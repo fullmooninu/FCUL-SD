@@ -36,5 +36,6 @@ void entry_destroy(struct entry_t *entry){
 struct entry_t *entry_dup(struct entry_t *entry){
 	if(entry == NULL) return NULL;
 	struct entry_t *copia = entry_create(entry->key, entry->value);
+	if(copia == NULL) return NULL;
 	return copia;
 }

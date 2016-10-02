@@ -33,6 +33,7 @@ struct data_t *data_create(int size) {
  * o parâmetro data.
  */
 struct data_t *data_create2(int size, void *data) {
+	if(size <= 0) return NULL;
 	struct data_t *retVal;
 	if (data == NULL) return NULL;
 	retVal = data_create(size);
@@ -55,5 +56,6 @@ struct data_t *data_dup(struct data_t *data) {
 	if(data == NULL) return NULL;
 	struct data_t *copia;
 	copia = data_create2(data->datasize, data->data);
+	if(copia == NULL) return NULL;
 	return copia;
 }
