@@ -33,8 +33,9 @@ struct data_t *data_create(int size) {
  * o parâmetro data.
  */
 struct data_t *data_create2(int size, void *data) {
+	struct data_t *retVal;
 	if (data == NULL) return NULL;
-	struct data_t *retVal = data_create(size);
+	retVal = data_create(size);
 	if (retVal == NULL) return NULL;
 	memcpy(retVal->data, data, size);
 	return retVal;
@@ -52,7 +53,7 @@ void data_destroy(struct data_t *data2) {
  */
 struct data_t *data_dup(struct data_t *data) {
 	if(data == NULL) return NULL;
-
-	struct data_t *copia = data_create2(data->datasize, data->data);
+	struct data_t *copia;
+	copia = data_create2(data->datasize, data->data);
 	return copia;
 }
