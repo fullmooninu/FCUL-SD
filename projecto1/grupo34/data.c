@@ -9,13 +9,14 @@
 Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
 
-/* Função que cria um novo elemento de dados data_t e reserva a memória
- * necessária, especificada pelo parâmetro size
+/* Funcao que cria um novo elemento de dados data_t e reserva a memoria
+ * necessaria, especificada pelo parametro size
  */
 struct data_t *data_create(int size) {
+	struct data_t *retVal;
 	if (size <= 0) return NULL;
-	//Alocação da estutura do bloco de dados
-	struct data_t *retVal = malloc(sizeof(struct data_t));
+	//Alocacao da estrutura do bloco de dados
+	retVal = (struct data_t*) malloc(sizeof(struct data_t));
 	if (retVal == NULL) return NULL;
 	//define o size
 	retVal->datasize = size;
