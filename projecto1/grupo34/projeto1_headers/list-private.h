@@ -1,15 +1,17 @@
-/* TODO PUT HEADER HERE */
+#ifndef _LIST_PRIVATE_H
+#define _LIST_PRIVATE_H
 
-struct list_t
+#include "entry.h"
+#include "list.h"
 
-// https://www.tutorialspoint.com/data_structures_algorithms/linked_list_program_in_c.htm
 
-/*
-struct node  
-{
-   int data;
-   int key;
-   struct node *next;
+struct node_t {
+  struct entry_t *entry;
+  struct node_t *next;
 };
 
-/*
+struct list_t {
+  struct node_t *head;
+};
+
+#endif
