@@ -1,6 +1,6 @@
 # FCUL-SD
 
-- A fazer:
+##A fazer:
 
 - acabar as funçoes do list.c . Compilar funções à parte.
 - usar o splint e perceber o porquê dos avisos.
