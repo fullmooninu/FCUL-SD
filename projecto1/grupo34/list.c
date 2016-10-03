@@ -5,9 +5,12 @@
 struct list_t *list_create() {
 	struct list_t *l;
 	l = (struct list_t*) malloc(sizeof (struct list_t));
-	l -> head = NULL;
-	l -> size = 0;
-	return l;
+	if( l != NULL){
+		l -> head = NULL;
+		l -> size = 0;
+		return l;
+	}
+	else return NULL;
 }
 
 /* Elimina uma lista, libertando *toda* a memoria utilizada pela
