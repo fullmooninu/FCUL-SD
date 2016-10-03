@@ -50,7 +50,8 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 /* Retorna o tamanho (numero de elementos) da lista 
  * Retorna -1 em caso de erro.  */
 int list_size(struct list_t *list) {
-
+	if (list == NULL || list->size < 0) return -1;
+	return list -> size;
 }
 
 /* Devolve um array de char * com a cópia de todas as keys da 
