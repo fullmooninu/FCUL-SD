@@ -1,3 +1,4 @@
 *.o
 #ignora o exec
 projecto1/grupo34/data
+/.project

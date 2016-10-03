@@ -4,6 +4,7 @@
 #include "entry.h"
 #include "list.h"
 
+int size; 		/*Tamanho da lista */
 
 struct node_t {
   struct entry_t *entry;
