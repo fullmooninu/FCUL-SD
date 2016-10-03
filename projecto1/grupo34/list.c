@@ -59,8 +59,6 @@ int list_add(struct list_t *list, struct entry_t *entry) {
  */
 int list_remove(struct list_t *list, char* key) {
 	if(list == NULL || key == NULL) return -1;
-
-<<<<<<< HEAD
 	/* Apontador que vai percorrer os v�rios n�s */
 	struct node_t *current = head;
 	while (strcmp(current -> entry -> key,*key) != 0)
@@ -71,31 +69,7 @@ int list_remove(struct list_t *list, char* key) {
 	entry_destroy(current); //TEM-SE QUE FAZER O INCLUDE DO ENTRY.H?
 	return 0;
 }
-=======
-	struct node* current = list_t -> head;
-	struct node* previous = NULL;~
-	
-	// se a lista estiver vazia
-	if (list -> head == NULL) return -1;
 
-	while(current->key != key) {
-		if (current-> next == NULL) {
-			return -1;
-		}else{
-			previous = current;
-			current = current -> next;
-	    }
-	}
-	// encontrou
-	if (current == list -> head  {
-		(list -> head) = (list -> head -> next);
-
-	}else{
-		previous -> next = current -> next;
-	list_t -> size = list_t -> size - 1
-
-
->>>>>>> branch 'master' of https://github.com/fullmooninu/FCUL-SD.git
 
 /* Obtem um elemento da lista que corresponda à chave key. 
  * Retorna a referência do elemento na lista (ou seja, uma alteração
