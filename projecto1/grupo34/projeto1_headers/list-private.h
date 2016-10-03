@@ -14,5 +14,6 @@ struct list_t{
 	int size;	/* Tamanho da lista */
 };
 
+void sort{};
 
 #endif
