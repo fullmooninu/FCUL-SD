@@ -3,10 +3,11 @@
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
  */
 struct list_t *list_create() {
-	//PARA COMPLETAR
 	struct list_t *l;
-	list_t -> head = NULL;
-	return head;
+	l = (struct list_t*) malloc(sizeof (struct list_t));
+	l -> head = NULL;
+	l -> size = 0;
+	return l;
 }
 
 /* Elimina uma lista, libertando *toda* a memoria utilizada pela
@@ -21,6 +22,7 @@ void list_destroy(struct list_t *list) {
  * Retorna 0 (OK) ou -1 (erro)
  */
 int list_add(struct list_t *list, struct entry_t *entry) {
+	//PARA COMPLETAR
 	if (list == NULL || entry_t == NULL) return NULL;
 
 	struct node_t *newNode = (struct node_t*) malloc(sizeof(struct node_t));
