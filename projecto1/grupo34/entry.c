@@ -9,7 +9,7 @@
 struct entry_t *entry_create(char *key, struct data_t *data2){
 	if (key == NULL || data2 == NULL) return NULL;
 	struct entry_t *e;
-	e = malloc(sizeof(struct entry_t));
+	e = malloc(sizeof(struct entry_t)); // falta aqui o ?cast ?
 	if(e == NULL) return NULL;
 	char *k = strdup(key);
 	if(k == NULL) return NULL;
