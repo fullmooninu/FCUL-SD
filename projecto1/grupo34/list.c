@@ -1,9 +1,9 @@
 /* TODO PUT HEADER HERE */
 
-
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
  */
 struct list_t *list_create() {
+	//PARA COMPLETAR
 	struct list_t *l;
 	list_t -> head = NULL;
 	return head;
@@ -94,7 +94,8 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 /* Retorna o tamanho (numero de elementos) da lista 
  * Retorna -1 em caso de erro.  */
 int list_size(struct list_t *list) {
-	return list_t -> size;
+	if (list == NULL || list->size < 0) return -1;
+	return list -> size;
 }
 
 /* Devolve um array de char * com a cópia de todas as keys da 
@@ -118,5 +119,5 @@ char **list_get_keys(struct list_t *list) {
 /* Liberta a memoria reservada por list_get_keys.
  */
 void list_free_keys(char **keys) {
-	//TODO
+	
 }

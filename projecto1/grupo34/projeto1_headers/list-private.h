@@ -4,8 +4,6 @@
 #include "entry.h"
 #include "list.h"
 
-int size; 		/*Tamanho da lista */
-
 struct node_t {
   struct entry_t *entry;
   struct node_t *next;
@@ -13,6 +11,7 @@ struct node_t {
 
 struct list_t{
 	struct node_t *head;
+	int size;	/* Tamanho da lista */
 };
 
 
