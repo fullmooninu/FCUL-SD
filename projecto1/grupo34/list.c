@@ -6,7 +6,7 @@ struct list_t *list_create() {
 	struct list_t *l;
 	l = (struct list_t*) malloc(sizeof (struct list_t));
 	if(l == NULL) return NULL;
-	l -> head = NULL;
+	l -> head = l;
 	l -> size = 0;
 	return l;
 }
