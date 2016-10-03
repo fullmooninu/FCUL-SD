@@ -15,7 +15,18 @@ struct list_t *list_create() {
  * lista.
  */
 void list_destroy(struct list_t *list) {
-  
+	struct node* current = list -> head;
+	struct node* next;
+	while (current != NULL) {
+		next = current -> next;
+		entry_destroy(current -> entry)
+		free(current -> entry)
+		free(current);
+		current = next;
+	};
+	free(list -> head);
+	list -> *head = NULL;
+	*list = NULL;
 }
 
 /* novo metodo para fazer sort a lista*/
