@@ -110,19 +110,20 @@ char **list_get_keys(struct list_t *list) {
 	// criar array com o size da lista
 	// para cada elemento da lista:
 	// array[i] node -> entry -> key )
-	
 	struct node* current = list_t -> head;
-	**char list_keys[list_t -> size]; 
+	**char list_keys[list_t -> size + 1]; 
 	int i;
-	
 	for (i = 0; i < list_t -> size, i++) {
 		list_keys[i] = node -> entry -> key;
 		current = current -> next;
 	}
+	list_keys[list_t -> size] = NULL;
+	free(i);
+	return list_keys;
 }
 
 /* Liberta a memoria reservada por list_get_keys.
  */
 void list_free_keys(char **keys) {
-	
+	free(keys);
 }
