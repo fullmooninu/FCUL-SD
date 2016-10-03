@@ -11,8 +11,9 @@ struct node_t {
   struct node_t *next;
 };
 
-struct list_t {
-  struct node_t *head;
+struct list_t{
+	struct node_t *head;
 };
+
 
 #endif
