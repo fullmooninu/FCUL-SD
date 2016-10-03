@@ -58,6 +58,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
  * Retorna 0 (OK) ou -1 (erro)
  */
 int list_remove(struct list_t *list, char* key) {
+	//FALTA COMPLETAR
 	if(list == NULL || key == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t *current = head;
@@ -67,6 +68,8 @@ int list_remove(struct list_t *list, char* key) {
 	if(strcmp(current -> entry -> key, *key) != 0) return -1;
 
 	entry_destroy(current); //TEM-SE QUE FAZER O INCLUDE DO ENTRY.H?
+	//FALTA APAGAR NÒ E JUNTAR OS NEXT
+
 	return 0;
 }
 
