@@ -1,25 +1,26 @@
 FLAGS = -Wall
-TARGET = data
-OBJS = data.o test_data.o entry.o test_entry.o
-#HEADERS = projeto1_headers
+OBJS_TEST_DATA = data.o test_data.o entry.o
+OBJS_TEST_ENTRY = data.o entry.o test_entry.o
 
-all: ${TARGET}
+all: testData testEntry
 
-${TARGET}: ${OBJS}
-	gcc -g ${FLAGS} -o ${TARGET} ${OBJS}
+testData: ${OBJS_TEST_DATA}
+	gcc -g ${FLAGS} -o testData ${OBJS_TEST_DATA}
+
+testEntry: ${OBJS_TEST_ENTRY}
+	gcc -g ${FLAGS} -o testEntry ${OBJS_TEST_ENTRY}
 
 data.o: data.c projeto1_headers/data.h
 	gcc -g -c ${FLAGS} data.c
 
-entry.o: entry.c projeto1_headers/entry.h projeto1_headers/data.h
-	gcc -g -c ${FLAGS} entry.c
-
 test_data.o: test_data.c projeto1_headers/data.h
 	gcc -g -c ${FLAGS} test_data.c
 
-test_entry.o: test_entry.c projeto1_headers/test_.h projeto1_headers/data.h
-	gcc -g -c ${FLAGS} test_data.c
+entry.o: entry.c projeto1_headers/data.h projeto1_headers/entry.h
+	gcc -g -c ${FLAGS} entry.c
 
+test_entry.o: test_entry.c projeto1_headers/data.h projeto1_headers/entry.h
+	gcc -g -c ${FLAGS} test_entry.c
 
 clean:
-	rm -f *.o ${TARGET}
+	rm -f *.o testData testEntry
