@@ -73,11 +73,11 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 int list_remove(struct list_t *list, char* key) {
 	//FALTA COMPLETAR
 	if(list == NULL || key == NULL) return -1;
-	/* Apontador que vai percorrer os v�rios n�s */
+	/* Apontador que vai percorrer os varios nos */
 	struct node_t *current = head;
 	while (strcmp(current -> entry -> key,*key) != 0)
 	current = head.next;
-	/* Se chegar ao fim e n�o estiver l� a chave, d� erro. */
+	/* Se chegar ao fim e n�o estiver lah a chave, da erro. */
 	if(strcmp(current -> entry -> key, *key) != 0) return -1;
 
 	entry_destroy(current); //TEM-SE QUE FAZER O INCLUDE DO ENTRY.H?
@@ -93,20 +93,20 @@ int list_remove(struct list_t *list, char* key) {
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
 	if (list == NULL || key == NULL) return NULL;
-	struct node* current = list -> head;
+	struct node_t* current = list -> head;
 
 	if (list -> head == NULL) return NULL;
 
 	// correr a lista
-	while (current -> key != key) {
+	while (current -> entry -> key != key) {
 		//se for o ultimo node
 		if (current -> next == NULL) {
 			return NULL;
 		}else{
-			current = current -> next
+			current = current -> next;
 		}
 	}
-	return current;
+	return current -> entry;
 }
 
 /* Retorna o tamanho (numero de elementos) da lista
@@ -120,18 +120,15 @@ int list_size(struct list_t *list) {
 * tabela, e um último elemento a NULL.
 */
 char **list_get_keys(struct list_t *list) {
-	// criar array com o size da lista
-	// para cada elemento da lista:
-	// array[i] node -> entry -> key )
-	struct node* current = list_t -> head;
-	**char list_keys[list_t -> size + 1];
-	int i;
-	for (i = 0; i < list_t -> size, i++) {
-		list_keys[i] = node -> entry -> key;
+	//TODO mudar isto para dynamic alloc
+	struct node_t* current = list -> head;
+	char **list_keys[list -> size + 1];
+	for (int i = 0; i < list -> size; i++) 
+	{
+		list_keys[i] = current -> entry -> key;
 		current = current -> next;
 	}
-	list_keys[list_t -> size] = NULL;
-	free(i);
+	list_keys[list -> size] = NULL;
 	return list_keys;
 }
 
