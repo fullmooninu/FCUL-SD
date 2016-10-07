@@ -1,3 +1,7 @@
+/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Silvia Ferreira 45511 */
+
 #include "projeto1_headers/data.h"
 #include <stdlib.h>
 #include <string.h>

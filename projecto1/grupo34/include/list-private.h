@@ -1,3 +1,7 @@
+/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Silvia Ferreira 45511 */
+
 #ifndef _LIST_PRIVATE_H
 #define _LIST_PRIVATE_H
 

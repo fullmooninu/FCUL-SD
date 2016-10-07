@@ -1,8 +1,9 @@
-#include "projeto1_headers/list-private.h"
-
-/* TODO FINISH HEADER Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
 Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
+
+#include "projeto1_headers/list-private.h"
+#include <string.h>
 
 /* Funcao que cria um novo elemento da lista node_t, reserva-lhe a memoria
  * necessaria e incializa-o de acordo com o parametro entry
@@ -13,7 +14,7 @@ struct node_t *node_create(struct entry_t *entry){
   newNode = (struct node_t*) malloc(sizeof(struct node_t));
   if(newNode == NULL) return NULL;
   //inicializacao do newNode
-  newNode->entry = entry
+  newNode->entry = entry;
   newNode->next = NULL;
   return newNode;
 }

@@ -1,4 +1,9 @@
-/* TODO PUT HEADER HERE */
+/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Silvia Ferreira 45511 */
+
+#include "projeto1_headers/list-private.h"
+#include <stdlib.h>
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
 */
