@@ -2,7 +2,9 @@
 Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
 
+// TODO porque criar este ficheiro?
 #include "include/list-private.h"
+#include <stdlib.h>
 #include <string.h>
 
 /* Funcao que cria um novo elemento da lista node_t, reserva-lhe a memoria
@@ -20,10 +22,10 @@ struct node_t *node_create(struct entry_t *entry){
 }
 
 /* Funcao que recebe um noh, insere-o numa lista e ordena a lista por ordem decrescente
-* das chaves alfanuméricas
+* das chaves alfanumericas
 * contidas nas entradas do tipo enty_t.
 */
-void addBy_descendOrder(struct node_t *newNode, struct struct list_t *list){
+void addBy_descendOrder(struct node_t *newNode, struct list_t *list){
   struct node_t* currentNode;
   currentNode = list->head;
   //se a key do novo noh for > que a key do current, colocamos o novo noh logo à cabeça

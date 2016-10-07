@@ -22,14 +22,19 @@ struct list_t{
 	int size;	/* Tamanho da lista */
 };
 
+//TODO esta funcao parece-me desnecessaria, e a fazer implica a funcao de destroy, nao?
 /* Funcao que cria um novo elemento da lista node_t, reserva-lhe a memoria
  * necessaria e incializa-o de acordo com o parametro entry
  */
 struct node_t *node_create(struct entry_t *entry);
 
+
+//TODO esta funcao nao vai ser implementada?
 /* Funcao que ordena uma lista por ordem decrescente das chaves alfanuméricas
 *contidas nas entradas do tipo enty_t.
 */
 void descending_sort(struct list_t *list);
+
+void addBy_descendOrder(struct node_t *newNode, struct list_t *list);
 
 #endif

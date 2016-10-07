@@ -2,8 +2,10 @@
 Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
 
+
 #include "include/list-private.h"
 #include <stdlib.h>
+
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
 */
@@ -21,7 +23,7 @@ struct list_t *list_create() {
 */
 void list_destroy(struct list_t *list) {
 	if(list != NULL){
-		node_t *current, *next;
+		struct node_t *current, *next;
 		current = list->head;
 		while(current != NULL) {
 			next = current->next;
@@ -48,7 +50,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	if(entry == NULL || entry -> value == NULL || entry -> key == NULL)
 	return -1;
 
-	struct node_t *newNode, currentNode;
+	struct node_t *newNode;
 	newNode = node_create(entry);
 	if(newNode == NULL) return -1;
 
@@ -60,11 +62,10 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	}
 
 	//cc
-	addBy_descendOrder(struct node_t *newNode,
-		struct struct list_t *list);
-		return 0;
-	}
+	addBy_descendOrder(newNode, list);
+	return 0;
 }
+
 
 /* Elimina da lista um elemento com a chave key.
 * Retorna 0 (OK) ou -1 (erro)
