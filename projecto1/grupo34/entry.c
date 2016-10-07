@@ -3,8 +3,8 @@ Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
 
 
-#include "projeto1_headers/data.h"
-#include "projeto1_headers/entry.h"
+#include "include/data.h"
+#include "include/entry.h"
 #include <string.h>
 #include <stdlib.h>
 

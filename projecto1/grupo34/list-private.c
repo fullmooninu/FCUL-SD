@@ -2,7 +2,7 @@
 Elias Miguel Barreira 40821, Pedro Pais 4XXXX
 Silvia Ferreira 45511 */
 
-#include "projeto1_headers/list-private.h"
+#include "include/list-private.h"
 #include <string.h>
 
 /* Funcao que cria um novo elemento da lista node_t, reserva-lhe a memoria
