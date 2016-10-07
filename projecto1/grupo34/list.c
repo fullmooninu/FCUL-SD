@@ -122,18 +122,23 @@ int list_size(struct list_t *list) {
 char **list_get_keys(struct list_t *list) {
 	//TODO mudar isto para dynamic alloc
 	struct node_t* current = list -> head;
-	char **list_keys[list -> size + 1];
+	//char **list_keys[list -> size + 1];
+	char** list_keys;
+	list_keys = malloc( (list->size) * sizeof(char**) );
 	for (int i = 0; i < list -> size; i++) 
 	{
 		list_keys[i] = current -> entry -> key;
 		current = current -> next;
 	}
-	list_keys[list -> size] = NULL;
-	return list_keys;
+	list_keys[list -> size] = NULL
+;	return list_keys;
 }
 
 /* Liberta a memoria reservada por list_get_keys.
 */
 void list_free_keys(char **keys) {
+	for (int i = 0; keys[i] != NULL; i++) {
+		free( keys[i]);
+	}
 	free(keys);
 }
