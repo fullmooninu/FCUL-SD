@@ -6,7 +6,7 @@ Silvia Ferreira 45511 */
 #include "include/list-private.h"
 #include "include/entry.h"
 #include <stdlib.h>
-
+#include <string.h>
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
 */
@@ -68,44 +68,47 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 int list_remove(struct list_t *list, char* key) {
 	if(list == NULL || key == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
-	struct node_t *current = list->head;
+	struct node_t* current = list->head;
+	struct node_t* previous = NULL;
 
-	if (list -> head == NULL) return -1;
-
-	while (strcmp((current->next.entry.key,*key) != 0) && (current -> next != NULL))
-		current = current->next;
-	/* Se chegar ao fim e não estiver lá a chave, dá erro. */
-	if(strcmp(current -> entry.key, *key) != 0) return -1;
-
-	entry_destroy(current -> next);
-
-	current -> next = current.next.next;
-
-	list -> size--;
+	while ( strcmp(current->entry->key, key) != 0) {
+		if (current -> next == NULL) {
+			return -1;
+		}else{
+			previous = current;
+			current = current -> next;
+		}
+	}
+	if (current == list -> head) {
+		list->head = list->head->next;
+	}else{
+		previous->next = current->next;
+	}
+	entry_destroy(current->entry);
+	free(current->next);
+	free(current);
 	return 0;
 }
 
 
-/* Obtem um elemento da lista que corresponda Ã  chave key.
-* Retorna a referÃªncia do elemento na lista (ou seja, uma alteraÃ§Ã£o
+/* Obtem um elemento da lista que corresponda a chave key.
+* Retorna a referencia do elemento na lista (ou seja, uma alteracao
 * implica alterar o elemento na lista).
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
-	if (list == NULL || key == NULL) return NULL;
-	struct node_t* current = list -> head;
-
-	if (list -> head == NULL) return NULL;
+	if (list == NULL || key == NULL || list->head == NULL) return NULL;
+	struct node_t* current = list->head;
 
 	// correr a lista
-	while (current -> entry -> key != key) {
+	while (current->entry->key != key) {
 		//se for o ultimo node
-		if (current -> next == NULL) {
+		if (current->next == NULL) {
 			return NULL;
 		}else{
-			current = current -> next;
+			current = current->next;
 		}
 	}
-	return current -> entry;
+	return current->entry;
 }
 
 /* Retorna o tamanho (numero de elementos) da lista
@@ -115,8 +118,8 @@ int list_size(struct list_t *list) {
 	return list -> size;
 }
 
-/* Devolve um array de char * com a cÃ³pia de todas as keys da
-* tabela, e um Ãºltimo elemento a NULL.
+/* Devolve um array de char * com a copia de todas as keys da
+* tabela, e um ultimo elemento a NULL.
 */
 char **list_get_keys(struct list_t *list) {
 	//TODO mudar isto para dynamic alloc
