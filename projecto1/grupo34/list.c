@@ -82,8 +82,9 @@ int list_remove(struct list_t *list, char* key) {
 	/* Se chegar ao fim e não estiver lá a chave, dá erro. */
 	if(strcmp(current -> entry -> key, *key) != 0) return -1;
 
-	current.next = current.next.next;
 	entry_destroy(current.next); //TEM-SE QUE FAZER  O INCLUDE DO ENTRY.H?
+
+	current.next = current.next.next;
 
 	list -> size--;
 	return 0;
