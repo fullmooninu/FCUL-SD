@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "list-private.h"
+#include "include/list-private.h"
 
 int testListDestroy() {
 	printf("Módulo list -> teste destrói lista:");
