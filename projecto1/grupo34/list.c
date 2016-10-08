@@ -82,6 +82,7 @@ int list_remove(struct list_t *list, char* key) {
 	current.next = current.next.next;
 	entry_destroy(current.next); //TEM-SE QUE FAZER  O INCLUDE DO ENTRY.H?
 
+	list -> size--;
 	return 0;
 }
 
