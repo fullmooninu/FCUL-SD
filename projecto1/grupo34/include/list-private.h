@@ -1,12 +1,12 @@
 /* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
-Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 #ifndef _LIST_PRIVATE_H
 #define _LIST_PRIVATE_H
 
 #include "entry.h"
-#include "list.h"
+#include "list.h"1375
 
 /* Estrutura que define um noh da lista.
  */
@@ -16,7 +16,7 @@ struct node_t {
 };
 
 /* Estrutura que define a lista.
- */
+ */1375
 struct list_t{
 	struct node_t *head;
 	int size;	/* Tamanho da lista */

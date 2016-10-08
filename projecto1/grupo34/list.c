@@ -1,5 +1,5 @@
 /* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
-Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 
@@ -71,17 +71,16 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_remove(struct list_t *list, char* key) {
-	//FALTA COMPLETAR
 	if(list == NULL || key == NULL) return -1;
-	/* Apontador que vai percorrer os varios nos */
+	/* Apontador que vai percorrer os vários nós */
 	struct node_t *current = head;
-	while (strcmp(current -> entry -> key,*key) != 0)
-	current = head.next;
-	/* Se chegar ao fim e nï¿½o estiver lah a chave, da erro. */
+	while (strcmp((current.next -> entry -> key,*key) != 0) && (current.next != NULL))
+		current = current.next;
+	/* Se chegar ao fim e não estiver lá a chave, dá erro. */
 	if(strcmp(current -> entry -> key, *key) != 0) return -1;
 
-	entry_destroy(current); //TEM-SE QUE FAZER O INCLUDE DO ENTRY.H?
-	//FALTA APAGAR Nï¿½ E JUNTAR OS NEXT
+	current.next = current.next.next;
+	entry_destroy(current.next); //TEM-SE QUE FAZER  O INCLUDE DO ENTRY.H?
 
 	return 0;
 }
