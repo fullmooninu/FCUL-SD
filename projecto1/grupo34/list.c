@@ -74,6 +74,9 @@ int list_remove(struct list_t *list, char* key) {
 	if(list == NULL || key == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t *current = list->head;
+
+	if (list -> head == NULL) return -1;
+
 	while (strcmp((current.next -> entry -> key,*key) != 0) && (current.next != NULL))
 		current = current.next;
 	/* Se chegar ao fim e não estiver lá a chave, dá erro. */
