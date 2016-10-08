@@ -4,6 +4,7 @@ Silvia Ferreira 45511 */
 
 
 #include "include/list-private.h"
+#include "include/entry.h"
 #include <stdlib.h>
 
 
@@ -11,7 +12,7 @@ Silvia Ferreira 45511 */
 */
 struct list_t *list_create() {
 	struct list_t *list;
-	list = (struct list_t*) malloc(sizeof (struct list_t));
+	list = (struct list_t*) malloc(sizeof(struct list_t));
 	if(list == NULL) return NULL;
 	list -> head = NULL;
 	list -> size = 0;
@@ -33,12 +34,6 @@ void list_destroy(struct list_t *list) {
 		}
 		free(list);
 	}
-}
-
-/* novo metodo para fazer sort a lista*/
-void sort() {
-	// TODO
-	//criei em alternativa o addBy_descendOrder
 }
 
 /* Adiciona uma entry na lista. Como a lista deve ser ordenada,
@@ -74,7 +69,7 @@ int list_remove(struct list_t *list, char* key) {
 	if(list == NULL || key == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t *current = list->head;
- 
+
 	if (list -> head == NULL) return -1;
 
 	while (strcmp((current->next.entry.key,*key) != 0) && (current -> next != NULL))
@@ -82,7 +77,7 @@ int list_remove(struct list_t *list, char* key) {
 	/* Se chegar ao fim e não estiver lá a chave, dá erro. */
 	if(strcmp(current -> entry.key, *key) != 0) return -1;
 
-	entry_destroy(current -> next); //TEM-SE QUE FAZER  O INCLUDE DO ENTRY.H?
+	entry_destroy(current -> next);
 
 	current -> next = current.next.next;
 
@@ -129,7 +124,7 @@ char **list_get_keys(struct list_t *list) {
 	//char **list_keys[list -> size + 1];
 	char** list_keys;
 	list_keys = malloc( (list->size) * sizeof(char**) );
-	for (int i = 0; i < list -> size; i++) 
+	for (int i = 0; i < list -> size; i++)
 	{
 		list_keys[i] = current -> entry -> key;
 		current = current -> next;

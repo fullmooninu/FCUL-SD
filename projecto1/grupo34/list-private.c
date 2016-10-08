@@ -4,6 +4,8 @@ Silvia Ferreira 45511 */
 
 // TODO porque criar este ficheiro?
 #include "include/list-private.h"
+#include "include/entry.h"
+#include "include/list.h"
 #include <stdlib.h>
 #include <string.h>
 

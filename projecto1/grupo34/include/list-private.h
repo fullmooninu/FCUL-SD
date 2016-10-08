@@ -6,7 +6,7 @@ Silvia Ferreira 45511 */
 #define _LIST_PRIVATE_H
 
 #include "entry.h"
-#include "list.h"1375
+#include "list.h"
 
 /* Estrutura que define um noh da lista.
  */
@@ -16,7 +16,7 @@ struct node_t {
 };
 
 /* Estrutura que define a lista.
- */1375
+ */
 struct list_t{
 	struct node_t *head;
 	int size;	/* Tamanho da lista */
