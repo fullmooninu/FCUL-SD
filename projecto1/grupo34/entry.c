@@ -13,24 +13,23 @@ Silvia Ferreira 45511 */
  */
 struct entry_t *entry_create(char *key, struct data_t *data2){
 	if (key == NULL || data2 == NULL) return NULL;
-	struct entry_t *e;
-	e = (struct entry_t*) malloc(sizeof(struct entry_t));
-	if(e == NULL) return NULL;
-	e->key = key;
-	struct data_t *d;
-	d = data_create2(data2->datasize, data2->data);
-	if(d == NULL) return NULL;
-	e->value = d;
-	return e;
+	struct entry_t* entry;
+	entry = (struct entry_t*) malloc(sizeof(struct entry_t));
+	if(entry == NULL) return NULL;
+	char* new_key;
+	new_key = strdup(key);
+	entry->key = new_key;
+	struct data_t* new_value;
+	new_value = data_create2(data2->datasize,data2->data);
+	entry->value = new_value;
+	return entry;
 }
 
 /* Função que destrói um par {chave-valor} e liberta toda a memória.
  */
 void entry_destroy(struct entry_t *entry){
 	if(entry != NULL){
-	  if (entry -> key != NULL) free(entry->key);
-	data_destroy(entry->value);
-	free(entry);
+		free(entry);
     }
 }
 
