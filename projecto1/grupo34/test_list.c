@@ -360,11 +360,11 @@ int main() {
 	score += testListaVazia();
 	printf("\nmiguel - testAddCabeca\n\n");
 	score += testAddCabeca();
-
+	printf("\nmiguel - testAddVarios\n\n");
 	score += testAddVarios();
-
+	printf("\nmiguel - testRemoveCabeca\n\n");
 	score += testRemoveCabeca();
-
+	printf("\nmiguel - testRemoveCauda\n\n");
 	score += testRemoveCauda();
 
 	score += testRemoveMeio();
