@@ -75,8 +75,8 @@ int list_remove(struct list_t *list, char* key) {
 	}else{
 		previous->next = current->next;
 	}
-	entry_destroy(current->entry);
-	free(current->next);
+	// entry_destroy(current->entry);
+	// free(current->next->);
 	free(current);
 	list->size -= 1;
 	return 0;
