@@ -16,9 +16,8 @@ struct entry_t *entry_create(char *key, struct data_t *data2){
 	struct entry_t *e;
 	e = (struct entry_t*) malloc(sizeof(struct entry_t));
 	if(e == NULL) return NULL;
-	char *k = strdup(key);
 	if(k == NULL) return NULL;
-	e->key = k;
+	e->key = key;
 	struct data_t *d;
 	d = data_create2(data2->datasize, data2->data);
 	if(d == NULL) return NULL;
