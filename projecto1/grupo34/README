@@ -1,16 +1,20 @@
-
-
-
-Em várias funções, e.g.: entry_create(), não realizamos a libertação de memória 
-de alguns ponteiros através da função free(), visto que entravam em conflito com 
+Em várias funções, e.g.: entry_create(), não realizamos a libertação de memória alocada por
+alguns ponteiros através da função free(), visto que entravam em conflito com 
 os ficheiros de testes que já faziam essa libertação - destroy(). Delegamos essa
 responsabilidade então para o ficheiro de testes que serviam como cliente.
+Portanto, uma funçaõ do género list_destroy, espera, pela implementação apresentada 
+nos testes, que a destruição dos seus nodes constintuintes seja feita pelo cliente.
 
 Ao realizar o teste AddVarios, verificamos que a inserção de forma ordenada funcionava
-para chaves (keys) até 10 entradas e passava no teste, mas à décima primeira, tinhamos 
-uma Segmentation fault, falhando o teste. Revemos o código, mas não conseguimos perceber
-onde está a falta, uma vez que utilizamos a função strcmp() que à partida ordena as strings
-de vários tamanhos, o que não está a funcionar neste caso.
+para chaves (keys) até 10 entradas e passava no teste. Mas à décima primeira, tinhamos 
+uma Segmentation fault,quando líamos a lista nesta situação, vericmos ter um node mal inserido, 
+i.e. com a chave vazia. Falhando o teste.
+Revemos o código para ambos, mas nesta altura ainda não conseguimos perceber onde está a falta, uma vez que utilizamos a 
+função strcmp() que à partida ordena as strings, o que não está a funcionar neste caso.
+Se se comentar o teste *"score += testAddVarios();"* os outros testes passam excepto o ultimo, testGetKeys.
+
+Utilizámos o programa cppcheck (corrector estatico) para ver falhas no nosso codigo, e serviu-nos para identificar e corrigir
+memory leaks, que depois de identificados e corrigidos, mostraram novo erro no codigo, nomeadamente a segmentation fault.
 
 
 
