@@ -10,8 +10,8 @@ Silvia Ferreira 45511 */
 #include <string.h>
 
 /* Funcao que cria um novo elemento da lista node_t, reserva-lhe a memoria
- * necessaria e incializa-o de acordo com o parametro entry
- */
+* necessaria e incializa-o de acordo com o parametro entry
+*/
 struct node_t *node_create(struct entry_t *entry){
   if(entry == NULL) return NULL;
   struct node_t* newNode;
@@ -30,8 +30,16 @@ struct node_t *node_create(struct entry_t *entry){
 void addBy_descendOrder(struct node_t *newNode, struct list_t *list){
   struct node_t* currentNode;
   currentNode = list->head;
-  //se a key do novo noh for > que a key do current, colocamos o novo noh logo à cabeça
-  if(strcmp(currentNode->entry->key, newNode->entry->key) < 0){
+  //se a key do novo noh for == ah key do current
+  if(strcmp(currentNode->entry->key, newNode->entry->key) == 0){
+    currentNode->entry->value = newNode->entry->value;
+    //libertar memoria do value do currentNode
+    //copiar a memoria do value novo para o current
+    //tem que se fazer free do newNode que nao foi incluido
+
+
+  }
+  else if(strcmp(currentNode->entry->key, newNode->entry->key) < 0){
     list->head = newNode;
     newNode->next = currentNode;
     list->size++;
@@ -40,8 +48,16 @@ void addBy_descendOrder(struct node_t *newNode, struct list_t *list){
       strcmp(currentNode->entry->key, newNode->entry->key)>0){
         currentNode = currentNode->next;
       }
-      newNode->next = currentNode->next;
-      currentNode->next = newNode;
-      list->size++;
+      if(strcmp(currentNode->entry->key, newNode->entry->key) == 0){
+        currentNode->entry->value = newNode->entry->value;
+        //libertar memoria do value do currentNode
+        //copiar a memoria do value novo para o current
+        //tem que se fazer free do newNode que nao foi incluido
+      }
+      else{
+        newNode->next = currentNode->next;
+        currentNode->next = newNode;
+        list->size++;
+      }
     }
   }
