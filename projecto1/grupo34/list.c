@@ -137,5 +137,5 @@ void list_free_keys(char **keys) {
 	for (int i = 0; keys[i] != NULL; i++) {
 		free( keys[i]);
 	}
-	free(keys);
+	//free(keys);
 }
