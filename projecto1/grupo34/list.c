@@ -116,6 +116,7 @@ int list_size(struct list_t *list) {
 */
 char **list_get_keys(struct list_t *list) {
 	//TODO mudar isto para dynamic alloc
+	if(list == NULL) return NULL;
 	struct node_t* current = list -> head;
 	//char **list_keys[list -> size + 1];
 	char** list_keys;
