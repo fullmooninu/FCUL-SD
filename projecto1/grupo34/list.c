@@ -7,6 +7,7 @@ Silvia Ferreira 45511 */
 #include "include/entry.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
 */
@@ -139,6 +140,7 @@ char **list_get_keys(struct list_t *list) {
 /* Liberta a memoria reservada por list_get_keys.
 */
 void list_free_keys(char **keys) {
+	if (keys == NULL) return;
 	for (int i = 0; keys[i] != NULL; i++) {
 		free( keys[i]);
 	}

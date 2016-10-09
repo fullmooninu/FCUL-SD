@@ -353,13 +353,13 @@ int main() {
 	int score = 0;
 
 	printf("\nIniciando o teste do módulo list\n\n");
-
+	printf("\nmiguel - testListDestroy\n\n");
 	score += testListDestroy();
-
+	printf("\nmiguel - testListFreeKeys\n\n");
 	score += testListFreeKeys();
-
+	printf("\nmiguel - testListaVazia\n\n");
 	score += testListaVazia();
-
+	printf("\nmiguel - testAddCabeca\n\n");
 	score += testAddCabeca();
 
 	score += testAddVarios();
