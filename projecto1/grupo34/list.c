@@ -43,7 +43,7 @@ void list_destroy(struct list_t *list) {
 */
 int list_add(struct list_t *list, struct entry_t *entry) {
 
-	if(entry == NULL || entry -> value == NULL || entry -> key == NULL)
+	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL)
 	return -1;
 
 	struct node_t *newNode;
@@ -101,7 +101,7 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 	struct node_t* current = list->head;
 
 	// correr a lista
-	while (current->entry->key != key) {
+	while (strcmp(current->entry->key, key) != 0) {
 		//se for o ultimo node
 		if (current->next == NULL) {
 			return NULL;

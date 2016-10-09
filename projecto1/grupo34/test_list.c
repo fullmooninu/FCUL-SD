@@ -78,7 +78,6 @@ int testAddCabeca() {
 		 entry2 != entry &&
                  list_size(list) == 1 &&
 		 strcmp(entry->key, entry2->key) == 0;
-
 	entry_destroy(entry);
 	data_destroy(data);
 	list_destroy(list);
