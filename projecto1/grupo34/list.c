@@ -24,17 +24,7 @@ struct list_t *list_create() {
 * lista.
 */
 void list_destroy(struct list_t *list) {
-	if(list != NULL){
-		struct node_t *current, *next;
-		current = list->head;
-		while(current != NULL) {
-			next = current->next;
-			entry_destroy(current->entry);
-			free(current);
-			current = next;
-		}
-		free(list);
-	}
+	if(list != NULL) free(list);
 }
 
 /* Adiciona uma entry na lista. Como a lista deve ser ordenada,
@@ -99,7 +89,6 @@ int list_remove(struct list_t *list, char* key) {
 struct entry_t *list_get(struct list_t *list, char *key) {
 	if (list == NULL || key == NULL || list->head == NULL) return NULL;
 	struct node_t* current = list->head;
-
 	// correr a lista
 	while (strcmp(current->entry->key, key) != 0) {
 		//se for o ultimo node
@@ -109,7 +98,9 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 			current = current->next;
 		}
 	}
-	return current->entry;
+	struct entry_t* ret_entry;
+	ret_entry = entry_create(current->entry->key,current->entry->value);
+	return ret_entry;
 }
 
 /* Retorna o tamanho (numero de elementos) da lista
