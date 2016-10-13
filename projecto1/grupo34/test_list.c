@@ -99,7 +99,7 @@ int testAddVarios() {
 	if ((list = list_create()) == NULL)
 		error(1, errno, "  O teste não pode prosseguir");
 
-	for(i=0; i<1024; i++) {
+	for(i=0; i<9; i++) {
 		sprintf(key, "keyabc-%d",i);
 		keysize = strlen(key) + 1;
 
@@ -114,10 +114,10 @@ int testAddVarios() {
 		list_add(list, entry[i]);
 	}
 
-	assert(list_size(list) == 1024);
-	result = (list_size(list) == 1024);
+	assert(list_size(list) == 9);
+	result = (list_size(list) == 9);
 
-	for(i=0; i<1024; i++) {
+	for(i=0; i<9; i++) {
 		assert(list_get(list, entry[i]->key) != entry[i]);
 		aux = list_get(list, entry[i]->key);
 		result = result &&
