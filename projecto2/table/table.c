@@ -5,11 +5,14 @@
 #include "table-private.h"
 
 int key_hash(char *key, int l){
-	if (key == NULL | l > size) return -1;
+	if (key == NULL) return -1;
 
+	/* FALTA VALIDAR l - ESTÁ ASSOCIADO AO SIZE DA DO BUCKET */
+	
+	
 	unsigned int soma;
 
-	//Pode come�ar em 0.
+	//Pode começar em 0.
 	soma = 0;
 
 	for(; *key != '0'; key++)
@@ -22,15 +25,15 @@ struct table_t *table_create(int n) {
 
 	struct table_t *new_table;
 
-  /* n tem valor válido? */
+  /* n tem valor vÃ¡lido? */
 	if (n < 1) return NULL;
 
-  /* Alocar memória para struct table_t */
+  /* Alocar memÃ³ria para struct table_t */
 	new_table = malloc(sizeof(table_t));
 
 
-  /* Alocar memória para array de listas com n entradas 
-     que ficará referenciado na struct table_t alocada. */
+  /* Alocar memÃ³ria para array de listas com n entradas 
+     que ficarÃ¡ referenciado na struct table_t alocada. */
 	new_table -> buckets = int buckets[n+1];
 
 
@@ -50,11 +53,11 @@ struct table_t *table_create(int n) {
 
 void table_destroy(struct table_t *table) {
 
-  /* table é NULL? */
+  /* table Ã© NULL? */
 	if(table == NULL) return -1;
 	int i;
 
-  /*   Libertar memória das listas.*/
+  /*   Libertar memÃ³ria das listas.*/
 	for(i=0; i < table->size;i++)
 	{
 		list = table->list[i];
@@ -63,7 +66,7 @@ void table_destroy(struct table_t *table) {
 		}
 	}
 
-     /*Libertar memória da tabela. */
+     /*Libertar memÃ³ria da tabela. */
 	free(table->buckets);
 	free(table->list);
 	free(table);
@@ -95,9 +98,9 @@ int table_del(struct table_t *table, char *key){
 
 }
 
-/* Esta é dada! Ao estilo C! */
+/* Esta Ã© dada! Ao estilo C! */
 int table_size(struct table_t *table) {
-	/*ATEN��O QUE N�O PODE SER O SIZE (PEDRO)*/
+	/*ATENÇÃO QUE NÂO PODE SER O SIZE (PEDRO)*/
 	return table == NULL ? -1 : table->nListas;
 }
 
