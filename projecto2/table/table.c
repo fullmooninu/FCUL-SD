@@ -97,7 +97,8 @@ int table_del(struct table_t *table, char *key){
 
 /* Esta Ã© dada! Ao estilo C! */
 int table_size(struct table_t *table) {
-	return table == NULL ? -1 : table->/*atributo*/;
+	/*ATENÇÃO QUE NÂO PODE SER O SIZE (PEDRO)*/
+	return table == NULL ? -1 : table->nListas;
 }
 
 char **table_get_keys(struct table_t *table) {
