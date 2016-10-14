@@ -4,8 +4,12 @@
 
 #include "table-private.h"
 
+
 int key_hash(char *key, int l){
-	if (key == NULL | l > size) return -1;
+	if (key == NULL || l < 1) return -1;
+
+	//FALTA VALIDAR O l que está associado ao tamanho do Buckets.
+	//Ou não sera necessario?
 
 	unsigned int soma;
 
@@ -29,9 +33,10 @@ struct table_t *table_create(int n) {
 	new_table = malloc(sizeof(table_t));
 
 
-  /* Alocar memÃ³ria para array de listas com n entradas 
+  /* Alocar memÃ³ria para array de listas com n entradas
      que ficarÃ¡ referenciado na struct table_t alocada. */
-	new_table -> buckets = int buckets[n+1];
+	int buckets[n + 1];
+	new_table -> buckets = buckets;
 
 
     /* Inicializar listas.*/
@@ -68,7 +73,7 @@ void table_destroy(struct table_t *table) {
 	free(table->list);
 	free(table);
 
-  
+
 }
 
 int table_put(struct table_t *table, char * key, struct data_t *value) {
