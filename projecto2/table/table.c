@@ -5,41 +5,68 @@
 #include "table-private.h"
 
 int key_hash(char *key, int l){
-	if (key == NULL) return -1;
+	if (key == NULL | l > size) return -1;
 
+	unsigned int soma;
 
+	//Pode come�ar em 0.
+	soma = 0;
 
-  /* l tem valor válido? */
+	for(; *key != '0'; key++)
+		soma = *key + (soma << 5) - soma;
 
   return soma % l;
 }
 
 struct table_t *table_create(int n) {
 
+	struct table_t *new_table;
+
   /* n tem valor válido? */
+	if (n < 1) return NULL;
 
   /* Alocar memória para struct table_t */
+	new_table = malloc(sizeof(table_t));
+
 
   /* Alocar memória para array de listas com n entradas 
-     que ficará referenciado na struct table_t alocada. 
+     que ficará referenciado na struct table_t alocada. */
+	new_table -> buckets = int buckets[n+1];
 
-     Inicializar listas.
 
-     Inicializar atributos da tabela.
-  */
+    /* Inicializar listas.*/
+	new_table -> list_t = malloc(sizeof(struct list_t *) * size);
+
+	int i;
+	for (i = 0; i < size; i++)
+		new_table -> list[i] = NULL;
+
+    /* Inicializar atributos da tabela. */
+	new_table->size = n;
+	new_table->nListas = 0;
 
   return new_table;
 }
 
 void table_destroy(struct table_t *table) {
 
-  /* table é NULL? 
+  /* table é NULL? */
+	if(table == NULL) return -1;
+	int i;
 
-     Libertar memória das listas.
+  /*   Libertar memória das listas.*/
+	for(i=0; i < table->size;i++)
+	{
+		list = table->list[i];
+		while(list != NULL){
+			list_destroy(list);
+		}
+	}
 
-     Libertar memória da tabela.
-
-  */
+     /*Libertar memória da tabela. */
+	free(table->buckets);
+	free(table->list);
+	free(table);
 
   
 }
