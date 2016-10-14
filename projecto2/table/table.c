@@ -5,8 +5,9 @@
 #include "table-private.h"
 
 int key_hash(char *key, int l){
+	if (key == NULL) return -1;
 
-  /* Verificar se key é NULL */
+
 
   /* l tem valor válido? */
 
