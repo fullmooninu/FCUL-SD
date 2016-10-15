@@ -42,7 +42,7 @@ struct table_t *table_create(int n) {
 
 
     /* Inicializar listas.*/
-	new_table -> list = malloc(sizeof(list_t *) * n);
+	new_table -> list = malloc(sizeof(struct list_t *) * n);
 
 	int i;
 	for (i = 0; i < n; i++)
