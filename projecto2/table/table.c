@@ -74,7 +74,6 @@ void table_destroy(struct table_t *table) {
 
 		/*Libertar memória da tabela. */
 		free(table->buckets);
-		free(table->list);
 		free(table);
 	}
 
