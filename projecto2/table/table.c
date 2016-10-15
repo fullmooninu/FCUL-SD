@@ -29,7 +29,7 @@ struct table_t *table_create(int n) {
 	struct table_t *new_table;
 
   /* n tem valor válido? */
-	if (n < 1) return NULL;
+	if (n < 0) return NULL;
 
   /* Alocar memória para struct table_t */
 	new_table = malloc(sizeof(table_t));
