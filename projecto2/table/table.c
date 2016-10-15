@@ -45,7 +45,7 @@ struct table_t *table_create(int n) {
 
 	int i;
 	for (i = 0; i < n; i++)
-		new_table -> list[i] = NULL;
+		new_table -> list[i] = list_create();
 
     /* Inicializar atributos da tabela. */
 	new_table->size = n;
