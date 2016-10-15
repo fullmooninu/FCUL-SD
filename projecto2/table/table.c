@@ -42,10 +42,10 @@ struct table_t *table_create(int n) {
 
 
     /* Inicializar listas.*/
-	new_table -> list_t = malloc(sizeof(list_t *) * n);
+	new_table -> list = malloc(sizeof(list_t *) * n);
 
 	int i;
-	for (i = 0; i < size; i++)
+	for (i = 0; i < n; i++)
 		new_table -> list[i] = NULL;
 
     /* Inicializar atributos da tabela. */
@@ -61,6 +61,7 @@ void table_destroy(struct table_t *table) {
 	if(table == NULL) return NULL;
 
 	int i;
+	struct list_t *list;
 
   /*   Libertar memória das listas.*/
 	for(i=0; i < table->size;i++)
