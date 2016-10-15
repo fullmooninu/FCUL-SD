@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "table-private.h"
+#include "include/list-private.h"
 
 
 int key_hash(char *key, int l){
@@ -41,7 +42,7 @@ struct table_t *table_create(int n) {
 
 
     /* Inicializar listas.*/
-	new_table -> list_t = malloc(sizeof(struct list_t *) * size);
+	new_table -> list_t = malloc(sizeof(list_t *) * n);
 
 	int i;
 	for (i = 0; i < size; i++)
