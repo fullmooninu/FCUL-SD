@@ -32,8 +32,7 @@ struct table_t *table_create(int n) {
 		if (n < 1) return NULL;
 
 	  /* Alocar memória para struct table_t */
-		new_table = malloc(sizeof(struct table_t));
-
+		new_table =(struct table_t*) malloc(sizeof(struct table_t));
 
 
   /* Alocar memória para array de listas com n entradas
@@ -42,7 +41,7 @@ struct table_t *table_create(int n) {
 	new_table -> buckets = buckets;
 
     /* Inicializar listas.*/
-	new_table -> list = malloc(sizeof(struct list_t *) * n);
+	new_table -> list =(struct list_t**) malloc(sizeof(struct list_t *) * n);
 
 	int i;
 	for (i = 0; i < n; i++)
@@ -54,7 +53,6 @@ struct table_t *table_create(int n) {
 
   return new_table;
 }
-
 
 void table_destroy(struct table_t *table) {
 
