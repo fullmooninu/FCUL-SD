@@ -40,7 +40,6 @@ struct table_t *table_create(int n) {
 	int buckets[n + 1];
 	new_table -> buckets = buckets;
 
-
     /* Inicializar listas.*/
 	new_table -> list = malloc(sizeof(struct list_t *) * n);
 
