@@ -58,7 +58,8 @@ struct table_t *table_create(int n) {
 void table_destroy(struct table_t *table) {
 
   /* table é NULL? */
-	if(table == NULL) return -1;
+	if(table == NULL) return NULL;
+
 	int i;
 
   /*   Libertar memória das listas.*/
