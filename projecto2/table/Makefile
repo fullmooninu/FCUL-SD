@@ -17,7 +17,7 @@ testList: ${OBJS_TEST_LIST}
 		
 testTable: ${OBJS_TEST_TABLE}
 		gcc -g ${FLAGS} -o testTable ${OBJS_TEST_TABLE}
-
+ 
 data.o: data.c include/data.h
 	gcc -g -c ${FLAGS} data.c
 
