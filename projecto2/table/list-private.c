@@ -18,7 +18,9 @@ struct node_t *node_create(struct entry_t *entry){
   newNode = (struct node_t*) malloc(sizeof(struct node_t));
   if(newNode == NULL) return NULL;
   //inicializacao do newNode
-  newNode->entry = entry;
+  struct entry_t *dupentry;
+  dupentry = entry_create(entry->key, entry->value);
+  newNode->entry = dupentry;
   newNode->next = NULL;
   return newNode;
 }
@@ -32,32 +34,31 @@ void addBy_descendOrder(struct node_t *newNode, struct list_t *list){
   currentNode = list->head;
   //se a key do novo noh for == ah key do current
   if(strcmp(currentNode->entry->key, newNode->entry->key) == 0){
-    currentNode->entry->value = newNode->entry->value;
-    //libertar memoria do value do currentNode
-    //copiar a memoria do value novo para o current
-    //tem que se fazer free do newNode que nao foi incluido
-
-
-  }
-  else if(strcmp(currentNode->entry->key, newNode->entry->key) < 0){
+    free(currentNode);
+    list->head = newNode;
+  } else if(strcmp(currentNode->entry->key, newNode->entry->key) < 0){
     list->head = newNode;
     newNode->next = currentNode;
     list->size++;
   }else{
     while(currentNode->next != NULL &&
-      strcmp(currentNode->entry->key, newNode->entry->key)>0){
+      strcmp(currentNode->next->entry->key, newNode->entry->key)>0){
         currentNode = currentNode->next;
       }
-      if(strcmp(currentNode->entry->key, newNode->entry->key) == 0){
-        currentNode->entry->value = newNode->entry->value;
-        //libertar memoria do value do currentNode
-        //copiar a memoria do value novo para o current
-        //tem que se fazer free do newNode que nao foi incluido
-      }
-      else{
-        newNode->next = currentNode->next;
+
+      if (currentNode->next == NULL) {
         currentNode->next = newNode;
         list->size++;
+      } else {
+        if(strcmp(currentNode->next->entry->key, newNode->entry->key) == 0){
+          free(currentNode->next);
+          currentNode->next = newNode;
+        }
+        else{
+          newNode->next = currentNode->next;
+          currentNode->next = newNode;
+          list->size++;
+        }
       }
     }
   }

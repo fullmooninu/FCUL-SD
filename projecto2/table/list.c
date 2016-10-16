@@ -37,7 +37,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	return -1;
 
 	struct node_t *newNode;
-	newNode = node_create(entry);
+		newNode = node_create(entry);
 	if(newNode == NULL) return -1;
 
 	//se a lista for vazia
@@ -57,7 +57,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_remove(struct list_t *list, char* key) {
-	if(list == NULL || key == NULL) return -1;
+	if(list == NULL || key == NULL || list->head == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t* current = list->head;
 	struct node_t* previous = NULL;
@@ -75,7 +75,7 @@ int list_remove(struct list_t *list, char* key) {
 	}else{
 		previous->next = current->next;
 	}
-	// entry_destroy(current->entry);
+	entry_destroy(current->entry);
 	// free(current->next->);
 	free(current);
 	list->size -= 1;
@@ -90,18 +90,20 @@ int list_remove(struct list_t *list, char* key) {
 struct entry_t *list_get(struct list_t *list, char *key) {
 	if (list == NULL || key == NULL || list->head == NULL) return NULL;
 	struct node_t* current = list->head;
-	// correr a lista
-	while (strcmp(current->entry->key, key) != 0) {
-		//se for o ultimo node
-		if (current->next == NULL) {
-			return NULL;
-		}else{
-			current = current->next;
-		}
+
+	if (strcmp(current->entry->key, key) == 0) {
+		return current->entry;
 	}
-	struct entry_t* ret_entry;
-	ret_entry = entry_create(current->entry->key,current->entry->value);
-	return ret_entry;
+
+	while (current->next != NULL && strcmp(current->next->entry->key, key) != 0) {
+		current = current->next;
+	}
+	if (current->next == NULL) {
+		return NULL;
+	} else {
+		return current->next->entry;
+	}
+
 }
 
 /* Retorna o tamanho (numero de elementos) da lista

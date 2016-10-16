@@ -29,6 +29,8 @@ struct entry_t *entry_create(char *key, struct data_t *data2){
  */
 void entry_destroy(struct entry_t *entry){
 	if(entry != NULL){
+		free(entry->key);
+		data_destroy(entry->value);
 		free(entry);
     }
 }
