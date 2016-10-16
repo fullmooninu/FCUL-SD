@@ -50,7 +50,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 
 	list->head=new_head;
 	list->size += 1;	
-	//descending_sort(list);
+	descending_sort(list);
 	return 0;
 	}
 }
