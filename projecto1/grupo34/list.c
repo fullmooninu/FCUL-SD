@@ -38,7 +38,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	if (list->size==0) { 
 		struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
 		list->head = new_head;
-		list->head->entry=entry;
+		list->head->entry=entry_create(entry->key,entry->value);
 		list->head->next=NULL;
 		list->size = 1;
 		return 0;
@@ -46,7 +46,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	//create a link
 	struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
 	new_head->next = list->head;
-	new_head->entry = entry;
+	new_head->entry = entry_create(entry->key,entry->value);
 
 	list->head=new_head;
 	list->size += 1;	

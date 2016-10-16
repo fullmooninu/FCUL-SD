@@ -89,7 +89,7 @@ int testAddCabeca() {
 int testAddVarios() {
 	int result,i,keysize;
 	struct list_t *list;
-	struct entry_t *entry[1024];
+	struct entry_t *entry[11];
 	struct entry_t *aux;
 	struct data_t *data;
 	char key[16];
@@ -99,7 +99,7 @@ int testAddVarios() {
 	if ((list = list_create()) == NULL)
 		error(1, errno, "  O teste não pode prosseguir");
 
-	for(i=0; i<9; i++) {
+	for(i=0; i<11; i++) {
 		sprintf(key, "keyabc-%d",i);
 		keysize = strlen(key) + 1;
 
@@ -114,10 +114,10 @@ int testAddVarios() {
 		list_add(list, entry[i]);
 	}
 
-	assert(list_size(list) == 9);
-	result = (list_size(list) == 9);
+	assert(list_size(list) == 11);
+	result = (list_size(list) == 11);
 
-	for(i=0; i<9; i++) {
+	for(i=0; i<11; i++) {
 		assert(list_get(list, entry[i]->key) != entry[i]);
 		aux = list_get(list, entry[i]->key);
 		result = result &&
@@ -336,7 +336,7 @@ int testGetKeys() {
                  strcmp(keys[1], e2->key) == 0 && keys[1] != e2->key &&
                  strcmp(keys[2], e1->key) == 0 && keys[2] != e1->key &&
                  keys[3] == NULL;
-
+    printf("\n\n%d\n\n",result);
 	list_free_keys(keys);
 	list_destroy(list);
 	entry_destroy(e1);
