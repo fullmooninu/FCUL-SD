@@ -37,7 +37,7 @@ struct table_t *table_create(int n) {
 	/* Alocar memória para array de listas com n entradas
 	que ficará referenciado na struct table_t alocada. */
 	int buckets[n + 1];
-	new_table -> buckets = buckets;
+	new_table -> buckets = &(buckets);
 
 	/* Inicializar listas.*/
 	new_table -> list =(struct list_t**) malloc(sizeof(struct list_t *) * n);
