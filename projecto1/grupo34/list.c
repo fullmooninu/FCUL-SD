@@ -36,7 +36,10 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 		return -1;
 	}
 	if (list->size==0) { 
-		list->head->entry = entry;
+		struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
+		list->head = new_head;
+		list->head->entry=entry;
+		list->head->next=NULL;
 		list->size = 1;
 		return 0;
 	}else{
@@ -44,7 +47,6 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 	struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
 	new_head->next = list->head;
 	new_head->entry = entry;
-	
 
 	list->head=new_head;
 	list->size += 1;	
@@ -57,21 +59,38 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 void descending_sort(struct list_t *list) {
 	struct node_t* current_node;
 	struct node_t* next_node;
+	current_node = list->head;
+	next_node = current_node->next;
 
 	struct entry_t* tempEntry;
 
-	int k = list->size;
-	for (int i = 0; i < list->size - 1; i++, k--) {
-		current_node = list->head;
-		next_node = list->head->next;
-		for (int j = 1; j < k; j++) {
-			if ( strcmp(current_node->entry->key , next_node->entry->key) > 0) {
-				tempEntry = current_node->entry;
-				current_node->entry = next_node->entry;
-				next_node->entry = tempEntry;
-			}
+	while(next_node!=NULL) {
+		if ( strcmp(current_node->entry->key , next_node->entry->key) < 0 ) {
+ 			tempEntry = current_node->entry;
+ 			current_node->entry = next_node->entry;
+ 			next_node->entry = tempEntry;
 		}
+		current_node = current_node->next;
+		next_node = current_node->next;
 	}
+
+	// struct node_t* current_node;
+	// struct node_t* next_node;
+	// struct entry_t* tempEntry;
+	// int k = list->size;
+	
+
+	// for (int i = 0; i < list->size - 1; i++, k--) {
+	// 	current_node = list->head;
+	// 	next_node = list->head->next;
+	// 	for (int j = 1; j < k; j++) {
+	// 		if ( strcmp(current_node->entry->key , next_node->entry->key) > 0) {
+	// 			tempEntry = current_node->entry;
+	// 			current_node->entry = next_node->entry;
+	// 			next_node->entry = tempEntry;
+	// 		}
+	// 	}
+	// }
 }
 
 /* Elimina da lista um elemento com a chave key.
