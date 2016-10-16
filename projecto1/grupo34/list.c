@@ -32,26 +32,47 @@ void list_destroy(struct list_t *list) {
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_add(struct list_t *list, struct entry_t *entry) {
-
-	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL)
-	return -1;
-
-	struct node_t *newNode;
-	newNode = node_create(entry);
-	if(newNode == NULL) return -1;
-
-	//se a lista for vazia
-	if(list->head == NULL){
-		list->head = newNode;
-		list->size++;
-		return 0;
+	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL) {
+		return -1;
 	}
+	if (list->size==0) { 
+		list->head->entry = entry;
+		list->size = 1;
+		return 0;
+	}else{
+	//create a link
+	struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
+	new_head->next = list->head;
+	new_head->entry = entry;
+	
 
-	//cc
-	addBy_descendOrder(newNode, list);
+	list->head=new_head;
+	list->size += 1;	
+	//descending_sort(list);
 	return 0;
+	}
 }
 
+
+void descending_sort(struct list_t *list) {
+	struct node_t* current_node;
+	struct node_t* next_node;
+
+	struct entry_t* tempEntry;
+
+	int k = list->size;
+	for (int i = 0; i < list->size - 1; i++, k--) {
+		current_node = list->head;
+		next_node = list->head->next;
+		for (int j = 1; j < k; j++) {
+			if ( strcmp(current_node->entry->key , next_node->entry->key) > 0) {
+				tempEntry = current_node->entry;
+				current_node->entry = next_node->entry;
+				next_node->entry = tempEntry;
+			}
+		}
+	}
+}
 
 /* Elimina da lista um elemento com a chave key.
 * Retorna 0 (OK) ou -1 (erro)
