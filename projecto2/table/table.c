@@ -101,6 +101,13 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 }
 
 int table_update(struct table_t *table, char * key, struct data_t *value) {
+	struct data_t* new_data;
+	new_data = data_create(sizeof(value));
+	int t = sizeof(value);
+	memcpy(new_data, value, sizeof(t));
+
+	//TODO como eh que agora descubro qual a lista em que vou fazer list_add
+	//pelo keyhash da key?
 	return 0;
 }
 
@@ -124,12 +131,25 @@ int table_del(struct table_t *table, char *key){
 
 /* Esta é dada! Ao estilo C! */
 int table_size(struct table_t *table) {
-	/*ATEN��O QUE N�O PODE SER O SIZE (PEDRO)*/
+	/*ATENCAO QUE NAO PODE SER O SIZE (PEDRO)*/
+	/* Isto diz para devolver o numero de elementos na tabela. Eh suposto contarmos
+	todas as entries de todas as listas ou apenas o nListas como proposeste? */
 	return table == NULL ? -1 : table->nListas;
 }
 
 char **table_get_keys(struct table_t *table) {
-	return NULL;
+	if (table == NULL) return NULL;
+	struct list_t** current_list = NULL; // como se percorre as listas na tabela? ~ miguel
+	char** table_keys_list;
+	table_keys_list = malloc( table_size(table) * sizeof(char**));
+	for (int i = 0; i < table_size(table); i++)
+	{	
+		//table_keys_list[i] = list_get_keys(current_list);
+		// para cada lista meter a lista toda na char** table_keys
+		// e aumentar o index i o correspondente ao n de elementos que se adicionou
+	}
+	table_keys_list[table->nListas] = NULL;
+	return table_keys_list;
 }
 
 void table_free_keys(char **keys) {
