@@ -75,6 +75,8 @@ void table_destroy(struct table_t *table) {
 		free(table->buckets);
 		free(table);
 	}
+	else
+		return NULL;
 
 }
 
