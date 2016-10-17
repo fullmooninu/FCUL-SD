@@ -12,13 +12,21 @@ int key_hash(char *key, int l){
 	//Ou n�o sera necessario?
 	if (key == NULL) return -1;
 
-	unsigned int soma;
+//	unsigned int soma;
+//
+//	//Pode come�ar em 0.
+//	soma = 0;
+//
+//	for(; *key != '0'; key++)
+//		soma = *key + (soma << 5) - soma;
 
-	//Pode come�ar em 0.
-	soma = 0;
+	char *ch;
+	ch = strcpy(ch, key);
+	short chlength = strlen(ch);
 
-	for(; *key != '0'; key++)
-	soma = *key + (soma << 5) - soma;
+	int i, soma;
+	for (soma=0, i=0; i < chlength; i++)
+		soma += ch[i];
 
 	return soma % l;
 }
@@ -47,7 +55,7 @@ struct table_t *table_create(int n) {
 	unsigned int i;
 
 	for (i = 0; i < n; i++)
-		new_table -> list[i] = list_create();
+		new_table -> list[i] = NULL;
 
 	/* Inicializar atributos da tabela. */
 	new_table->size = n;
@@ -77,8 +85,6 @@ void table_destroy(struct table_t *table) {
 		free(table-> list);
 		free(table);
 	}
-	else
-		return NULL;
 
 }
 
