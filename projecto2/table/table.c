@@ -68,7 +68,7 @@ void table_destroy(struct table_t *table) {
 
 	if(table != NULL)
 	{
-		int i,f;
+		int i;
 		struct list_t *list;
 
 		/*   Libertar memória das listas.*/
