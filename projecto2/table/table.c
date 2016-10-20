@@ -8,8 +8,8 @@
 int key_hash(char *key, int l){
 	if (key == NULL || l < 1) return -1;
 
-	//FALTA VALIDAR O l que est� associado ao tamanho do Buckets.
-	//Ou n�o sera necessario?
+	//TODO FALTA VALIDAR O l que estah associado ao tamanho do Buckets.
+	//Ou nao sera necessario?
 	if (key == NULL) return -1;
 
 //	unsigned int soma;
@@ -123,16 +123,20 @@ int table_update(struct table_t *table, char * key, struct data_t *value) {
         struct list_t* list = table->list[hashCode];
         /* Inserir entry na tabela */
         int retVal = list_add(list,e);
-	if (retVal == 0) ? return 0 : return -1;
+        if (retVal == 0) {
+        	return 0;
+        }else{
+        	return 1;
+        }
 }
 
 struct data_t *table_get(struct table_t *table, char * key){
-	if(table == NULL || key == NULL) return -1;
+	if(table == NULL || key == NULL) return NULL;
         int hashCode = key_hash(key, table->size) % table->size;
         struct list_t* list = table->list[hashCode];
 	struct data_t* data = list_get(list,key)->value;
 	struct data_t* ret_data;
-	ret_data = data_create2(getSize(data),data);
+	ret_data = data_create2(sizeof(data),data);
 
 	return ret_data;
 }
