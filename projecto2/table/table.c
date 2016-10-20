@@ -21,7 +21,7 @@ int key_hash(char *key, int l){
 //		soma = *key + (soma << 5) - soma;
 
 	char *ch;
-	ch = strcpy(ch, key);
+	ch = strcpy(ch, key); // @pedro estahs a usar a variavel ch sem a inicializar ~ miguel
 	short chlength = strlen(ch);
 
 	int i, soma;
