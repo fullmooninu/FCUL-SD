@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "include/data.h"
+#include "data.h"
 
 /* Sem comentários! Não há tempo... */
 
@@ -102,7 +102,7 @@ int testDup() {
 
 	data2 = data_dup(data);
 
-	result = (data->data != data2->data) &&
+	result = (data->data != data2->data) && 
                  (data->datasize == data2->datasize) &&
                  (memcmp(data->data, data2->data, data->datasize) == 0);
 
