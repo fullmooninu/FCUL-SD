@@ -5,10 +5,7 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "include/list-private.h"
-#include "include/list.h"
-#include "include/data.h"
-#include "include/entry.h"
+#include "list-private.h"
 
 int testListDestroy() {
 	printf("Módulo list -> teste destrói lista:");
@@ -36,7 +33,7 @@ int testListaVazia() {
 	result = (list != NULL) && (list_size(list) == 0);
 
 	list_destroy(list);
-
+	
 	printf(" %s\n", result ? "passou" : "não passou");
 
 	return result;
@@ -75,9 +72,10 @@ int testAddCabeca() {
 	entry2 = list_get(list, "abc");
 
 	result = result &&
-		 entry2 != entry &&
+		 entry2 != entry && 
                  list_size(list) == 1 &&
 		 strcmp(entry->key, entry2->key) == 0;
+
 	entry_destroy(entry);
 	data_destroy(data);
 	list_destroy(list);
@@ -171,7 +169,7 @@ int testRemoveCabeca() {
 	result = result &&
 		 list_remove(list, "ghi") == 0 &&
 		 list_size(list) == 2;
-
+ 
 	entry = list_get(list, "def");
 	result = result &&
 		 entry != e2 &&
@@ -333,8 +331,8 @@ int testGetKeys() {
 		error(1, errno, "  O teste não pode prosseguir");
 
 	result = strcmp(keys[0], e3->key) == 0 && keys[0] != e3->key &&
-                 strcmp(keys[1], e2->key) == 0 && keys[1] != e2->key &&
-                 strcmp(keys[2], e1->key) == 0 && keys[2] != e1->key &&
+                 strcmp(keys[1], e2->key) == 0 && keys[1] != e2->key && 
+                 strcmp(keys[2], e1->key) == 0 && keys[2] != e1->key && 
                  keys[3] == NULL;
 
 	list_free_keys(keys);
@@ -352,19 +350,19 @@ int main() {
 	int score = 0;
 
 	printf("\nIniciando o teste do módulo list\n\n");
-	printf("\nmiguel - testListDestroy\n\n");
+
 	score += testListDestroy();
-	printf("\nmiguel - testListFreeKeys\n\n");
+
 	score += testListFreeKeys();
-	printf("\nmiguel - testListaVazia\n\n");
+
 	score += testListaVazia();
-	printf("\nmiguel - testAddCabeca\n\n");
+
 	score += testAddCabeca();
-	printf("\nmiguel - testAddVarios\n\n");
+
 	score += testAddVarios();
-	printf("\nmiguel - testRemoveCabeca\n\n");
+
 	score += testRemoveCabeca();
-	printf("\nmiguel - testRemoveCauda\n\n");
+
 	score += testRemoveCauda();
 
 	score += testRemoveMeio();

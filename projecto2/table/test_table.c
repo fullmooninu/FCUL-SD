@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "include/table-private.h"
+#include "table-private.h"
 
 int testTableDestroy(){
 	printf("Módulo table -> teste table destroy:");

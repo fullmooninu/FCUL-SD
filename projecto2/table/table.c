@@ -8,8 +8,8 @@
 int key_hash(char *key, int l){
 	if (key == NULL || l < 1) return -1;
 
-	//FALTA VALIDAR O l que est� associado ao tamanho do Buckets.
-	//Ou n�o sera necessario?
+	//TODO FALTA VALIDAR O l que estah associado ao tamanho do Buckets.
+	//Ou nao sera necessario?
 	if (key == NULL) return -1;
 
 //	unsigned int soma;
@@ -111,18 +111,34 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 }
 
 int table_update(struct table_t *table, char * key, struct data_t *value) {
-	struct data_t* new_data;
-	new_data = data_create(sizeof(value));
-	int t = sizeof(value);
-	memcpy(new_data, value, sizeof(t));
+        /* Verificar valores de entrada */
+        if(table == NULL || key == NULL || value == NULL) return -1;
 
-	//TODO como eh que agora descubro qual a lista em que vou fazer list_add
-	//pelo keyhash da key?
-	return 0;
+        /* Criar entry com par chave/valor */
+        struct entry_t* e = entry_create(key, value);
+        if(e == NULL) return -1;
+
+        /* Executar hash para determinar onde inserir a entry na tabela */
+        int hashCode = key_hash(key, table->size) % table->size;
+        struct list_t* list = table->list[hashCode];
+        /* Inserir entry na tabela */
+        int retVal = list_add(list,e);
+        if (retVal == 0) {
+        	return 0;
+        }else{
+        	return 1;
+        }
 }
 
 struct data_t *table_get(struct table_t *table, char * key){
-	return NULL;
+	if(table == NULL || key == NULL) return NULL;
+        int hashCode = key_hash(key, table->size) % table->size;
+        struct list_t* list = table->list[hashCode];
+	struct data_t* data = list_get(list,key)->value;
+	struct data_t* ret_data;
+	ret_data = data_create2(sizeof(data),data);
+
+	return ret_data;
 }
 
 int table_del(struct table_t *table, char *key){
@@ -151,7 +167,7 @@ char **table_get_keys(struct table_t *table) {
 	char** table_keys_list;
 	table_keys_list = malloc( table_size(table) * sizeof(char**));
 	for (int i = 0; i < table_size(table); i++)
-	{	
+	{
 		//table_keys_list[i] = list_get_keys(current_list);
 		// para cada lista meter a lista toda na char** table_keys
 		// e aumentar o index i o correspondente ao n de elementos que se adicionou
