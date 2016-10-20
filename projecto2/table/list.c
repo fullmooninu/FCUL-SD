@@ -24,7 +24,8 @@ struct list_t *list_create() {
 * lista.
 */
 void list_destroy(struct list_t *list) {
-	if(list != NULL) free(list);
+	if(list != NULL)
+		free(list);
 }
 
 /* Adiciona uma entry na lista. Como a lista deve ser ordenada,

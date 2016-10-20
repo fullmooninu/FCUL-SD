@@ -12,13 +12,21 @@ int key_hash(char *key, int l){
 	//Ou n�o sera necessario?
 	if (key == NULL) return -1;
 
-	unsigned int soma;
+//	unsigned int soma;
+//
+//	//Pode come�ar em 0.
+//	soma = 0;
+//
+//	for(; *key != '0'; key++)
+//		soma = *key + (soma << 5) - soma;
 
-	//Pode come�ar em 0.
-	soma = 0;
+	char *ch;
+	ch = strcpy(ch, key);
+	short chlength = strlen(ch);
 
-	for(; *key != '0'; key++)
-	soma = *key + (soma << 5) - soma;
+	int i, soma;
+	for (soma=0, i=0; i < chlength; i++)
+		soma += ch[i];
 
 	return soma % l;
 }
@@ -33,37 +41,38 @@ struct table_t *table_create(int n) {
 	/* Alocar memória para struct table_t */
 	new_table =(struct table_t*) malloc(sizeof(struct table_t));
 
+	if(!new_table) return NULL;
 
 	/* Alocar memória para array de listas com n entradas
 	que ficará referenciado na struct table_t alocada. */
-	int buckets[n + 1];
-	new_table -> buckets = buckets;
+	if((new_table -> list = (struct list_t **) malloc(n * sizeof(struct list_t *))) == NULL)
+	{
+		free(new_table-> list);
+		return NULL;
+	}
 
 	/* Inicializar listas.*/
-	new_table -> list =(struct list_t**) malloc(sizeof(struct list_t *) * n);
+	unsigned int i;
 
-	int i;
 	for (i = 0; i < n; i++)
-	new_table -> list[i] = list_create();
+		new_table -> list[i] = NULL;
 
 	/* Inicializar atributos da tabela. */
 	new_table->size = n;
-	new_table->nListas = 0;
+	new_table->nElem = 0;
 
 	return new_table;
 }
 
 void table_destroy(struct table_t *table) {
 
-	/* table é NULL? */
 	if(table != NULL)
 	{
-
 		int i;
 		struct list_t *list;
 
 		/*   Libertar memória das listas.*/
-		for(i=0; i < table->size;i++)
+		for(i=0; i < table->size; i++)
 		{
 			list = table->list[i];
 			while(list != NULL){
@@ -72,7 +81,7 @@ void table_destroy(struct table_t *table) {
 		}
 
 		/*Libertar memória da tabela. */
-		free(table->buckets);
+		free(table-> list);
 		free(table);
 	}
 
@@ -94,6 +103,7 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 	int retVal = list_add(list,e);
 	if(retVal == 0){
 		table->size++;
+		table->nElem++;
 		return 0;
 	}
 	else
@@ -122,7 +132,7 @@ int table_del(struct table_t *table, char *key){
 	struct list_t* list = table->list[hashCode];
 	int retVal = list_remove(list, key);
 	if(retVal == 0){
-		table->nListas--;
+		table->nElem--;
 		return 0;
 	}
 	else
@@ -132,9 +142,7 @@ int table_del(struct table_t *table, char *key){
 /* Esta é dada! Ao estilo C! */
 int table_size(struct table_t *table) {
 	/*ATENCAO QUE NAO PODE SER O SIZE (PEDRO)*/
-	/* Isto diz para devolver o numero de elementos na tabela. Eh suposto contarmos
-	todas as entries de todas as listas ou apenas o nListas como proposeste? */
-	return table == NULL ? -1 : table->nListas;
+	return table == NULL ? -1 : table -> nElem;
 }
 
 char **table_get_keys(struct table_t *table) {
@@ -148,7 +156,7 @@ char **table_get_keys(struct table_t *table) {
 		// para cada lista meter a lista toda na char** table_keys
 		// e aumentar o index i o correspondente ao n de elementos que se adicionou
 	}
-	table_keys_list[table->nListas] = NULL;
+	table_keys_list[table->nElem] = NULL;
 	return table_keys_list;
 }
 
