@@ -80,7 +80,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	  int int_dataSize = htons(int_aux);
 	  memcpy(ptr, &int_dataSize, _INT);
 	  ptr += _INT;
-	  //colocar o data
+	  //colocar o data structure
 
 	  break;
   case CT_KEY:
