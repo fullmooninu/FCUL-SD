@@ -81,14 +81,20 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
   /* O opcode e c_type são válidos? */
   if(!isValidOC(msg->opcode) || !isValidCTC(msg->c_type)) return NULL;
   int int_aux;
+  struct data_t* data;
+  char *key;
+  char** keys;
+  struct entry_t* entry;
+
+
+
   /* Consoante o c_type, continuar a recuperação da mensagem original */
-  switch (msg->content) {
+  switch (msg->c_type) {
     case CT_RESULT:
       memcpy(&int_aux, msg_buf, _INT);
       msg->content.result = ntohs(int_aux);
     break;
     case CT_VALUE:
-      struct data_t* data;
       //datasize
       memcpy(&int_aux, msg_buf,_INT);
       msg_buf += _INT;
@@ -99,19 +105,17 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
       msg->content.data = data;
       break;
     case CT_KEY:
-      char *k;
       //keysize
       memcpy(&short_aux, msg_buf,_SHORT);
       msg_buf += _SHORT;
       //key
-      k = malloc(sizeof(char)*short_aux);
-      if(k == NULL) return NULL;
-      strcpy(k, msg_buf, short_aux);
+      key = malloc(sizeof(char)*short_aux);
+      if(key == NULL) return NULL;
+      strncpy(key, msg_buf, short_aux);
       //TODO DUVIDA ntohost
-      msg->content.key = K;
+      msg->content.key = key;
       break;
     case CT_KEYS:
-      char** keys;
       //nkeys
       memcpy(&int_aux, msg_buf,_INT);
       msg_buf += _INT;
@@ -130,16 +134,13 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
       msg->content.keys = keys;
       break;
     case CT_ENTRY:
-      struct entry_t* entry;
-      struct data_t* data;
-      char*key;
       //keysize
       memcpy(&short_aux, msg_buf,_SHORT);
       msg_buf += _SHORT;
       //key
       key = (char*)malloc(sizeof(char)*short_aux);
       if(key == NULL) return NULL;
-      strcpy(key, msg_buf, short_aux);
+      strncpy(key, msg_buf, short_aux);
       //TODO DUVIDA - nthost
       msg->content.key = key;
       msg_buf += short_aux;
@@ -152,7 +153,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
       //TODO DUVIDA - ntohost
       msg->content.data = data;
       //recuperar a entry
-      entry = entry_create(key, value);
+      entry = entry_create(key, data);
       if(entry == NULL) return NULL;
       msg->content.entry = entry;
       break;

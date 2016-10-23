@@ -5,10 +5,12 @@
 CFLAGS = -g -Wall -I./include
 CC = gcc
 
-all: test_data test_entry test_list test_table 
+all: test_data test_entry test_list test_table test_message
 
 list_objects = data.o entry.o list.o list-private.o
 test_table: $(list_objects) table.o table-private.o
+
+test_message: message.o message-private.o
 
 test_list: data.o entry.o list.o list-private.o
 
@@ -18,4 +20,4 @@ test_data: data.o
 
 
 clean:
-	rm -f *.o test_data test_entry test_list test_table
+	rm -f *.o test_data test_entry test_list test_table test_message
