@@ -23,10 +23,13 @@ void free_message(struct message_t *msg){
 int message_to_buffer(struct message_t *msg, char **msg_buf){
 
   /* Verificar se msg é NULL */
+	if(msg == NULL || msg_buf == NULL) return NULL;
 
   /* Consoante o msg->c_type, determinar o tamanho do vetor de bytes
      que tem de ser alocado antes de serializar msg
   */
+
+
 
   /* Alocar quantidade de memória determinada antes 
      *msg_buf = ....
