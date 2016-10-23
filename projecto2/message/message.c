@@ -28,7 +28,21 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
   /* Consoante o msg->c_type, determinar o tamanho do vetor de bytes
      que tem de ser alocado antes de serializar msg
   */
+	int sizeBytes; //Tamanho em bytes
 
+	switch (msg->c_type)
+	{
+	case CT_RESULT: sizeBytes = 4;
+					break;
+	case CT_VALUE: sizeBytes = (4 + sizeof(msg->content->data)); //Verificar se funciona
+					break;
+	case CT_KEY: sizeBytes = (4 + sizeof(msg->content->key));
+					break;
+	case CT_KEYS: sizeBytes = (6 + sizeof(msg->content->keys));
+					break;
+	case CT_ENTRY: sizeBytes = (4 + sizeof(msg->content->key) + 4 + sizeof(msg->content->data));
+					break;
+	}
 
 
   /* Alocar quantidade de memória determinada antes 
