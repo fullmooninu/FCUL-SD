@@ -1,4 +1,4 @@
-
+#include "message-private.h"
 
 
 bool isValidOPC(short opcode){
