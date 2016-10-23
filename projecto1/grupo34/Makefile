@@ -1,39 +1,27 @@
-FLAGS = -Wall
-OBJS_TEST_DATA = data.o test_data.o entry.o
-OBJS_TEST_ENTRY = data.o entry.o test_entry.o
-OBJS_TEST_LIST = data.o entry.o list.o list-private.o test_list.o
+CFLAGS = -g -Wall -I. -I./include
+CC = gcc
 
-all: testData testEntry testList
+all: test_data test_entry test_list
 
-testData: ${OBJS_TEST_DATA}
-	gcc -g ${FLAGS} -o testData ${OBJS_TEST_DATA}
+test_list: data.o entry.o list.o list-private.o
 
-testEntry: ${OBJS_TEST_ENTRY}
-	gcc -g ${FLAGS} -o testEntry ${OBJS_TEST_ENTRY}
+test_list.o: 
 
-testList: ${OBJS_TEST_LIST}
-		gcc -g ${FLAGS} -o testList ${OBJS_TEST_LIST}
+list.o:
 
-data.o: data.c include/data.h
-	gcc -g -c ${FLAGS} data.c
+list_private:
 
-test_data.o: test_data.c include/data.h
-	gcc -g -c ${FLAGS} test_data.c
+test_entry: data.o entry.o
 
-entry.o: entry.c include/data.h include/entry.h
-	gcc -g -c ${FLAGS} entry.c
+test_entry.o:
 
-test_entry.o: test_entry.c include/data.h include/entry.h
-	gcc -g -c ${FLAGS} test_entry.c
+entry.o:
 
-list.o: list.c list-private.c include/list.h include/list-private.h include/entry.h include/data.h
-		gcc -g -c ${FLAGS} list.c
+test_data: data.o
 
-list-private.o: list-private.c include/list-private.h include/list.h include/entry.h
+test_data.o:
 
-test_list.o: test_list.c include/list-private.h include/list.h include/entry.h include/data.h
-		gcc -g -c ${FLAGS} test_list.c
-
+data.o:
 
 clean:
-	rm -f *.o testData testEntry testList
+	rm -f *.o test_data test_entry test_list

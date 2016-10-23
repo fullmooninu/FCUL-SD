@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-
+make clean
 make
 cppcheck .
-./testData
-./testEntry
-./testList
+./test_data
+./test_entry
+./test_list
