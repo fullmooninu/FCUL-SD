@@ -91,7 +91,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
 
-		//colocar o data structure - ???
+		//TODO colocar o data structure - ???
 
 		break;
 
