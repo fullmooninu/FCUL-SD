@@ -13,7 +13,7 @@ int key_hash(char *key, int l){
 		for(i = 0; i < key_len-1; i++){
 			soma += (int) key[i];
 		}
-
+	}
 		else{
 			for(i = 0; i < 3; i++){
 				soma += (int) key[i];
