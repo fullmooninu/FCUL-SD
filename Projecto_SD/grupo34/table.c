@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "include/table-private.h"
-#include "include/list-private.h"
+#include "table-private.h"
+#include "list-private.h"
 
 
 int key_hash(char *key, int l){
