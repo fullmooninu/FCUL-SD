@@ -10,7 +10,7 @@ Silvia Ferreira 45511 */
 //#define NULL 0
 
 /* TODO FINISH HEADER Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
-Elias Miguel Barreira 40821, Pedro Pais 4XXXX
+Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 /* Funcao que cria um novo elemento de dados data_t e reserva a memoria

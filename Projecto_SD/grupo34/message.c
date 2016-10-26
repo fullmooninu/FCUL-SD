@@ -38,7 +38,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	switch (msg->c_type) {
 	case CT_ENTRY:
 		buffer_size = (6 + sizeof(msg->content.key) + 4
-				+ sizeof(msg->content.entry));
+				+ sizeof(msg->content.data->data));
 		break;
 	case CT_KEY:
 		buffer_size = (6 + sizeof(msg->content.key));
@@ -48,10 +48,10 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++){
 			keysSize += 2 + strlen(msg->content.keys[i]);
 		}
-		buffer_size = 6 + keysSize;
+		buffer_size = 8 + keysSize;
 		break;
 	case CT_VALUE:
-		buffer_size = (8 + sizeof(msg->content.data)); //Verificar se funciona
+		buffer_size = (8 + sizeof(msg->content.data->data)); //Verificar se funciona
 		break;
 	case CT_RESULT:
 		buffer_size = 8;
@@ -90,18 +90,23 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		char *key_aux;
 		key_aux = (char *) malloc(sizeof(msg->content.key));
 		strcpy(key_aux, msg->content.key);
+		if(key_aux == NULL) return -1;
 		memcpy(ptr, &key_aux, strlen(key_aux));
+		if (ptr == NULL) return -1;
 		ptr += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		//colocar o data_sizeDS
-		int_aux = htons(sizeof(msg->content.data));
+		int_aux = htons(msg->content.data->datasize);
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
-
-		//TODO colocar o data structure - ???
-
+		//colocar o data->data
+		void *key_aux;
+		int_aux = msg->content.data->data;
+		key_aux = malloc(sizeof(int_aux));
+		memcpy(ptr,&key_aux, int_aux);
+		ptr += int_aux;
+		free(key_aux);
 		break;
-
 	case CT_KEY:
 		short_aux = strlen(msg->content.key);
 		memcpy(ptr, &short_aux, _SHORT);
