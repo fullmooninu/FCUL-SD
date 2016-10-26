@@ -31,6 +31,9 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	 */
 	int buffer_size; //Tamanho em bytes
 
+	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
+	int keysSize;
+
 	//REVER TAMANHOS
 	switch (msg->c_type) {
 	case CT_ENTRY:
@@ -41,7 +44,11 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		buffer_size = (6 + sizeof(msg->content.key));
 		break;
 	case CT_KEYS:
-		buffer_size = (10 + sizeof(msg->content.keys));
+		//Calcular o size total
+		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++){
+			keysSize += 2 + strlen(msg->content.keys[i]);
+		}
+		buffer_size = 6 + keysSize;
 		break;
 	case CT_VALUE:
 		buffer_size = (8 + sizeof(msg->content.data)); //Verificar se funciona
