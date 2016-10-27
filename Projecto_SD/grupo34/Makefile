@@ -2,7 +2,7 @@
 # Elias Miguel Barreira 40821, Pedro Pais 41375
 # Silvia Ferreira 45511
 
-CFLAGS = -g -Wall -I./include
+CFLAGS = -g -Wall -I. -I./include
 CC = gcc
 
 all: test_data test_entry test_list test_table test_message
