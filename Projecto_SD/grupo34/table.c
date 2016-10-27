@@ -40,14 +40,14 @@ int key_hash(char *key, int l){
 
 		/* Alocar memória para array de listas com n entradas
 		que ficará referenciado na struct table_t alocada. */
-		if((new_table -> list = (struct list_t **) malloc(n * sizeof(struct list_t *))) == NULL)
+		if((new_table -> list = (struct list_t **) malloc(n * sizeof(struct list_t*))) == NULL)
 		{
 			free(new_table-> list);
 			return NULL;
 		}
 
 		/* Inicializar listas.*/
-		unsigned int i;
+		int i;
 
 		for (i = 0; i < n; i++)
 		new_table -> list[i] = NULL;
@@ -85,15 +85,25 @@ int key_hash(char *key, int l){
 	int table_put(struct table_t *table, char * key, struct data_t *value) {
 
 		/* Verificar valores de entrada */
-		if(table == NULL || key == NULL || value == NULL) return -1;
+		if(table == NULL || key == NULL || value == NULL){
+			return -1;
+	 }
 
 		/* Criar entry com par chave/valor */
-		struct entry_t* e = entry_create(key, value);
-		if(e == NULL) return -1;
+		struct entry_t* e;
+		e = entry_create(key, value);
+		if(e == NULL){
+			return -1;
+		}
 
 		/* Executar hash para determinar onde inserir a entry na tabela */
 		int hashCode = key_hash(key, table->size);
 		struct list_t* list = table->list[hashCode];
+		if(list == NULL){
+			list = list_create();
+			if(list == NULL) return -1;
+			table->list[hashCode] = list;
+		}
 		/* Inserir entry na tabela */
 		int retVal = list_add(list,e);
 		if(retVal == 0){
@@ -129,9 +139,13 @@ int key_hash(char *key, int l){
 		if(table == NULL || key == NULL) return NULL;
 		int hashCode = key_hash(key, table->size);
 		struct list_t* list = table->list[hashCode];
-		struct data_t* data = list_get(list,key)->value;
+		struct entry_t * entry;
+		entry = entry_dup(list_get(list, key));
+
+		if(entry == NULL) return NULL;
 		struct data_t* ret_data;
-		ret_data = data_create2(sizeof(data),data);
+		ret_data = data_create2(entry->value->datasize,entry->value);
+		if(ret_data == NULL) return NULL;
 
 		return ret_data;
 	}
