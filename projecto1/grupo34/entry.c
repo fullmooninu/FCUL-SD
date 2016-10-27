@@ -2,11 +2,10 @@
 Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
-
 #include "include/data.h"
 #include "include/entry.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Função que cria um novo par {chave, valor} (isto é, que inicializa
  * a estrutura e aloca a memória necessária).
@@ -29,6 +28,8 @@ struct entry_t *entry_create(char *key, struct data_t *data2){
  */
 void entry_destroy(struct entry_t *entry){
 	if(entry != NULL){
+		free(entry->key);
+		data_destroy(entry->value);
 		free(entry);
     }
 }
