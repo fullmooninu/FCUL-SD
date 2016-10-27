@@ -20,6 +20,7 @@ void free_message(struct message_t *msg) {
 
 }
 
+
 int message_to_buffer(struct message_t *msg, char **msg_buf) {
 
 	/* Verificar se msg é NULL */
