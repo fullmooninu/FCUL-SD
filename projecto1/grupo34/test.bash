@@ -12,4 +12,3 @@ cppcheck ./include --enable=all .
 ./test_data
 ./test_entry
 ./test_list
-
