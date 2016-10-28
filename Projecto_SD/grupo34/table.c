@@ -180,17 +180,24 @@ int table_size(struct table_t *table) {
 */
 char **table_get_keys(struct table_t *table) {
 	if (table == NULL) return NULL;
-		struct list_t** current_list = NULL; // como se percorre as listas na tabela? ~ miguel
-		char** table_keys_list;
-		table_keys_list = malloc( table_size(table) * sizeof(char**));
-		for (int i = 0; i < table_size(table); i++)
-		{
-			//table_keys_list[i] = list_get_keys(current_list);
-			// para cada lista meter a lista toda na char** table_keys
-			// e aumentar o index i o correspondente ao n de elementos que se adicionou
+	//  Inicializar return
+	char** table_keys_list;
+	table_keys_list = malloc( (table->nElem + 1) * sizeof(char*));
+	
+	char** list_keys;
+	for (int i = 0; i < table->nElem; i++) {
+		list_keys = list_get_keys(table->list[i]); // returns malloc
+		if (list_keys != NULL) {
+			for(int f = 0; list_keys[f]!= NULL; f++) {
+				table_keys_list[i] = malloc(strlen(list_keys[f]+1));
+				strcpy(table_keys_list[i],list_keys[f]);
+				i++;
+			}
+		free(list_keys);
 		}
-		table_keys_list[table->nElem] = NULL;
-		return table_keys_list;
+	}
+	table_keys_list[table->size] = NULL;
+	return table_keys_list;
 	}
 
 /* Liberta a memória alocada por table_get_keys().

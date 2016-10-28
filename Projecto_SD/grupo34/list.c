@@ -142,18 +142,17 @@ int list_size(struct list_t *list) {
 * tabela, e um ultimo elemento a NULL.
 */
 char **list_get_keys(struct list_t *list) {
-	//TODO mudar isto para dynamic alloc
-	if(list == NULL) return NULL;
-	struct node_t* current = list -> head;
-	//char **list_keys[list -> size + 1];
+	if(list == NULL || list->head == NULL) return NULL;
 	char** list_keys;
-	list_keys = malloc( (list->size + 1) * sizeof(char**) );
-	for (int i = 0; i < list -> size; i++)
+	struct node_t* current = list->head;
+	list_keys = malloc( (list->size + 1) * sizeof(char*) );
+	for (int i = 0; i < list->size; i++)
 	{
-		list_keys[i] = current -> entry -> key;
-		current = current -> next;
+		list_keys[i] = malloc(strlen(current->entry->key)+1);
+		strcpy(list_keys[i],current->entry->key);
+		current = current->next;
 	}
-	list_keys[list -> size] = NULL;
+	list_keys[list->size] = NULL;
 	return list_keys;
 }
 
