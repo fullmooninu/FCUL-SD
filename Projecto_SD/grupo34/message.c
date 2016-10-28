@@ -22,6 +22,7 @@ void free_message(struct message_t *msg) {
 			break;
 		default: ;
 	}
+	free(msg);
 }
 
 int message_to_buffer(struct message_t *msg, char **msg_buf) {
