@@ -204,7 +204,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 	 msg_buf += _SHORT;
 	 */
 	/* O opcode e c_type são válidos? */
-	if (!isValidOC(msg->opcode) || !isValidCTC(msg->c_type))
+	if (!isValidOPC(msg->opcode) || !isValidCTC(msg->c_type))
 		return NULL;
 	int int_aux;
 	struct data_t* data;
