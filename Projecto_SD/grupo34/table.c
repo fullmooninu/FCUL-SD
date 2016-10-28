@@ -65,26 +65,15 @@ struct table_t *table_create(int n) {
 /* Libertar toda a memória ocupada por uma tabela.
 */
 void table_destroy(struct table_t *table) {
-
-	if(table != NULL)
-	{
-		int i;
-		struct list_t *list;
-
-			/*   Libertar memória das listas.*/
-		for(i=0; i < table->size; i++)
-		{
-			list = table->list[i];
-			while(list != NULL){
-				list_destroy(list);
-			}
+	if(table != NULL) {
+		/*   Libertar memória das listas.*/
+		for(int i=0; i < table->size; i++) {
+			list_destroy(table->list[i]);
 		}
-
-			/*Libertar memória da tabela. */
+		/*Libertar memória da tabela. */
 		free(table-> list);
 		free(table);
 	}
-
 }
 
 /* Função para adicionar um par chave-valor na tabela.
@@ -92,21 +81,17 @@ void table_destroy(struct table_t *table) {
 * Devolve 0 (ok) ou -1 (out of memory, outros erros)
 */
 int table_put(struct table_t *table, char * key, struct data_t *value) {
+	/* Verificar valores de entrada */
+	if(table == NULL || key == NULL || value == NULL) return -1;
 
-		/* Verificar valores de entrada */
-	if(table == NULL || key == NULL || value == NULL){
-		return -1;
-	}
-
-		/* Criar entry com par chave/valor */
+	/* Criar entry com par chave/valor */
 	struct entry_t* e;
-	e = entry_create(key, value);
-	if(e == NULL){
-		return -1;
-	}
+	e = entry_create(key, value); //TODO esta entry tem de ser libertada mais tarde, julgo ~ miguel
+	if(e == NULL) return -1;
 
-		/* Executar hash para determinar onde inserir a entry na tabela */
+	/* Executar hash para determinar onde inserir a entry na tabela */
 	int hash = key_hash(key, table->size);
+	// se nao existir lista no local, criar nova lista
 	if(table->list[hash] == NULL){
 		table->list[hash] = list_create();
 		if(table->list[hash] == NULL) return -1;
@@ -154,11 +139,8 @@ struct data_t *table_get(struct table_t *table, char * key){
 	if(table == NULL || key == NULL) return NULL;
 	int hash = key_hash(key, table->size);
 	
-	struct entry_t * entry = list_get(table->list[hash], key);
-	if(entry == NULL) return NULL;
-	
 	struct data_t* ret_data;
-	ret_data = data_create2(entry->value->datasize,entry->value);
+	ret_data = data_dup(list_get(table->list[hash],key)->value);
 	if(ret_data == NULL) return NULL;
 
 	return ret_data;

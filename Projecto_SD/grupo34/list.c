@@ -2,7 +2,6 @@
 Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
-
 #include "list-private.h"
 #include "entry.h"
 #include <stdlib.h>
@@ -24,18 +23,26 @@ struct list_t *list_create() {
 * lista.
 */
 void list_destroy(struct list_t *list) {
-	if(list != NULL) free(list);
-}
+	if(list == NULL || list -> head == NULL) return;
+	struct node_t* headToDelete;
+	while(list->head != NULL) {
+		headToDelete = list->head;
+		list->head = list->head->next;
+		//entry_destroy(headToDelete->entry);
+		free(headToDelete);
+	}
+	free(list);
+	}
+	
 
 /* Adiciona uma entry na lista. Como a lista deve ser ordenada,
 * a nova entry deve ser colocada no local correto.
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_add(struct list_t *list, struct entry_t *entry) {
-	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL) {
+	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL)
 		return -1;
-	}
-	if (list->size==0) {
+	if (list->size==0) { 
 		struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
 		list->head = new_head;
 		list->head->entry=entry_create(entry->key,entry->value);
@@ -43,18 +50,15 @@ int list_add(struct list_t *list, struct entry_t *entry) {
 		list->size = 1;
 		return 0;
 	}else{
-	//create a link
-	struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
-	new_head->next = list->head;
-	new_head->entry = entry_create(entry->key,entry->value);
-
+		struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
+		new_head->next = list->head;
+		new_head->entry = entry_create(entry->key,entry->value);
 	list->head=new_head;
-	list->size += 1;
+	list->size += 1;	
 	descending_sort(list);
 	return 0;
 	}
 }
-
 
 void descending_sort(struct list_t *list) {
 	struct node_t* current_node;
@@ -73,50 +77,32 @@ void descending_sort(struct list_t *list) {
 		current_node = current_node->next;
 		next_node = current_node->next;
 	}
-
-	// struct node_t* current_node;
-	// struct node_t* next_node;
-	// struct entry_t* tempEntry;
-	// int k = list->size;
-
-
-	// for (int i = 0; i < list->size - 1; i++, k--) {
-	// 	current_node = list->head;
-	// 	next_node = list->head->next;
-	// 	for (int j = 1; j < k; j++) {
-	// 		if ( strcmp(current_node->entry->key , next_node->entry->key) > 0) {
-	// 			tempEntry = current_node->entry;
-	// 			current_node->entry = next_node->entry;
-	// 			next_node->entry = tempEntry;
-	// 		}
-	// 	}
-	// }
 }
 
 /* Elimina da lista um elemento com a chave key.
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_remove(struct list_t *list, char* key) {
-	if(list == NULL || key == NULL) return -1;
+	if(list == NULL || key == NULL || list->head == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t* current = list->head;
-	struct node_t* previous = NULL;
+	struct node_t* previous;
 
 	while ( strcmp(current->entry->key, key) != 0) {
-		if (current -> next == NULL) {
+		if (current->next == NULL) {
 			return -1;
 		}else{
 			previous = current;
-			current = current -> next;
+			current = current->next;
 		}
 	}
-	if (current == list -> head) {
+	if (current == list->head) {
 		list->head = list->head->next;
 	}else{
 		previous->next = current->next;
 	}
-	// entry_destroy(current->entry);
-	// free(current->next->);
+	entry_destroy(current->entry);
+	current->next = 0;
 	free(current);
 	list->size -= 1;
 	return 0;
@@ -139,8 +125,9 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 			current = current->next;
 		}
 	}
-	struct entry_t* ret_entry;
-	ret_entry = entry_create(current->entry->key,current->entry->value);
+	//struct entry_t* ret_entry;
+	//ret_entry = entry_create(current->entry->key,current->entry->value);
+	struct entry_t* ret_entry = current->entry;
 	return ret_entry;
 }
 
@@ -160,14 +147,14 @@ char **list_get_keys(struct list_t *list) {
 	struct node_t* current = list -> head;
 	//char **list_keys[list -> size + 1];
 	char** list_keys;
-	list_keys = malloc( (list->size) * sizeof(char**) );
+	list_keys = malloc( (list->size + 1) * sizeof(char**) );
 	for (int i = 0; i < list -> size; i++)
 	{
 		list_keys[i] = current -> entry -> key;
 		current = current -> next;
 	}
-	list_keys[list -> size] = NULL
-;	return list_keys;
+	list_keys[list -> size] = NULL;
+	return list_keys;
 }
 
 /* Liberta a memoria reservada por list_get_keys.
@@ -177,5 +164,5 @@ void list_free_keys(char **keys) {
 	for (int i = 0; keys[i] != NULL; i++) {
 		free( keys[i]);
 	}
-	//free(keys);
+	free(keys);
 }
