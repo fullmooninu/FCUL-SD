@@ -84,15 +84,18 @@ void table_destroy(struct table_t *table) {
 int table_put(struct table_t *table, char * key, struct data_t *value) {
 	/* Verificar valores de entrada */
 	if(table == NULL || key == NULL || value == NULL) return -1;
-	// Verificar se jah existe
-	if (table_get(table,key) != NULL) return 0;
-	/* Criar entry com par chave/valor */
-	struct entry_t* e;
-	e = entry_create(key, value); //TODO esta entry tem de ser libertada mais tarde, julgo ~ miguel
-	if(e == NULL) return -1;
-
+	
 	/* Executar hash para determinar onde inserir a entry na tabela */
 	int hash = key_hash(key, table->size);
+
+	// Verificar se jah existe
+	if (list_get(table->list[hash],key) != NULL) return 0;
+	
+	/* Criar entry com par chave/valor */
+	struct entry_t* e;
+	e = entry_create(key, value);
+	if(e == NULL) return -1; 
+	
 	// se nao existir lista no local, criar nova lista
 	if(table->list[hash] == NULL){
 		table->list[hash] = list_create();
@@ -100,6 +103,7 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 	}
 	/* Inserir entry na tabela */
 	int retVal = list_add(table->list[hash],e);
+	entry_destroy(e);
 	if(retVal == 0){
 		table->nElem++;
 		return 0;
@@ -113,18 +117,19 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 * Devolve 0 (OK) ou -1 (out of memory, outros erros)
 */
 int table_update(struct table_t *table, char * key, struct data_t *value) {
-		/* Verificar valores de entrada */
+	// Verificar valores de entrada
 	if(table == NULL || key == NULL || value == NULL) return -1;
 
-		/* Criar entry com par chave/valor */
+	// Criar entry com par chave/valor
 	struct entry_t* e = entry_create(key, value);
 	if(e == NULL) return -1;
 
-		/* Executar hash para determinar onde inserir a entry na tabela */
+    // Executar hash para determinar onde inserir a entry na tabela */
 	int hashCode = key_hash(key, table->size);
 	struct list_t* list = table->list[hashCode];
 		/* Inserir entry na tabela */
 	int retVal = list_add(list,e);
+	entry_destroy(e);
 	if (retVal == 0) {
 		return 0;
 	}else{
@@ -148,6 +153,7 @@ struct data_t *table_get(struct table_t *table, char * key){
 	struct data_t* ret_data;
 	ret_data = data_dup(list_get(table->list[hash],key)->value);
 	if(ret_data == NULL) return NULL;
+
 	
 	return ret_data;
 }
@@ -182,24 +188,24 @@ int table_size(struct table_t *table) {
 char **table_get_keys(struct table_t *table) {
 	if (table == NULL) return NULL;
 	//  Inicializar returned value
-	char** table_keys_list;
-	table_keys_list = malloc( (table->nElem + 1) * sizeof(char*));
-	if (table_keys_list == NULL) return NULL;
+	char** table_keys = NULL;
+	table_keys = malloc( (table->nElem + 1) * sizeof(char*));
+	if (table_keys == NULL) return NULL;
 	
 	int pos = 0;
 	for (int i = 0; i < table->size; i++) {
-		char** list_keys;
-		if ((list_keys = list_get_keys(table->list[i])) != NULL) {
-			for(int f = 0; list_keys[f]!= NULL; f++) {
-				table_keys_list[pos] = malloc(strlen(list_keys[f]+1));
-				strcpy(table_keys_list[pos],list_keys[f]);
+		if(table->list[i] == NULL) continue;
+		char** keys;
+		keys = list_get_keys(table->list[i]);
+		for(int f = 0; keys[f]!=NULL; f++) {
+				table_keys[pos] = malloc(strlen(keys[f])+1);
+				strcpy(table_keys[pos],keys[f]);
 				pos++;
-			} 
-		free(list_keys);
-		}
+		} 
+		list_free_keys(keys);
 	}
-	table_keys_list[table->size] = NULL;
-	return table_keys_list;
+	table_keys[table->nElem] = NULL;
+	return table_keys;
 }
 
 /* Liberta a memória alocada por table_get_keys().
