@@ -34,7 +34,6 @@ void free_message(struct message_t *msg) {
 	free(msg);
 }
 
-
 int message_to_buffer(struct message_t *msg, char **msg_buf) {
 
 	/* Verificar se msg Ã© NULL */
@@ -60,7 +59,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		buffer_size = (6 + sizeof(msg->content.key));
 		break;
 	case CT_KEYS:
-		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++){
+		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
 			keysSize += 2 + strlen(msg->content.keys[i]);
 		}
 		buffer_size = 8 + keysSize;
@@ -107,21 +106,23 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		char *key_aux;
 		key_aux = (char *) malloc(sizeof(msg->content.key));
 		strcpy(key_aux, msg->content.key);
-		if(key_aux == NULL) return -1;
+		if (key_aux == NULL)
+			return -1;
 		memcpy(ptr, &key_aux, strlen(key_aux));
-		if (ptr == NULL) return -1;
+		if (ptr == NULL)
+			return -1;
 		ptr += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		//colocar o data_sizeDS
 		int_aux = htonl(msg->content.data->datasize);
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
-		if((msg->content.data->datasize) != 0){
+		if ((msg->content.data->datasize) != 0) {
 			//colocar o data->data
 			void *key_aux;
 			int_aux = msg->content.data->datasize;
 			key_aux = malloc(int_aux);
-			memcpy(ptr,&key_aux, int_aux);
+			memcpy(ptr, &key_aux, int_aux);
 			ptr += int_aux;
 			free(key_aux);
 		}
@@ -140,7 +141,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 
 	case CT_KEYS:
 		key_aux = msg->content.keys[0];
-		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++){
+		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
 			nKeys++;
 			key_aux += strlen(msg->content.keys[i]);
 		}
@@ -148,13 +149,13 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
 		//colocar as varias chaves
-		for(int i = 0; i< sizeof(msg->content.keys) - 1; i++){
+		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
 			key_aux = (char *) malloc(sizeof(msg->content.keys[i]));
 			strcpy(key_aux, msg->content.keys[i]);
 			short_aux = htons(strlen(key_aux));
-			memcpy(ptr,&short_aux,_SHORT);
+			memcpy(ptr, &short_aux, _SHORT);
 			ptr += _SHORT;
-			memcpy(ptr,&key_aux,strlen(key_aux));
+			memcpy(ptr, &key_aux, strlen(key_aux));
 			ptr += strlen(key_aux);
 			free(key_aux);
 		}
@@ -165,18 +166,18 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		int_aux = htonl(msg->content.data->datasize);
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
-		if ((msg->content.data->datasize) != 0){
+		if ((msg->content.data->datasize) != 0) {
 			//colocar o data->data
 			void *key_aux;
 			int_aux = htonl(msg->content.data->datasize);
 			key_aux = malloc(int_aux);
-			memcpy(ptr,&key_aux, int_aux);
+			memcpy(ptr, &key_aux, int_aux);
 			ptr += int_aux;
 			free(key_aux);
 		}
 
 	case CT_RESULT:
-		int_aux= htonl(msg->content.result);
+		int_aux = htonl(msg->content.result);
 		memcpy(ptr, &int_aux, _INT);
 		ptr += _INT;
 		break;
