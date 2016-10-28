@@ -36,7 +36,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	int buffer_size; //Tamanho em bytes
 
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
-	int keysSize;
+	int keysSize = 0;
 
 	//REVER TAMANHOS
 	switch (msg->c_type) {
