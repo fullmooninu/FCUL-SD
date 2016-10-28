@@ -8,16 +8,30 @@
 void free_message(struct message_t *msg) {
 
 	/* Verificar se msg é NULL */
+	if (msg != NULL) {
 
-	/* Se msg->c_type for:
-	 VALOR, libertar msg->content.data
-	 ENTRY, libertar msg->content.entry_create
-	 CHAVES, libertar msg->content.keys
-	 CHAVE, libertar msg->content.key
-	 */
-
+		/* Se msg->c_type for:
+		 VALOR, libertar msg->content.data
+		 ENTRY, libertar msg->content.entry_create
+		 CHAVES, libertar msg->content.keys
+		 CHAVE, libertar msg->content.key
+		 */
+		switch (msg->c_type) {
+		case CT_VALUE:
+			free(msg->content.data);
+			break;
+		case CT_ENTRY:
+			free(msg->content.entry); //entry_create?!
+			break;
+		case CT_KEYS:
+			free(msg->content.keys);
+			break;
+		case CT_KEY:
+			free(msg->content.key);
+		}
+	}
 	/* libertar msg */
-
+	free(msg);
 }
 
 
@@ -35,7 +49,6 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
 	int keysSize;
 
-	printf("Chegou aqui");
 	//REVER TAMANHOS
 	switch (msg->c_type) {
 	case CT_ENTRY:
