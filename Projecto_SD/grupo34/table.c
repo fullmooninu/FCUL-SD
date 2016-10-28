@@ -185,20 +185,20 @@ char **table_get_keys(struct table_t *table) {
 	table_keys_list = malloc( (table->nElem + 1) * sizeof(char*));
 	
 	char** list_keys;
-	for (int i = 0; i < table->nElem; i++) {
-		list_keys = list_get_keys(table->list[i]); // returns malloc
-		if (list_keys != NULL) {
+	int pos = 0;
+	for (int i = 0; i < table->size; i++) {
+		if ((list_keys = list_get_keys(table->list[i])) != NULL) {
 			for(int f = 0; list_keys[f]!= NULL; f++) {
-				table_keys_list[i] = malloc(strlen(list_keys[f]+1));
-				strcpy(table_keys_list[i],list_keys[f]);
-				i++;
-			}
+				table_keys_list[pos] = malloc(strlen(list_keys[f]+1));
+				strcpy(table_keys_list[pos],list_keys[f]);
+				pos++;
+			} 
 		free(list_keys);
 		}
 	}
 	table_keys_list[table->size] = NULL;
 	return table_keys_list;
-	}
+}
 
 /* Liberta a memória alocada por table_get_keys().
 */
