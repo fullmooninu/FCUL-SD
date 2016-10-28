@@ -6,32 +6,22 @@
 #include "message-private.h"
 
 void free_message(struct message_t *msg) {
-
-	/* Verificar se msg é NULL */
-	if (msg != NULL) {
-
-		/* Se msg->c_type for:
-		 VALOR, libertar msg->content.data
-		 ENTRY, libertar msg->content.entry_create
-		 CHAVES, libertar msg->content.keys
-		 CHAVE, libertar msg->content.key
-		 */
-		switch (msg->c_type) {
+	if (msg == NULL) return;
+	switch (msg->c_type) {
 		case CT_VALUE:
-			free(msg->content.data);
-			break;
-		case CT_ENTRY:
-			free(msg->content.entry); //entry_create?!
-			break;
-		case CT_KEYS:
-			free(msg->content.keys);
+			data_destroy(msg->content.data);
 			break;
 		case CT_KEY:
 			free(msg->content.key);
-		}
+			break;
+		case CT_KEYS:
+			list_free_keys(msg->content.keys);
+			break;
+		case CT_ENTRY:
+			entry_destroy(msg->content.entry);
+			break;
+		default: ;
 	}
-	/* libertar msg */
-	free(msg);
 }
 
 int message_to_buffer(struct message_t *msg, char **msg_buf) {
