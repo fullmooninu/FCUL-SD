@@ -1,3 +1,7 @@
+/* Sistemas Distribuidos - 2016 - Grupo 34
+Elias Miguel Barreira 40821, Pedro Pais 41375
+Silvia Ferreira 45511 */
+
 /*
    Programa que implementa um servidor de uma tabela hash com chainning.
    Uso: table-server <porta TCP> <dimensão da tabela>
