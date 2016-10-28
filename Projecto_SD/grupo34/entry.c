@@ -1,15 +1,14 @@
-/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+/* Sistemas Distribuidos - 2016 - Grupo 34
 Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
-#include "data.h"
 #include "entry.h"
 #include <stdlib.h>
 #include <string.h>
 
 /* Função que cria um novo par {chave, valor} (isto é, que inicializa
- * a estrutura e aloca a memória necessária).
- */
+* a estrutura e aloca a memória necessária).
+*/
 struct entry_t *entry_create(char *key, struct data_t *data2){
 	if (key == NULL || data2 == NULL) return NULL;
 	struct entry_t* entry;
@@ -30,8 +29,8 @@ void entry_destroy(struct entry_t *entry){
 	if(entry != NULL){
 		free(entry->key);
 		data_destroy(entry->value);
-		free(entry);
     }
+    free(entry);
 }
 
 /* Função que duplica um par {chave, valor}.

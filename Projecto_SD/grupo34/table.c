@@ -1,8 +1,12 @@
+/* Sistemas Distribuidos - 2016 - Grupo 34
+Elias Miguel Barreira 40821, Pedro Pais 41375
+Silvia Ferreira 45511 */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "table-private.h"
-#include "list-private.h"
+
 
 int key_hash(char *key, int l){
 	if (key == NULL || l < 1) return -1;
@@ -30,31 +34,28 @@ int key_hash(char *key, int l){
 * linhas(n = módulo da função hash)
 */
 struct table_t *table_create(int n) {
-
 	struct table_t *new_table;
-
-		/* n tem valor válido? */
+	// n tem valor valido?
 	if (n < 1) return NULL;
-
-		/* Alocar memória para struct table_t */
+	// Alocar memoria para struct table_t
 	new_table =(struct table_t*) malloc(sizeof(struct table_t));
-
 	if(!new_table) return NULL;
 
-		/* Alocar memória para array de listas com n entradas
-		que ficará referenciado na struct table_t alocada. */
-	if((new_table -> list = (struct list_t **) malloc(n * sizeof(struct list_t*))) == NULL)
-	{
-		free(new_table-> list);
+	/* Alocar memoria para array de listas com n entradas
+	que ficara referenciado na struct table_t alocada. */
+	if((new_table->list = (struct list_t **) malloc(n * sizeof(struct list_t*))) == NULL) 
+	{	free(new_table-> list);
+		free(new_table);
 		return NULL;
 	}
 
 		/* Inicializar listas.*/
+	
 	int i;
 
 	for (i = 0; i < n; i++)
 		new_table -> list[i] = NULL;
-
+	
 		/* Inicializar atributos da tabela. */
 	new_table->size = n;
 	new_table->nElem = 0;
@@ -180,13 +181,14 @@ int table_size(struct table_t *table) {
 */
 char **table_get_keys(struct table_t *table) {
 	if (table == NULL) return NULL;
-	//  Inicializar return
+	//  Inicializar returned value
 	char** table_keys_list;
 	table_keys_list = malloc( (table->nElem + 1) * sizeof(char*));
+	if (table_keys_list == NULL) return NULL;
 	
-	char** list_keys;
 	int pos = 0;
 	for (int i = 0; i < table->size; i++) {
+		char** list_keys;
 		if ((list_keys = list_get_keys(table->list[i])) != NULL) {
 			for(int f = 0; list_keys[f]!= NULL; f++) {
 				table_keys_list[pos] = malloc(strlen(list_keys[f]+1));
