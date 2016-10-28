@@ -5,8 +5,9 @@
 #include "network_client.h"
 
 struct server_t{
-	/* Atributos importantes para interagir com o servidor, */
-	/* tanto antes da ligação estabelecida, como depois.    */
+	sa_family_t	sin_family;
+	in_port_t	sin_port;
+	struct	in_addr sin_addr;
 };
 
 /* Função que garante o envio de len bytes armazenados em buf,

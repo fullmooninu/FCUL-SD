@@ -19,6 +19,10 @@ struct server_t *network_connect(const char *address_port){
 	struct server_t *server = malloc(sizeof(struct server_t));
 
 	/* Verificar parâmetro da função e alocação de memória */
+	if(address_port == NULL) return NULL;
+
+	int sockfd;
+
 
 	/* Estabelecer ligação ao servidor:
 
@@ -29,8 +33,21 @@ struct server_t *network_connect(const char *address_port){
 
 		Estabelecer ligação.
 	*/
+	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		perror("Erro ao criar o socket");
+		return -1;
+	}
+
+	server.sin_family = AF_INET;
+	server.sin_port = htons(/**qual porta que se coloca aqui??**/);
+	server.sin_addr.s_addr = inet_addr(/**qual o address que se coloca aqui??**/);
 
 	/* Se a ligação não foi estabelecida, retornar NULL */
+
+	if(connect(sockfd,(struct server_t *)&server,sizeof(server))<0)
+	{
+		return NULL;
+	}
 
 	return server;
 }
@@ -41,6 +58,7 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 	struct message_t msg_resposta;
 
 	/* Verificar parâmetros de entrada */
+	if (server == NULL || msg == NULL) return NULL;
 
 	/* Serializar a mensagem recebida */
 	message_size = message_to_buffer(msg, &message_out));
@@ -85,9 +103,10 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 
 int network_close(struct server_t *server){
 	/* Verificar parâmetros de entrada */
-
+	if(server == NULL) return NULL;
 	/* Terminar ligação ao servidor */
-
+	close(server);
 	/* Libertar memória */
+	free(server);
 }
 

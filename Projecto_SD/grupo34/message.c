@@ -35,6 +35,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
 	int keysSize;
 
+	printf("Chegou aqui");
 	//REVER TAMANHOS
 	switch (msg->c_type) {
 	case CT_ENTRY:
