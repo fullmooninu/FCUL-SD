@@ -83,7 +83,8 @@ void table_destroy(struct table_t *table) {
 int table_put(struct table_t *table, char * key, struct data_t *value) {
 	/* Verificar valores de entrada */
 	if(table == NULL || key == NULL || value == NULL) return -1;
-
+	// Verificar se jah existe
+	if (table_get(table,key) != NULL) return 0;
 	/* Criar entry com par chave/valor */
 	struct entry_t* e;
 	e = entry_create(key, value); //TODO esta entry tem de ser libertada mais tarde, julgo ~ miguel
@@ -139,10 +140,14 @@ struct data_t *table_get(struct table_t *table, char * key){
 	if(table == NULL || key == NULL) return NULL;
 	int hash = key_hash(key, table->size);
 	
+	struct entry_t* entry;
+	entry = list_get(table->list[hash],key);
+	if (entry == NULL) return NULL;
+
 	struct data_t* ret_data;
 	ret_data = data_dup(list_get(table->list[hash],key)->value);
 	if(ret_data == NULL) return NULL;
-
+	
 	return ret_data;
 }
 
