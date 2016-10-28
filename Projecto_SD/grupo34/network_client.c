@@ -8,6 +8,18 @@ Silvia Ferreira 45511 */
 
 
 int write_all(int sock, char *buf, int len){
+	int bufsize = len;
+	while (len > 0){
+		int res = write(sock, buf, len);
+		if (res < 0){
+			if(errno == EINTR) continue;
+			perror("write failed.");
+			return res;
+		}
+		buf += res;
+		len -= res;
+	}
+	return bufsize;
 }
 
 
@@ -108,5 +120,6 @@ int network_close(struct server_t *server){
 	close(server);
 	/* Libertar memória */
 	free(server);
+	return 0;
 }
 

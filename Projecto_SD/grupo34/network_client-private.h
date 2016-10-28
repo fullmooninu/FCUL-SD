@@ -5,9 +5,11 @@
 #include "network_client.h"
 
 struct server_t{
+	uint8		sin_len; //Compr. Nao existe no Linux
 	sa_family_t	sin_family;
 	in_port_t	sin_port;
 	struct	in_addr sin_addr;
+	char 		sin_zero[8]; /* nao usado */
 };
 
 /* Função que garante o envio de len bytes armazenados em buf,
