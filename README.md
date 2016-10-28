@@ -1,14 +1,21 @@
 # FCUL-SD
 
 A partir de agora, sempre que alguém esteja a trabalhar, avise os outros. 
-Eu fui buscar as versões mais recentes dos testes das partes 1 e 2-1.
 
-Podem usar o ficheiro test.bash na parte1 para confirmar que corrigi os erros. Agora falta também corrigir os memory leaks, reaproveitado o codigo da Silvia. 
+A parte 1 não tem memory leaks.
 
-A parte 2-1, ainda vamos no final da table.
 
-Falta a parte 2-2 toda.
-
-Procurei por notas no codigo deste genero //TODO
-
-~ Miguel
+# Protocolo para entrega. 
+Acabar ficheiro readme no directorio pretendido, no repositorio
+Clonar o repositorio para um directorio novo.
+Ir ao directorio novo
+Fazer make clean.
+Apagar todos os test_*.c e todos os headers que não são private.
+Voltar a descarregar esses ficheiros da página da disciplina.
+Colocá-los no sitio correcto.
+Correr o ficheiro test.bash
+Quando o output dos testes for o desejado:
+  fazer make clean
+  apagar todos os ficheiros test_*.c
+  fazer zip do directorio e entregar
+  
