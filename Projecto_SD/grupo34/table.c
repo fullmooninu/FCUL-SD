@@ -106,17 +106,14 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 	}
 
 		/* Executar hash para determinar onde inserir a entry na tabela */
-	int hashCode = key_hash(key, table->size);
-	struct list_t* list = table->list[hashCode];
-	if(list == NULL){
-		list = list_create();
-		if(list == NULL) return -1;
-		table->list[hashCode] = list;
+	int hash = key_hash(key, table->size);
+	if(table->list[hash] == NULL){
+		table->list[hash] = list_create();
+		if(table->list[hash] == NULL) return -1;
 	}
-		/* Inserir entry na tabela */
-	int retVal = list_add(list,e);
+	/* Inserir entry na tabela */
+	int retVal = list_add(table->list[hash],e);
 	if(retVal == 0){
-		table->size++;
 		table->nElem++;
 		return 0;
 	}
@@ -155,12 +152,11 @@ int table_update(struct table_t *table, char * key, struct data_t *value) {
 */
 struct data_t *table_get(struct table_t *table, char * key){
 	if(table == NULL || key == NULL) return NULL;
-	int hashCode = key_hash(key, table->size);
-	struct list_t* list = table->list[hashCode];
-	struct entry_t * entry;
-	entry = entry_dup(list_get(list, key));
-
+	int hash = key_hash(key, table->size);
+	
+	struct entry_t * entry = list_get(table->list[hash], key);
 	if(entry == NULL) return NULL;
+	
 	struct data_t* ret_data;
 	ret_data = data_create2(entry->value->datasize,entry->value);
 	if(ret_data == NULL) return NULL;
@@ -189,8 +185,7 @@ int table_del(struct table_t *table, char *key){
 /* Devolve o número de elementos na tabela.
 */
 int table_size(struct table_t *table) {
-		/*ATENCAO QUE NAO PODE SER O SIZE (PEDRO)*/
-	return table == NULL ? -1 : table -> nElem;
+	return table == NULL ? -1 : table->nElem;
 }
 
 /* Devolve um array de char * com a cópia de todas as keys da
