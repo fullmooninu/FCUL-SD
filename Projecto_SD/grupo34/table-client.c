@@ -15,18 +15,24 @@ Silvia Ferreira 45511 */
 
 int main(int argc, char **argv){
 	struct server_t *server;
-	char input[81];
+	char input[81], *s;
 	struct message_t *msg_out, *msg_resposta;
 
 	/* Testar os argumentos de entrada */
+  if (argc != 2) {
+    printf("Número de argumentos inválido.\n");
+    return -1;
+  }
 
 	/* Usar network_connect para estabelcer ligação ao servidor */
-  //TODO
-	server = network_connect("127.0.0.1:333");
+	server = network_connect(argv[1]);
+  if (server == NULL) {
+    printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
+    return -1;
+  }
 
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
-//TODO
- 	while (0){
+ 	while (1){
 
 		printf(">>> "); // Mostrar a prompt para inserção de comando
 
@@ -36,6 +42,10 @@ int main(int argc, char **argv){
 		   comando fgets, o carater \n é incluido antes do \0.
 		   Convém retirar o \n substituindo-o por \0.
 		*/
+    fgets(input, 80, stdin);
+    s = strchr(input, '\n');
+    *s = '\0';
+    // printf("Leu <%s>\n", input);
 
 		/* Verificar se o comando foi "quit". Em caso afirmativo
 		   não há mais nada a fazer a não ser terminar decentemente.
@@ -50,7 +60,27 @@ int main(int argc, char **argv){
 			o server e receber msg_resposta.
 		*/
 
+    if (strcmp(input, "quit") == 0) {
+      return network_close(server);
+    }
+
+    if (strncmp(input, "put ", 4) == 0) {
+      printf("Leu PUT\n");
+
+    } else if (strncmp(input, "get ", 4) == 0) {
+      printf("Leu GET\n");
+
+    } else if (strncmp(input, "update ", 7) == 0) {
+      printf("Leu UPDATE\n");
+
+    } else if (strncmp(input, "del ", 4) == 0) {
+      printf("Leu DEL\n");
+
+    } else if (strncmp(input, "size", 4) == 0) {
+      printf("Leu SIZE\n");
+
+    }
+
 	}
   	return network_close(server);
 }
-

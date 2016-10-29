@@ -53,15 +53,24 @@ struct server_t *network_connect(const char *address_port){
   int server_socket_fd = -1;
 
 	/* Verificar parâmetro da função e alocação de memória */
-  if (server == NULL || address_port == NULL) return NULL;
+  if (server == NULL || address_port == NULL) {
+    network_close(server);
+    return NULL;
+  }
 
   strcpy(str_aux, address_port);
   server_name = strtok(str_aux, ":");
-  if (server_name == NULL) return NULL;
+  if (server_name == NULL) {
+    network_close(server);
+    return NULL;
+  }
 
   printf("host: %s\n", server_name);
   server_port = strtok(NULL, ":");
-  if (server_port == NULL) return NULL;
+  if (server_port == NULL) {
+    network_close(server);
+    return NULL;
+  }
   server_port_num = atoi(server_port);
   printf("port: %d\n", server_port_num);
 
@@ -78,19 +87,27 @@ struct server_t *network_connect(const char *address_port){
 
   //socket
   server_socket_fd = socket(PF_INET, SOCK_STREAM,0);
-  if(server_socket_fd < 0) return NULL;
+  if(server_socket_fd < 0) {
+    network_close(server);
+    return NULL;
+  }
   server->socket_fd = server_socket_fd;
 
   server_in.sin_family = AF_INET;
   server_in.sin_port = htons(server_port_num);
   hostinfo = gethostbyname (server_name);
-  if (hostinfo == NULL) return NULL;
+  if (hostinfo == NULL) {
+    network_close(server);
+    return NULL;
+  }
   server_in.sin_addr = *(struct in_addr *) hostinfo->h_addr;
 
 
 	/* Se a ligação não foi estabelecida, retornar NULL */
-  if(connect (server_socket_fd, (struct sockaddr *)&server_in, sizeof(server_in)) < 0)
+  if(connect (server_socket_fd, (struct sockaddr *)&server_in, sizeof(server_in)) < 0) {
+    network_close(server);
     return NULL;
+  }
 
   //TODO guardar mais info na estrutura server?
 
@@ -149,11 +166,15 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 
 int network_close(struct server_t *server){
 	/* Verificar parâmetros de entrada */
-  if (server == NULL) return NULL;
+  if (server == NULL) return -1;
 
 	/* Terminar ligação ao servidor */
   close(server->socket_fd);
 
 	/* Libertar memória */
-  //TODO
+  free(server);
+  //TODO ver se eh preciso libertar memória
+  // dentro da struct 'server'
+
+  return 0;
 }
