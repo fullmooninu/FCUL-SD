@@ -37,7 +37,7 @@ int make_server_socket(short port){
 
   if (listen(socket_fd, 0) < 0){
     perror("Erro ao executar listen");
-    close(sfd);
+    close(socket_fd);
     return -1;
   }
   return socket_fd;
@@ -52,9 +52,8 @@ int make_server_socket(short port){
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
   struct message_t *msg_resposta;
   int result;
-  struct entry_t* entry;
   struct data_t* data;
-  struct char* key;
+  char* key;
 
   /* Verificar parâmetros de entrada */
   if (msg_pedido == NULL || tabela == NULL) return NULL;
@@ -91,7 +90,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     case OC_UPDATE:
     //Garantir o c_type correspondente ao comando
     if(msg_pedido->c_type == CT_ENTRY){
-      result = table_update(tabela, msg_pedido->content.key, msg_pedido->content.value);
+      result = table_update(tabela, msg_pedido->content.key, msg_pedido->content.data);
       if (result == -1) {
         msg_resposta->opcode = OC_RT_ERROR;
         msg_resposta->c_type = CT_RESULT;
@@ -111,18 +110,18 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     if(msg_pedido->c_type == CT_KEY){
       msg_resposta->opcode = OC_GET+1;
       key = msg_pedido->content.key;
-      if(key == "*"){
+      if(strcmp(key, "*")){
         msg_resposta->c_type = CT_KEYS;
-        msg_resposta->content.keys = table_get_keys(table);
+        msg_resposta->content.keys = table_get_keys(tabela);
       }else {
         msg_resposta->c_type = CT_VALUE;
-        data = table_get(table, key);
+        data = table_get(tabela, key);
         if(data == NULL){
           data = (struct data_t*) malloc(sizeof(struct data_t));
           data->datasize = 0;
           data->data = NULL;
         }
-        msg_resposta->content.value = data;
+        msg_resposta->content.data = data;
       }
     }else{
       msg_resposta->opcode = OC_RT_ERROR;
@@ -132,7 +131,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     break;
     case OC_PUT:
     if(msg_pedido->c_type == CT_ENTRY){
-      result = table_put(tabela, msg_pedido->content.key, msg_pedido->content.value);
+      result = table_put(tabela, msg_pedido->content.key, msg_pedido->content.data);
       if (result == -1) {
         msg_resposta->opcode = OC_RT_ERROR;
         msg_resposta->c_type = CT_RESULT;
@@ -191,7 +190,7 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Verificar se a desserialização teve sucesso */
   //TODO libertar memoria em caso de erro
-  if (msg_pedido == NULL) return NULL;
+  if (msg_pedido == NULL) -1;
 
   /* Processar a mensagem */
   msg_resposta = process_message(msg_pedido, table);
