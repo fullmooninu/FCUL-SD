@@ -34,7 +34,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	/* Consoante o msg->c_type, determinar o tamanho do vetor de bytes
 	 que tem de ser alocado antes de serializar msg
 	 */
-	int buffer_size; //Tamanho em bytes
+	int buffer_size = 0; //Tamanho em bytes
 
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
 	int keysSize = 0;
@@ -69,16 +69,16 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	msg_buf = malloc(buffer_size);
 
 	/* Inicializar ponteiro auxiliar com o endereÃ§o da memÃ³ria alocada */
-	char *ptr;
-	ptr = *msg_buf;
+	//char *ptr;
+	//ptr = *msg_buf;
 
 	short short_value = htons(msg->opcode);
-	memcpy(ptr, &short_value, _SHORT);
-	ptr += _SHORT;
+	memcpy(msg_buf, &short_value, _SHORT);
+	msg_buf += _SHORT;
 
 	short_value = htons(msg->c_type);
-	memcpy(ptr, &short_value, _SHORT);
-	ptr += _SHORT;
+	memcpy(msg_buf, &short_value, _SHORT);
+	msg_buf += _SHORT;
 
 	/* Consoante o conteÃºdo da mensagem, continuar a serializaÃ§Ã£o da mesma */
 
@@ -91,42 +91,40 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	switch (msg->c_type) {
 	case CT_ENTRY:
 		short_aux = htons(strlen(msg->content.key));
-		memcpy(ptr, &short_aux, _SHORT);
-		ptr += _SHORT;
+		memcpy(msg_buf, &short_aux, _SHORT);
+		msg_buf += _SHORT;
 		//colocar a chave
 		char *key_aux;
 		key_aux = (char *) malloc(sizeof(msg->content.key));
 		strcpy(key_aux, msg->content.key);
 		if (key_aux == NULL)
 			return -1;
-		memcpy(ptr, &key_aux, strlen(key_aux));
-		if (ptr == NULL)
-			return -1;
-		ptr += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
+		memcpy(msg_buf, &key_aux, strlen(key_aux));
+		msg_buf += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		//colocar o data_sizeDS
 		int_aux = htonl(msg->content.data->datasize);
-		memcpy(ptr, &int_aux, _INT);
-		ptr += _INT;
+		memcpy(msg_buf, &int_aux, _INT);
+		msg_buf += _INT;
 		if ((msg->content.data->datasize) != 0) {
 			//colocar o data->data
 			void *key_aux;
 			int_aux = msg->content.data->datasize;
 			key_aux = malloc(int_aux);
-			memcpy(ptr, &key_aux, int_aux);
-			ptr += int_aux;
+			memcpy(msg_buf, &key_aux, int_aux);
+			msg_buf += int_aux;
 			free(key_aux);
 		}
 		break;
 	case CT_KEY:
 		short_aux = htons(strlen(msg->content.key));
-		memcpy(ptr, &short_aux, _SHORT);
-		ptr += _SHORT;
+		memcpy(msg_buf, &short_aux, _SHORT);
+		msg_buf += _SHORT;
 		//colocar a chave
 		key_aux = (char *) malloc(sizeof(msg->content.key));
 		strcpy(key_aux, msg->content.key);
-		memcpy(ptr, &key_aux, strlen(key_aux));
-		ptr += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
+		memcpy(msg_buf, &key_aux, strlen(key_aux));
+		msg_buf += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		break;
 
@@ -137,17 +135,17 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 			key_aux += strlen(msg->content.keys[i]);
 		}
 		int_aux = htonl(nKeys);
-		memcpy(ptr, &int_aux, _INT);
-		ptr += _INT;
+		memcpy(msg_buf, &int_aux, _INT);
+		msg_buf += _INT;
 		//colocar as varias chaves
 		for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
 			key_aux = (char *) malloc(sizeof(msg->content.keys[i]));
 			strcpy(key_aux, msg->content.keys[i]);
 			short_aux = htons(strlen(key_aux));
-			memcpy(ptr, &short_aux, _SHORT);
-			ptr += _SHORT;
-			memcpy(ptr, &key_aux, strlen(key_aux));
-			ptr += strlen(key_aux);
+			memcpy(msg_buf, &short_aux, _SHORT);
+			msg_buf += _SHORT;
+			memcpy(msg_buf, &key_aux, strlen(key_aux));
+			msg_buf += strlen(key_aux);
 			free(key_aux);
 		}
 		break;
@@ -155,22 +153,22 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	case CT_VALUE:
 		//colocar o data_sizeDS
 		int_aux = htonl(msg->content.data->datasize);
-		memcpy(ptr, &int_aux, _INT);
-		ptr += _INT;
+		memcpy(msg_buf, &int_aux, _INT);
+		msg_buf += _INT;
 		if ((msg->content.data->datasize) != 0) {
 			//colocar o data->data
 			void *key_aux;
 			int_aux = htonl(msg->content.data->datasize);
 			key_aux = malloc(int_aux);
-			memcpy(ptr, &key_aux, int_aux);
-			ptr += int_aux;
+			memcpy(msg_buf, &key_aux, int_aux);
+			msg_buf += int_aux;
 			free(key_aux);
 		}
 
 	case CT_RESULT:
 		int_aux = htonl(msg->content.result);
-		memcpy(ptr, &int_aux, _INT);
-		ptr += _INT;
+		memcpy(msg_buf, &int_aux, _INT);
+		msg_buf += _INT;
 		break;
 	}
 
