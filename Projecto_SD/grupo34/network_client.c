@@ -3,11 +3,10 @@ Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 #include "network_client-private.h"
-
 #include <stdlib.h>
 
 
-int write_all(int sock, char *buf, int len){
+//int write_all(int sock, char *buf, int len){
 	//TODO nao compila!
 	// int bufsize = len;
 	// while (len > 0){
@@ -21,11 +20,11 @@ int write_all(int sock, char *buf, int len){
 	// 	len -= res;
 	// }
 	// return bufsize;
-}
+//}
 
 //A DUVIDA � SE NOS TEMOS QUE PREOCUPAR COM O '/0'. Isso acrescenta-se no buffer? ???
 //Caso sim, acrescenta-se write(sock, '/0', len); e no buf += res + 1; len -= res + 1;
-int read_all(int sock, char *buf, int len){
+//int read_all(int sock, char *buf, int len){
 	//TODO nao compila!
 	// int bufsize = len;
 	// while(len > 0){
@@ -39,7 +38,7 @@ int read_all(int sock, char *buf, int len){
 	// 	len -= res;
 	// }
 	// return bufsize;
-}
+//}
 
 
 struct server_t *network_connect(const char *address_port){
@@ -177,4 +176,5 @@ int network_close(struct server_t *server){
   // dentro da struct 'server'
 
   return 0;
+
 }

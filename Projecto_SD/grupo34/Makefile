@@ -24,4 +24,4 @@ table-client: table-client.o network_client.o message.o message-private.o $(list
 
 
 clean:
-	rm -f *.o test_data test_entry test_list test_table test_message
+	rm -f *.o test_data test_entry test_list test_table test_message table-client

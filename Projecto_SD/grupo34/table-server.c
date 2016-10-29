@@ -8,10 +8,11 @@ Uso: table-server <porta TCP> <dimensão da tabela>
 Exemplo de uso: ./table_server 54321 10
 */
 #include <error.h>
-
 #include "inet.h"
 #include "table-private.h"
 #include "message-private.h"
+#include "table-server-private.h"
+#include "message.h"
 
 
 /* Função para preparar uma socket de receção de pedidos de ligação.
@@ -156,16 +157,19 @@ Neste caso a função implementa um ciclo receive/send:
 
 Recebe um pedido;
 Aplica o pedido na tabela;
-Envia a resposta.
+Envia a resposta.#include "message.h"
+
 */
 int network_receive_send(int sockfd, struct table_t *table){
   char *message_resposta, *message_pedido;
-  int msg_length;
+  //int msg_length;
   int message_size, msg_size, result;
   struct message_t *msg_pedido, *msg_resposta;
+  int msg_length;
   struct list_t *results;
 
   /* Verificar parâmetros de entrada */
+
   if(sockfd < 0|| table == NULL) return -1;
 
 
@@ -194,6 +198,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   //TODO libertar memoria em caso de erro
   if (msg_pedido == NULL) return -1;
 
+
   /* Processar a mensagem */
   msg_resposta = process_message(msg_pedido, table);
 
@@ -203,6 +208,8 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Verificar se a serialização teve sucesso */
   //TODO libertar memoria em caso de erro
   if (message_size == -1) return -1;
+  free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+
 
   /* Enviar ao cliente o tamanho da mensagem que será enviada
   logo de seguida
@@ -213,6 +220,8 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Verificar se o envio teve sucesso */
   //TODO libertar memoria em caso de erro
   if (result == -1) return -1;
+  free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+
 
   /* Enviar a mensagem que foi previamente serializada */
 
@@ -221,8 +230,11 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Verificar se o envio teve sucesso */
   //TODO libertar memoria em caso de erro
   if (result == -1) return -1;
+  free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+
 
   /* Libertar memória */
+  //TODO
   free(message_pedido);
   free(message_resposta);
   free_message(msg_pedido); //message.h
@@ -232,12 +244,12 @@ int network_receive_send(int sockfd, struct table_t *table){
 }
 
 
-
 int main(int argc, char **argv){
   int listening_socket, connsock, result;
   struct sockaddr_in client;
   socklen_t size_client;
   struct table_t *table;
+  struct message_t* msg_resposta;
 
   if (argc != 2){
     printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
@@ -255,11 +267,12 @@ int main(int argc, char **argv){
   while ((connsock = accept(listening_socket, (struct sockaddr *) &client, &size_client)) != -1) {
     printf(" * Client is connected!\n");
 
-    while (/* condição */){
+    //true
+    while (1){
 
       /* Fazer ciclo de pedido e resposta */
       msg_resposta->c_type = CT_VALUE;
-      network_receive_send((connsock, table) < 0);
+      network_receive_send(connsock, table);
 
       /* Ciclo feito com sucesso ? Houve erro?
       Cliente desligou? */
