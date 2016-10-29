@@ -13,10 +13,41 @@ Silvia Ferreira 45511 */
 
 #include "network_client-private.h"
 
+//TODO passar isto para o message private e alterar a apresentacao da informacao
+void print_message(struct message_t *msg) {
+	int i;
+
+	printf("----- MESSAGE -----\n");
+	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
+	switch(msg->c_type) {
+		case CT_ENTRY:{
+			printf("key: %s\n", msg->content.entry->key);
+			printf("datasize: %d\n", msg->content.entry->value->datasize);
+		}break;
+		case CT_KEY:{
+			printf("key: %s\n", msg->content.key);
+		}break;
+		case CT_KEYS:{
+			for(i = 0; msg->content.keys[i] != NULL; i++) {
+				printf("key[%d]: %s\n", i, msg->content.keys[i]);
+			}
+		}break;
+		case CT_VALUE:{
+			printf("datasize: %d\n", msg->content.data->datasize);
+		}break;
+		case CT_RESULT:{
+			printf("result: %d\n", msg->content.result);
+		};
+	}
+	printf("-------------------\n");
+}
+
+
+
 int main(int argc, char **argv){
 	struct server_t *server;
-	char input[81], *s;
-	struct message_t *msg_out, *msg_resposta;
+	char input[81], *s, *key, *data;
+	struct message_t *msg_out = NULL, *msg_resposta = NULL;
 
 	/* Testar os argumentos de entrada */
   if (argc != 2) {
@@ -66,21 +97,56 @@ int main(int argc, char **argv){
 
     if (strncmp(input, "put ", 4) == 0) {
       printf("Leu PUT\n");
+      strtok(input, " "); //ignorar o "put"
+      key = strtok(NULL, " ");
+      if (key == NULL) {
+        printf("Comando com formato inválido.\n");
+        return network_close(server);
+      }
+      printf("key: %s\n", key);
+      data = strtok(NULL, "");
+      if (data == NULL) {
+        printf("Comando com formato inválido.\n");
+        return network_close(server);
+      }
+      printf("data %s\n", data);
+
+      msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+      //TODO validar malloc
+      msg_out->opcode = OC_PUT;
+      msg_out->c_type = CT_ENTRY;
+      msg_out->content.key = strdup(key);
+      //TODO validar strdup
+      msg_out->content.entry = entry_create(key, data_create2(strlen(data), data));
+      //TODO validar entry_create & data_create
+
+      printf("PEDIDO:\n");
+      print_message(msg_out);
+
 
     } else if (strncmp(input, "get ", 4) == 0) {
       printf("Leu GET\n");
-
+      //TODO
     } else if (strncmp(input, "update ", 7) == 0) {
       printf("Leu UPDATE\n");
-
+      //TODO
     } else if (strncmp(input, "del ", 4) == 0) {
       printf("Leu DEL\n");
-
+      //TODO
     } else if (strncmp(input, "size", 4) == 0) {
       printf("Leu SIZE\n");
-
+      //TODO
     }
 
-	}
+    if (msg_out != NULL) {
+      msg_resposta = network_send_receive(server, msg_out);
+
+      //TODO imprimir resposta
+      print_message(msg_resposta);
+    }
+
+    free_message(msg_out);
+    free_message(msg_resposta);
+	}//while
   	return network_close(server);
 }
