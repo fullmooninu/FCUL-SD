@@ -5,40 +5,43 @@ Silvia Ferreira 45511 */
 #include "network_client-private.h"
 
 #include <stdlib.h>
+#include <errno.h>
 
 
-int write_all(int sock, char *buf, int len){
-	//TODO nao compila!
-	// int bufsize = len;
-	// while (len > 0){
-	// 	int res = write(sock, buf, len);
-	// 	if (res < 0){
-	// 		if(errno == EINTR) continue;
-	// 		perror("Write failed!");
-	// 		return res;
-	// 	}
-	// 	buf += res;
-	// 	len -= res;
-	// }
-	// return bufsize;
+int write_all(int sock, char *buf, int len) {
+
+	int bufsize = len;
+	while (len > 0) {
+		int res = write(sock, buf, len);
+		if (res < 0) {
+			int errsv = errno;
+			if(errsv==EINTR) continue;
+				perror("Write failed!");
+				return res;
+		}
+		buf += res;
+		len -= res;
+	}
+	return bufsize;
 }
 
 //A DUVIDA � SE NOS TEMOS QUE PREOCUPAR COM O '/0'. Isso acrescenta-se no buffer? ???
 //Caso sim, acrescenta-se write(sock, '/0', len); e no buf += res + 1; len -= res + 1;
-int read_all(int sock, char *buf, int len){
-	//TODO nao compila!
-	// int bufsize = len;
-	// while(len > 0){
-	// 	int res = read(sock, buf, len);
-	// 	if (res < 0) {
-	// 		if errno == EINTR) continue;
-	// 		perror("Read failed!");
-	// 		return res;
-	// 	}
-	// 	buf += res;
-	// 	len -= res;
-	// }
-	// return bufsize;
+int read_all(int sock, char *buf, int len) {
+
+	int bufsize = len;
+	while (len > 0) {
+		int res = read(sock, buf, len);
+		if (res < 0) {
+			int errsv = errno;
+			if(errsv==EINTR) continue;
+				perror("Read failed!");
+				return res;
+		}
+		buf += res;
+		len -= res;
+	}
+	return bufsize;
 }
 
 
