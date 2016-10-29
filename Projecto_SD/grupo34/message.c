@@ -85,7 +85,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	int int_aux = 0;
 	short short_aux = 0;
 
-	//Variável auxiliar para saber o numero de keys
+	//Variï¿½vel auxiliar para saber o numero de keys
 	int nKeys = 0;
 
 	switch (msg->c_type) {
@@ -100,7 +100,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		if (key_aux == NULL)
 			return -1;
 		memcpy(msg_buf, &key_aux, strlen(key_aux));
-		msg_buf += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
+		msg_buf += strlen(key_aux); //jï¿½ sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		//colocar o data_sizeDS
 		int_aux = htonl(msg->content.data->datasize);
@@ -124,7 +124,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		key_aux = (char *) malloc(sizeof(msg->content.key));
 		strcpy(key_aux, msg->content.key);
 		memcpy(msg_buf, &key_aux, strlen(key_aux));
-		msg_buf += strlen(key_aux); //já sabemos que o strlen nao contabiliza o '/0'
+		msg_buf += strlen(key_aux); //jï¿½ sabemos que o strlen nao contabiliza o '/0'
 		free(key_aux);
 		break;
 

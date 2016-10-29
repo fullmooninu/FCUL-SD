@@ -5,7 +5,7 @@
 CFLAGS = -g -Wall -I. -I./include
 CC = gcc
 
-all: test_data test_entry test_list test_table test_message
+all: test_data test_entry test_list test_table test_message table-client
 
 test_data: data.o
 
@@ -18,7 +18,7 @@ test_table: $(list_objects) table.o table-private.o
 
 test_message: $(list_objects) message.o message-private.o
 
-
+table-client: table-client.o network_client.o message.o message-private.o $(list_objects)
 
 
 

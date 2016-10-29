@@ -21,10 +21,12 @@ int main(int argc, char **argv){
 	/* Testar os argumentos de entrada */
 
 	/* Usar network_connect para estabelcer ligação ao servidor */
-	server = network_connect(/* */);
+  //TODO
+	server = network_connect("127.0.0.1:333");
 
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
- 	while (/* condição */){
+//TODO
+ 	while (0){
 
 		printf(">>> "); // Mostrar a prompt para inserção de comando
 
