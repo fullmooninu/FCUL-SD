@@ -46,7 +46,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	int keysSize = 0;
 
 	//REVER TAMANHOS
-	switch (msg->c_type) {
+	switch (msg->c_type) { //
 	case CT_ENTRY:
 		buffer_size = 6 + strlen(msg->content.key) + 4;
 		if ((msg->content.data->datasize) != 0)
