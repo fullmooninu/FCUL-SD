@@ -11,6 +11,7 @@ Exemplo de uso: ./table_server 54321 10
 
 #include "inet.h"
 #include "table-private.h"
+#include "message.h"
 #include "message-private.h"
 
 
@@ -164,8 +165,12 @@ int network_receive_send(int sockfd, struct table_t *table){
   int message_size, msg_size, result;
   struct message_t *msg_pedido, *msg_resposta;
   struct list_t *results;
+  struct server_t *server;
 
   /* Verificar parâmetros de entrada */
+  //TODO sockfd <0????????
+  if(sockfd < 0|| table == NULL) return -1;
+
 
   /* Com a função read_all, receber num inteiro o tamanho da
   mensagem de pedido que será recebida de seguida.*/
@@ -180,7 +185,6 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Com a função read_all, receber a mensagem de resposta. */
   result = read_all(sockfd, message_pedido, msg_size);
-
   /* Verificar se a receção teve sucesso */
   //TODO libertar memoria em caso de erro
   if (result == -1) return -1;
@@ -190,7 +194,7 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Verificar se a desserialização teve sucesso */
   //TODO libertar memoria em caso de erro
-  if (msg_pedido == NULL) -1;
+  if (msg_pedido == NULL) return -1;
 
   /* Processar a mensagem */
   msg_resposta = process_message(msg_pedido, table);
@@ -207,7 +211,8 @@ int network_receive_send(int sockfd, struct table_t *table){
   */
   msg_size = htonl(message_size);
   //TODO DUVIDA ponteiro 'server' vem de onde?
-  result = write_all(server->/*atributo*/, (char *) &msg_size, _INT));
+  //nao deve ser o sockfd???
+  result = write_all(sockfd, (char *) &msg_size, _INT);
 
   /* Verificar se o envio teve sucesso */
   //TODO libertar memoria em caso de erro
@@ -215,7 +220,7 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Enviar a mensagem que foi previamente serializada */
 
-  result = write_all(server->/*atributo*/, message_resposta, message_size));
+  result = write_all(sockfd, message_resposta, message_size);
 
   /* Verificar se o envio teve sucesso */
   //TODO libertar memoria em caso de erro
@@ -256,8 +261,9 @@ int main(int argc, char **argv){
 
     while (/* condição */){
 
-      /* Fazer ciclo de pedido e resposta */msg_resposta->c_type = CT_VALUE;
-      network_receive_send(connsock, table) < 0);
+      /* Fazer ciclo de pedido e resposta */
+      msg_resposta->c_type = CT_VALUE;
+      network_receive_send((connsock, table) < 0);
 
       /* Ciclo feito com sucesso ? Houve erro?
       Cliente desligou? */
