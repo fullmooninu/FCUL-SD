@@ -6,41 +6,6 @@ Silvia Ferreira 45511 */
 #include <stdlib.h>
 
 
-//int write_all(int sock, char *buf, int len){
-	//TODO nao compila!
-	// int bufsize = len;
-	// while (len > 0){
-	// 	int res = write(sock, buf, len);
-	// 	if (res < 0){
-	// 		if(errno == EINTR) continue;
-	// 		perror("Write failed!");
-	// 		return res;
-	// 	}
-	// 	buf += res;
-	// 	len -= res;
-	// }
-	// return bufsize;
-//}
-
-//A DUVIDA � SE NOS TEMOS QUE PREOCUPAR COM O '/0'. Isso acrescenta-se no buffer? ???
-//Caso sim, acrescenta-se write(sock, '/0', len); e no buf += res + 1; len -= res + 1;
-//int read_all(int sock, char *buf, int len){
-	//TODO nao compila!
-	// int bufsize = len;
-	// while(len > 0){
-	// 	int res = read(sock, buf, len);
-	// 	if (res < 0) {
-	// 		if errno == EINTR) continue;
-	// 		perror("Read failed!");
-	// 		return res;
-	// 	}
-	// 	buf += res;
-	// 	len -= res;
-	// }
-	// return bufsize;
-//}
-
-
 struct server_t *network_connect(const char *address_port){
 	struct server_t *server = malloc(sizeof(struct server_t));
   struct sockaddr_in server_in;
@@ -176,5 +141,4 @@ int network_close(struct server_t *server){
   // dentro da struct 'server'
 
   return 0;
-
 }
