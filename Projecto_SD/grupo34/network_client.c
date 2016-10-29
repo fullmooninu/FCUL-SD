@@ -13,7 +13,7 @@ int write_all(int sock, char *buf, int len){
 		int res = write(sock, buf, len);
 		if (res < 0){
 			if(errno == EINTR) continue;
-			perror("write failed.");
+			perror("Write failed!");
 			return res;
 		}
 		buf += res;
@@ -22,8 +22,21 @@ int write_all(int sock, char *buf, int len){
 	return bufsize;
 }
 
-
+//A DUVIDA � SE NOS TEMOS QUE PREOCUPAR COM O '/0' ???
+//Caso sim, acrescenta-se write(sock, '/0', len); e no buf += res + 1; len -= res + 1;
 int read_all(int sock, char *buf, int len){
+	int bufsize = len;
+	while(len > 0){
+		int res = read(sock, buf, len);
+		if (res < 0) {
+			if errno == EINTR) continue;
+			perror("Read failed!");
+			return res;
+		}
+		buf += res;
+		len -= res;
+	}
+	return bufsize;
 }
 
 
@@ -52,7 +65,7 @@ struct server_t *network_connect(const char *address_port){
 
 	server.sin_family = AF_INET;
 	server.sin_port = htons(/**qual porta que se coloca aqui??**/);
-	server.sin_addr.s_addr = inet_addr(/**qual o address que se coloca aqui??**/);
+	server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	/* Se a ligação não foi estabelecida, retornar NULL */
 
