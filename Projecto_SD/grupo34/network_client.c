@@ -22,7 +22,7 @@ int write_all(int sock, char *buf, int len){
 	return bufsize;
 }
 
-//A DUVIDA … SE NOS TEMOS QUE PREOCUPAR COM O '/0' ???
+//A DUVIDA … SE NOS TEMOS QUE PREOCUPAR COM O '/0'. Isso acrescenta-se no buffer? ???
 //Caso sim, acrescenta-se write(sock, '/0', len); e no buf += res + 1; len -= res + 1;
 int read_all(int sock, char *buf, int len){
 	int bufsize = len;
@@ -64,8 +64,8 @@ struct server_t *network_connect(const char *address_port){
 	}
 
 	server.sin_family = AF_INET;
-	server.sin_port = htons(/**qual porta que se coloca aqui??**/);
-	server.sin_addr.s_addr = inet_addr("127.0.0.1");
+	server.sin_port = htons(atoi(argv[1])); // Aqui usa-se o argv[1] ou atribui-se diretamente um porto das gamas possiveis?!
+	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	/* Se a liga√ß√£o n√£o foi estabelecida, retornar NULL */
 
