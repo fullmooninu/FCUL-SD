@@ -48,7 +48,7 @@
 		//REVER TAMANHOS
 		switch (msg->c_type) {  //
 		case CT_ENTRY:
-			buffer_size = 6 + strlen(msg->content.entry->key) + 4;
+			buffer_size = 6 + strlen(msg->content.key) + 4;
 			if ((msg->content.data->datasize) != 0)
 				buffer_size += msg->content.data->datasize;
 			break;
@@ -93,7 +93,7 @@
 		//Variavel auxiliar para saber o numero de keys
 		int nKeys = 0;
 
-		switch (msg->c_type) { //
+		switch (msg->c_type) {
 		case CT_ENTRY:
 			short_aux = htons(strlen(msg->content.entry->key));
 			memcpy(buffer, &short_aux, _SHORT);
@@ -122,11 +122,8 @@
 			memcpy(buffer, &short_aux, _SHORT);
 			buffer += _SHORT;
 			//colocar a chave
-			key_aux = (char *) malloc(strlen(msg->content.key));
-			strcpy(key_aux, msg->content.key);
-			memcpy(buffer, &key_aux, strlen(key_aux));
-			buffer += strlen(key_aux); //j� sabemos que o strlen nao contabiliza o '/0'
-			free(key_aux);
+			memcpy(buffer, msg->content.key,strlen(msg->content.key));
+			buffer += strlen(msg->content.key); //j� sabemos que o strlen nao contabiliza o '/0'
 			break;
 
 		case CT_KEYS:
@@ -224,27 +221,24 @@
 			memcpy(&int_aux, msg_buf, _INT);
 			msg_buf += _INT;
 			//data
-			data = data_create2(int_aux, msg_buf);
-			if (data == NULL)
-				return NULL;
-			//TODO DUVIDA ntohost
-			msg->content.data = data;
+			msg->content.data = data_create2(ntohl(int_aux), msg_buf);
 			break;
 		case CT_KEY:
 			//keysize
 			memcpy(&short_aux, msg_buf, _SHORT);
+			short_aux = ntohs(short_aux);
 			msg_buf += _SHORT;
 			//key
 			key = malloc(sizeof(char) * short_aux);
 			if (key == NULL)
 				return NULL;
 			strncpy(key, msg_buf, short_aux);
-			//TODO DUVIDA ntohost
 			msg->content.key = key;
 			break;
 		case CT_KEYS:
 			//nkeys
 			memcpy(&int_aux, msg_buf, _INT);
+			int_aux = ntohl(int_aux);
 			msg_buf += _INT;
 			keys = (char**) malloc(sizeof(char) * int_aux);
 			if (keys == NULL)
@@ -253,9 +247,10 @@
 			for (i = 0; i < int_aux; i++) {
 				//keysize
 				memcpy(&short_aux, msg_buf, _SHORT);
+				short_aux = ntohs(short_aux);
 				msg_buf += _SHORT;
 				//key
-				keys[i] = strndup(msg_buf, ntohs(short_aux));
+				keys[i] = strndup(msg_buf, short_aux);
 				if (keys[i] == NULL)
 					return NULL;
 				msg_buf += short_aux;
@@ -265,17 +260,18 @@
 		case CT_ENTRY:
 			//keysize
 			memcpy(&short_aux, msg_buf, _SHORT);
+			short_aux = ntohs(short_aux);
 			msg_buf += _SHORT;
 			//key
 			key = (char*) malloc(sizeof(char) * short_aux);
 			if (key == NULL)
 				return NULL;
 			strncpy(key, msg_buf, short_aux);
-			//TODO DUVIDA - nthost
 			msg->content.key = key;
 			msg_buf += short_aux;
 			//datasize
 			memcpy(&int_aux, msg_buf, _INT);
+			int_aux = ntohl(int_aux);
 			msg_buf += _INT;
 			//data
 			data = data_create2(int_aux, msg_buf);
