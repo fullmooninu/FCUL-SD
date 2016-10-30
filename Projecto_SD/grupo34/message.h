@@ -40,11 +40,11 @@ struct message_t {
  *
  * OPCODE		C_TYPE
  * [2 bytes]	[2 bytes]
- *
+ *  
  * a partir daí, o formato difere para cada tipo de conteúdo (c_type):
  * CT_ENTRY		KEYSIZE(KS)		KEY 		DATASIZE(DS)	DATA
  *			[2 bytes]		[KS bytes]	[4 bytes]	[DS bytes]
- * CT_KEY		KEYSIZE(KS)		KEY
+ * CT_KEY		KEYSIZE(KS)		KEY 		
  *			[2 bytes]		[KS bytes]
  * CT_KEYS		NKEYS			KEYSIZE(KS)	KEY		...
  *			[4 bytes]		[2 bytes]	[KS bytes]	...
@@ -67,5 +67,5 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size);
  */
 void free_message(struct message_t *msg);
 
-
 #endif
+
