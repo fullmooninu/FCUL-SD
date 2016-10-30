@@ -253,7 +253,7 @@
 			msg->content.keys = keys;
 			break;
 		case CT_ENTRY:
-			//keysize
+			//keysize /
 			memcpy(&short_aux, msg_buf, _SHORT);
 			short_aux = ntohs(short_aux);
 			msg_buf += _SHORT;
