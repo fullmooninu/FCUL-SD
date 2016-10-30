@@ -270,15 +270,18 @@ int main(int argc, char **argv){
     printf(" * Client is connected!\n");
 
     //true
-    while (1){
-
-      /* Fazer ciclo de pedido e resposta */
+    int success = -1;
+    do {
       msg_resposta->c_type = CT_VALUE;
-      network_receive_send(connsock, table);
+      success = network_receive_send(connsock, table);
+    }while (success!=-1);
+      /* Fazer ciclo de pedido e resposta */
+      
+      
       //TODO
       /* Ciclo feito com sucesso ? Houve erro?
       Cliente desligou? */
 
-    }
   }
 }
+
