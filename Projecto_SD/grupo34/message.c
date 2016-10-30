@@ -9,25 +9,24 @@
 #include <unistd.h>
 
 void free_message(struct message_t *msg) {
-	if (msg == NULL)
-		return;
-	switch (msg->c_type) {
-	case CT_VALUE:
-		data_destroy(msg->content.data);
-		break;
-	case CT_KEY:
+	if (msg == NULL) return;
+
+	if (msg->c_type == CT_ENTRY) {
+		entry_destroy(msg->content.entry);
+	}
+	if (msg->c_type == CT_KEY) {
 		free(msg->content.key);
-		break;
-	case CT_KEYS:
+	}
+	if (msg->c_type == CT_KEYS) {
 		for (int i = 0; msg->content.keys[i] != NULL; i++) {
 			free(msg->content.keys[i]);
 		}
 		free(msg->content.keys);
-		break;
-	case CT_ENTRY:
-		entry_destroy(msg->content.entry);
-		break;
 	}
+	if (msg->c_type == CT_VALUE) {
+		data_destroy(msg->content.data);
+	}
+
 	free(msg);
 }
 
