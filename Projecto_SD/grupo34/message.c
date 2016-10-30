@@ -48,9 +48,9 @@
 		//REVER TAMANHOS
 		switch (msg->c_type) {  //
 		case CT_ENTRY:
-			buffer_size = 6 + strlen(msg->content.key) + 4;
+			buffer_size = 6 + strlen(msg->content.entry->key) + 4;
 			if ((msg->content.data->datasize) != 0)
-				buffer_size += sizeof(msg->content.data->data);
+				buffer_size += msg->content.data->datasize;
 			break;
 		case CT_KEY:
 			buffer_size = (6 + strlen(msg->content.key));
@@ -64,13 +64,12 @@
 		case CT_VALUE:
 			buffer_size = 8;
 			if ((msg->content.data->datasize) != 0)
-				buffer_size += sizeof(msg->content.data->data);
+				buffer_size += msg->content.data->datasize;
 			break;
 		case CT_RESULT:
 			buffer_size = 8;
 			break;
 		}
-
 
 		char* buffer;
 		buffer = (char*) malloc(buffer_size);
@@ -89,19 +88,19 @@
 
 		int int_aux = 0;
 		short short_aux = 0;
+		char *key_aux;
 
 		//Variavel auxiliar para saber o numero de keys
 		int nKeys = 0;
 
-		switch (msg->c_type) {
+		switch (msg->c_type) { //
 		case CT_ENTRY:
-			short_aux = htons(strlen(msg->content.key));
+			short_aux = htons(strlen(msg->content.entry->key));
 			memcpy(buffer, &short_aux, _SHORT);
 			buffer += _SHORT;
 			//colocar a chave
-			char *key_aux;
-			key_aux = (char *) malloc(sizeof(msg->content.key));
-			strcpy(key_aux, msg->content.key);
+			key_aux = (char *) malloc(sizeof(msg->content.entry->key));
+			strcpy(key_aux, msg->content.entry->key);
 			if (key_aux == NULL)
 				return -1;
 			memcpy(buffer, &key_aux, strlen(key_aux));
@@ -113,12 +112,9 @@
 			buffer += _INT;
 			if ((msg->content.data->datasize) != 0) {
 				//colocar o data->data
-				void *key_aux;
 				int_aux = msg->content.data->datasize;
-				key_aux = malloc(int_aux);
-				memcpy(buffer, &key_aux, int_aux);
+				memcpy(buffer, msg->content.data->data, int_aux);
 				buffer += int_aux;
-				free(key_aux);
 			}
 			break;
 		case CT_KEY:
@@ -126,7 +122,7 @@
 			memcpy(buffer, &short_aux, _SHORT);
 			buffer += _SHORT;
 			//colocar a chave
-			key_aux = (char *) malloc(sizeof(msg->content.key));
+			key_aux = (char *) malloc(strlen(msg->content.key));
 			strcpy(key_aux, msg->content.key);
 			memcpy(buffer, &key_aux, strlen(key_aux));
 			buffer += strlen(key_aux); //j� sabemos que o strlen nao contabiliza o '/0'
@@ -144,7 +140,7 @@
 			buffer += _INT;
 			//colocar as varias chaves
 			for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
-				key_aux = (char *) malloc(sizeof(msg->content.keys[i]));
+				key_aux = (char *) malloc(strlen(msg->content.keys[i]));
 				strcpy(key_aux, msg->content.keys[i]);
 				short_aux = htons(strlen(key_aux));
 				memcpy(buffer, &short_aux, _SHORT);
@@ -162,12 +158,9 @@
 			buffer += _INT;
 			if ((msg->content.data->datasize) != 0) {
 				//colocar o data->data
-				void *key_aux;
-				int_aux = htonl(msg->content.data->datasize);
-				key_aux = malloc(int_aux);
-				memcpy(buffer, &key_aux, int_aux);
+				int_aux = msg->content.data->datasize;
+				memcpy(buffer, &msg->content.data->data, int_aux);
 				buffer += int_aux;
-				free(key_aux);
 			}
 
 		case CT_RESULT:
