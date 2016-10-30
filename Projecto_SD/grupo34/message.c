@@ -108,7 +108,7 @@
 			free(key_aux);
 			//colocar o data_sizeDS
 			int_aux = htonl(msg->content.data->datasize);
-			memcpy(buffer, &int_aux, _INT); //
+			memcpy(buffer, &int_aux, _INT);
 			buffer += _INT;
 			if ((msg->content.data->datasize) != 0) {
 				//colocar o data->data
