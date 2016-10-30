@@ -13,44 +13,6 @@ Silvia Ferreira 45511 */
 
 #include "network_client-private.h"
 
-//TODO passar isto para o message private e alterar a apresentacao da informacao
-void print_message(struct message_t *msg) {
-	int i;
-  char *c;
-
-	printf("----- MESSAGE -----\n");
-	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
-	switch(msg->c_type) {
-		case CT_ENTRY:{
-			printf("key: %s\n", msg->content.entry->key);
-			printf("datasize: %d\n", msg->content.entry->value->datasize);
-      printf("data: ");
-      c = (char *) msg->content.entry->value->data;
-      for (i = 0; i < msg->content.entry->value->datasize; i++) {
-        printf("%c", *c);
-        c += 1;
-      }
-      printf("\n");
-      // printf("data: %s\n", msg->content.entry->value->data);
-		}break;
-		case CT_KEY:{
-			printf("key: %s\n", msg->content.key);
-		}break;
-		case CT_KEYS:{
-			for(i = 0; msg->content.keys[i] != NULL; i++) {
-				printf("key[%d]: %s\n", i, msg->content.keys[i]);
-			}
-		}break;
-		case CT_VALUE:{
-			printf("datasize: %d\n", msg->content.data->datasize);
-		}break;
-		case CT_RESULT:{
-			printf("result: %d\n", msg->content.result);
-		};
-	}
-	printf("-------------------\n");
-}
-
 struct message_t* process_entry_command(char* input) {
   struct message_t* msg_out;
   char *key, *data;
@@ -215,12 +177,12 @@ int main(int argc, char **argv){
 
     if (msg_out != NULL) {
       printf("PEDIDO:\n");
-      print_message(msg_out);
+      print_msg(msg_out);
 
       msg_resposta = network_send_receive(server, msg_out);
 
       printf("RESPOSTA:\n");
-      print_message(msg_resposta);
+      print_msg(msg_resposta);
     }
 
     free_message(msg_out);

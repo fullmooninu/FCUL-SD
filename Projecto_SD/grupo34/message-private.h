@@ -26,4 +26,6 @@ int write_all(int sock, char *buf, int len);
 */
 int read_all(int sock, char *buf, int len);
 
+void print_msg(struct message_t *msg);
+
 #endif

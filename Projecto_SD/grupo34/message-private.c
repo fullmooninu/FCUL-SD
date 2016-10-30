@@ -5,7 +5,9 @@ Silvia Ferreira 45511 */
 
 #include "message-private.h"
 #include "message.h"
+#include <stdio.h>
 #include <stdlib.h>
+
 
 
 bool isValidOPC(short opcode){
@@ -15,4 +17,42 @@ bool isValidOPC(short opcode){
 bool isValidCTC(short c_type){
   return (c_type == CT_RESULT || c_type == CT_VALUE || c_type == CT_KEY
     || c_type == CT_KEYS || c_type == CT_ENTRY);
+}
+
+
+void print_msg(struct message_t *msg) {
+	int i;
+  char *c;
+
+	printf("----- MESSAGE -----\n");
+	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
+	switch(msg->c_type) {
+		case CT_ENTRY:{
+			printf("key: %s\n", msg->content.entry->key);
+			printf("datasize: %d\n", msg->content.entry->value->datasize);
+      printf("data: ");
+      c = (char *) msg->content.entry->value->data;
+      for (i = 0; i < msg->content.entry->value->datasize; i++) {
+        printf("%c", *c);
+        c += 1;
+      }
+      printf("\n");
+      // printf("data: %s\n", msg->content.entry->value->data);
+		}break;
+		case CT_KEY:{
+			printf("key: %s\n", msg->content.key);
+		}break;
+		case CT_KEYS:{
+			for(i = 0; msg->content.keys[i] != NULL; i++) {
+				printf("key[%d]: %s\n", i, msg->content.keys[i]);
+			}
+		}break;
+		case CT_VALUE:{
+			printf("datasize: %d\n", msg->content.data->datasize);
+		}break;
+		case CT_RESULT:{
+			printf("result: %d\n", msg->content.result);
+		};
+	}
+	printf("-------------------\n");
 }
