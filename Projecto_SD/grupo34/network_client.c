@@ -71,7 +71,7 @@ struct server_t *network_connect(const char *address_port) {
 		return NULL;
 	}
 
-	//TODO guardar mais info na estrutura server?
+	//TOD guardar mais info na estrutura server?
 
 	return server;
 }
@@ -164,7 +164,7 @@ int network_close(struct server_t *server) {
 
 	/* Libertar memória */
 	free(server);
-	//TODO ver se eh preciso libertar memória
+	//TOD ver se eh preciso libertar memória
 	// dentro da struct 'server'
 
 	return 0;
