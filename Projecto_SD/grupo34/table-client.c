@@ -16,6 +16,7 @@ Silvia Ferreira 45511 */
 //TODO passar isto para o message private e alterar a apresentacao da informacao
 void print_message(struct message_t *msg) {
 	int i;
+  char *c;
 
 	printf("----- MESSAGE -----\n");
 	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
@@ -23,6 +24,14 @@ void print_message(struct message_t *msg) {
 		case CT_ENTRY:{
 			printf("key: %s\n", msg->content.entry->key);
 			printf("datasize: %d\n", msg->content.entry->value->datasize);
+      printf("data: ");
+      c = (char *) msg->content.entry->value->data;
+      for (i = 0; i < msg->content.entry->value->datasize; i++) {
+        printf("%c", *c);
+        c += 1;
+      }
+      printf("\n");
+      // printf("data: %s\n", msg->content.entry->value->data);
 		}break;
 		case CT_KEY:{
 			printf("key: %s\n", msg->content.key);
@@ -42,7 +51,74 @@ void print_message(struct message_t *msg) {
 	printf("-------------------\n");
 }
 
+struct message_t* process_entry_command(char* input) {
+  struct message_t* msg_out;
+  char *key, *data;
+  struct data_t *datat;
 
+  strtok(input, " "); //ignorar o "comando"
+  key = strtok(NULL, " ");
+  if (key == NULL) {
+    printf("Comando com formato inválido.\n");
+    return NULL;
+  }
+  printf("key: <%s>\n", key);
+  data = strtok(NULL, "");//le ate ao fim da linha 'input'
+  if (data == NULL) {
+    printf("Comando com formato inválido.\n");
+    return NULL;
+  }
+  printf("data <%s>\n", data);
+
+  msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+  if (msg_out == NULL) return NULL;
+
+  msg_out->c_type = CT_ENTRY;
+  msg_out->content.key = strdup(key);
+  if (msg_out->content.key == NULL) {
+    free_message(msg_out);
+    return NULL;
+  }
+  printf("STRLEN data: %d\n", strlen(data));
+  datat = data_create2(strlen(data), data);
+  if (datat == NULL) {
+    free_message(msg_out);
+    return NULL;
+  }
+  msg_out->content.entry = entry_create(key, datat);
+  if (msg_out->content.entry == NULL) {
+    free_message(msg_out);
+    return NULL;
+  }
+
+  return msg_out;
+}
+
+
+struct message_t* process_key_command(char* input) {
+  struct message_t* msg_out;
+  char *key, *data;
+
+  strtok(input, " "); //ignorar o "comando"
+  key = strtok(NULL, "");//le ate ao fim da linha 'input'
+  if (key == NULL) {
+    printf("Comando com formato inválido.\n");
+    return NULL;
+  }
+  printf("key: <%s>\n", key);
+
+  msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+  if (msg_out == NULL) return NULL;
+
+  msg_out->c_type = CT_KEY;
+  msg_out->content.key = strdup(key);
+  if (msg_out->content.key == NULL) {
+    free_message(msg_out);
+    return NULL;
+  }
+
+  return msg_out;
+}
 
 int main(int argc, char **argv){
 	struct server_t *server;
@@ -96,52 +172,54 @@ int main(int argc, char **argv){
     }
 
     if (strncmp(input, "put ", 4) == 0) {
-      printf("Leu PUT\n");
-      strtok(input, " "); //ignorar o "put"
-      key = strtok(NULL, " ");
-      if (key == NULL) {
-        printf("Comando com formato inválido.\n");
-        return network_close(server);
-      }
-      printf("key: %s\n", key);
-      data = strtok(NULL, "");
-      if (data == NULL) {
-        printf("Comando com formato inválido.\n");
-        return network_close(server);
-      }
-      printf("data %s\n", data);
+      printf("Comando PUT\n");
 
-      msg_out = (struct message_t *) malloc(sizeof(struct message_t));
-      //TODO validar malloc
+      msg_out = process_entry_command(input);
+      if (msg_out == NULL) return network_close(server);
+
       msg_out->opcode = OC_PUT;
-      msg_out->c_type = CT_ENTRY;
-      msg_out->content.key = strdup(key);
-      //TODO validar strdup
-      msg_out->content.entry = entry_create(key, data_create2(strlen(data), data));
-      //TODO validar entry_create & data_create
-
-      printf("PEDIDO:\n");
-      print_message(msg_out);
-
 
     } else if (strncmp(input, "get ", 4) == 0) {
-      printf("Leu GET\n");
-      //TODO
+      printf("Comando GET\n");
+
+      msg_out = process_key_command(input);
+      if (msg_out == NULL) return network_close(server);
+
+      msg_out->opcode = OC_GET;
+
     } else if (strncmp(input, "update ", 7) == 0) {
-      printf("Leu UPDATE\n");
-      //TODO
+      printf("Comando UPDATE\n");
+
+      msg_out = process_entry_command(input);
+      if (msg_out == NULL) return network_close(server);
+
+      msg_out->opcode = OC_UPDATE;
+
     } else if (strncmp(input, "del ", 4) == 0) {
-      printf("Leu DEL\n");
-      //TODO
+      printf("Comando DEL\n");
+
+      msg_out = process_key_command(input);
+      if (msg_out == NULL) return network_close(server);
+
+      msg_out->opcode = OC_DEL;
+
     } else if (strncmp(input, "size", 4) == 0) {
-      printf("Leu SIZE\n");
-      //TODO
+      printf("Comando SIZE\n");
+
+      msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+      if (msg_out == NULL) return NULL;
+
+      msg_out->opcode = OC_SIZE;
+      msg_out->c_type = NULL;
     }
 
     if (msg_out != NULL) {
+      printf("PEDIDO:\n");
+      print_message(msg_out);
+
       msg_resposta = network_send_receive(server, msg_out);
 
-      //TODO imprimir resposta
+      printf("RESPOSTA:\n");
       print_message(msg_resposta);
     }
 
