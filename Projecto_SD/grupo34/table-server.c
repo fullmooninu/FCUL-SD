@@ -49,7 +49,6 @@ int make_server_socket(short port){
 - aplica a operação na mensagem de pedido na tabela;
 - devolve uma mensagem de resposta com oresultado.
 */
-//TODO TESTAR
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
   struct message_t *msg_resposta;
   int result;
@@ -198,7 +197,6 @@ int network_receive_send(int sockfd, struct table_t *table){
   msg_pedido = buffer_to_message(message_pedido, msg_size);
 
   /* Verificar se a desserialização teve sucesso */
-  //TODO libertar memoria em caso de erro
   if (msg_pedido == NULL){
     free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
     return -1;
