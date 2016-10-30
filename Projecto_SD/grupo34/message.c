@@ -56,7 +56,7 @@
 			buffer_size = (6 + strlen(msg->content.key));
 			break;
 		case CT_KEYS:
-			for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
+			for (int i = 0; msg->content.keys[i] != NULL; i++) {
 				keysSize += 2 + strlen(msg->content.keys[i]);
 			}
 			buffer_size = 8 + keysSize;
@@ -126,7 +126,7 @@
 
 		case CT_KEYS:
 			key_aux = msg->content.keys[0];
-			for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
+			for (int i = 0; msg->content.keys[i] != NULL; i++) {
 				nKeys++;
 				key_aux += strlen(msg->content.keys[i]);
 			}
@@ -134,15 +134,12 @@
 			memcpy(buffer, &int_aux, _INT);
 			buffer += _INT;
 			//colocar as varias chaves
-			for (int i = 0; i < sizeof(msg->content.keys) - 1; i++) {
-				key_aux = (char *) malloc(strlen(msg->content.keys[i]));
-				strcpy(key_aux, msg->content.keys[i]);
-				short_aux = htons(strlen(key_aux));
-				memcpy(buffer, &short_aux, _SHORT);
+			for (int i = 0; msg->content.keys[i] != NULL; i++) {
+				tamanhoDaChave = htons(strlen(msg->content.keys[i]));
+				memcpy(buffer, &tamanhoDaChave, _SHORT);
 				buffer += _SHORT;
-				memcpy(buffer, &key_aux, strlen(key_aux));
-				buffer += strlen(key_aux);
-				free(key_aux);
+				memcpy(buffer,msg->content.keys[i],tamanhoDaChave);
+				buffer += tamanhoDaChave;
 			}
 			break;
 
@@ -256,7 +253,7 @@
 			msg->content.keys = keys;
 			break;
 		case CT_ENTRY:
-			//keysize
+			//keysize /
 			memcpy(&short_aux, msg_buf, _SHORT);
 			short_aux = ntohs(short_aux);
 			msg_buf += _SHORT;
