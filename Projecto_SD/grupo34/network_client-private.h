@@ -15,14 +15,5 @@ struct server_t{
 	// char 		sin_zero[8]; /* nao usado */
 };
 
-/* Função que garante o envio de len bytes armazenados em buf,
-   através da socket sock.
-*/
-//int write_all(int sock, char *buf, int len);
-
-/* Função que garante a receção de len bytes através da socket sock,
-   armazenando-os em buf.
-*/
-//int read_all(int sock, char *buf, int len);
 
 #endif
