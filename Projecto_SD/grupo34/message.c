@@ -48,9 +48,9 @@
 		//REVER TAMANHOS
 		switch (msg->c_type) {  //
 		case CT_ENTRY:
-			buffer_size = 6 + strlen(msg->content.key) + 4;
-			if ((msg->content.data->datasize) != 0)
-				buffer_size += msg->content.data->datasize;
+			buffer_size = 6 + strlen(msg->content.entry->key) + 4;
+			if (msg->content.entry->value->datasize > 0)
+				buffer_size += msg->content.entry->value->datasize;
 			break;
 		case CT_KEY:
 			buffer_size = (6 + strlen(msg->content.key));
@@ -88,33 +88,31 @@
 
 		int int_aux = 0;
 		short short_aux = 0;
-		char *key_aux;
+		int tamanhoDaChave = 0;
+		int tamanhoDaData;
+		char* key_aux;
 
 		//Variavel auxiliar para saber o numero de keys
 		int nKeys = 0;
 
 		switch (msg->c_type) {
 		case CT_ENTRY:
-			short_aux = htons(strlen(msg->content.entry->key));
+			tamanhoDaChave = strlen(msg->content.entry->key);
+			short_aux = htons(tamanhoDaChave);
 			memcpy(buffer, &short_aux, _SHORT);
 			buffer += _SHORT;
 			//colocar a chave
-			key_aux = (char *) malloc(sizeof(msg->content.entry->key));
-			strcpy(key_aux, msg->content.entry->key);
-			if (key_aux == NULL)
-				return -1;
-			memcpy(buffer, &key_aux, strlen(key_aux));
-			buffer += strlen(key_aux); //j� sabemos que o strlen nao contabiliza o '/0'
-			free(key_aux);
+			memcpy(buffer, msg->content.entry->key, tamanhoDaChave);
+			buffer += tamanhoDaChave;
 			//colocar o data_sizeDS
-			int_aux = htonl(msg->content.data->datasize);
+			tamanhoDaData = msg->content.entry->value->datasize;
+			int_aux = htonl(tamanhoDaData);
 			memcpy(buffer, &int_aux, _INT);
 			buffer += _INT;
-			if ((msg->content.data->datasize) != 0) {
+			if (tamanhoDaData > 0) {
 				//colocar o data->data
-				int_aux = msg->content.data->datasize;
-				memcpy(buffer, msg->content.data->data, int_aux);
-				buffer += int_aux;
+				memcpy(buffer, msg->content.entry->value->data, tamanhoDaData);
+				buffer += tamanhoDaData;
 			}
 			break;
 		case CT_KEY:
@@ -153,10 +151,10 @@
 			int_aux = htonl(msg->content.data->datasize);
 			memcpy(buffer, &int_aux, _INT);
 			buffer += _INT;
-			if ((msg->content.data->datasize) != 0) {
+			if ((msg->content.data->datasize) > 0) {
 				//colocar o data->data
 				int_aux = msg->content.data->datasize;
-				memcpy(buffer, &msg->content.data->data, int_aux);
+				memcpy(buffer, msg->content.data->data, int_aux);
 				buffer += int_aux;
 			}
 
