@@ -13,7 +13,7 @@ Exemplo de uso: ./table_server 54321 10
 #include "message-private.h"
 #include "table-server-private.h"
 //#include "message.h"
-
+#define MAX_CLIENTES 1
 
 /* Função para preparar uma socket de receção de pedidos de ligação.
 */
@@ -36,7 +36,7 @@ int make_server_socket(short port){
     return -1;
   }
 
-  if (listen(socket_fd, 0) < 0){
+  if (listen(socket_fd, MAX_CLIENTES) < 0){
     perror("Erro ao executar listen");
     close(socket_fd);
     return -1;
@@ -270,16 +270,15 @@ int main(int argc, char **argv){
     //true
     int success = -1;
     do {
-      msg_resposta->c_type = CT_VALUE;
+      //msg_resposta->c_type = CT_VALUE;
       success = network_receive_send(connsock, table);
     }while (success!=-1);
       /* Fazer ciclo de pedido e resposta */
-      
-      
+
+
       //TODO
       /* Ciclo feito com sucesso ? Houve erro?
       Cliente desligou? */
 
   }
 }
-
