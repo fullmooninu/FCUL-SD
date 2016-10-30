@@ -93,7 +93,7 @@
 		//Variavel auxiliar para saber o numero de keys
 		int nKeys = 0;
 
-		switch (msg->c_type) {
+		switch (msg->c_type) { //
 		case CT_ENTRY:
 			short_aux = htons(strlen(msg->content.entry->key));
 			memcpy(buffer, &short_aux, _SHORT);
