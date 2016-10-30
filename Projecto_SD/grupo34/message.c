@@ -182,21 +182,18 @@
 	}
 
 	struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
-
 		/* Verificar se msg_buf é NULL */
-		if (msg_buf == NULL)
-			return NULL;
+		if (msg_buf == NULL) return NULL;
 
 		//TODO - msg_size < 7?????
 		/* msg_size tem tamanho mínimo ? */
-		if (msg_size < 7)
-			return NULL;
+		if (msg_size < 7) return NULL;
 
 		/* Alocar memória para uma struct message_t */
 		struct message_t* msg;
 		msg = (struct message_t *) malloc(sizeof(struct message_t));
-		if (msg == NULL)
-			return NULL;
+		if (msg == NULL) return NULL;
+
 		/* Recuperar o opcode e c_type */
 		short short_aux;
 		//short_aux = ntohs(msg->opcode);
@@ -214,7 +211,7 @@
 		 msg_buf += _SHORT;
 		 */
 		/* O opcode e c_type são válidos? */
-		if (!isValidOPC(msg->opcode) || !isValidCTC(msg->c_type))
+		if (!isValidOPC(msg->opcode) && !isValidCTC(msg->c_type))
 			return NULL;
 		int int_aux;
 		struct data_t* data;
@@ -226,7 +223,8 @@
 		switch (msg->c_type) {
 		case CT_RESULT:
 			memcpy(&int_aux, msg_buf, _INT);
-			msg->content.result = ntohs(int_aux);
+			msg->content.result = ntohl(int_aux);
+			msg_buf += _INT;
 			break;
 		case CT_VALUE:
 			//datasize
