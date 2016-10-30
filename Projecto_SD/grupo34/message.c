@@ -75,7 +75,7 @@
 		buffer = (char*) malloc(buffer_size);
 		if (buffer == NULL) { *msg_buf = NULL; return -1; }
 		char* i_buffer_loc = buffer;
-		
+
 		short short_value = htons(msg->opcode);
 		memcpy(buffer, &short_value, _SHORT); // short = 2
 		buffer += _SHORT;
@@ -224,10 +224,11 @@
 			short_aux = ntohs(short_aux);
 			msg_buf += _SHORT;
 			//key
-			key = malloc(sizeof(char) * short_aux);
+			key = malloc(sizeof(char) * (short_aux+1));
 			if (key == NULL)
 				return NULL;
 			strncpy(key, msg_buf, short_aux);
+      key[short_aux] = '\0';
 			msg->content.key = key;
 			break;
 		case CT_KEYS:
