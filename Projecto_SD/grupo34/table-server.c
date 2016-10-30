@@ -275,7 +275,7 @@ int main(int argc, char **argv){
       /* Fazer ciclo de pedido e resposta */
       msg_resposta->c_type = CT_VALUE;
       network_receive_send(connsock, table);
-
+      //TODO
       /* Ciclo feito com sucesso ? Houve erro?
       Cliente desligou? */
 
