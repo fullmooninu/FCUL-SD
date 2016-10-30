@@ -232,10 +232,8 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		short_aux = ntohs(short_aux);
 		msg_buf += _SHORT;
 		//key
-		key = malloc(sizeof(char) * short_aux);
-		if (key == NULL)
-			return NULL;
-		strncpy(key, msg_buf, short_aux);
+		key = strndup(msg_buf, short_aux);
+    if (key == NULL) return NULL;
 		msg->content.key = key;
 		break;
 	case CT_KEYS:
