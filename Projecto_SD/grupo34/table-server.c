@@ -49,7 +49,6 @@ int make_server_socket(short port){
 - aplica a operação na mensagem de pedido na tabela;
 - devolve uma mensagem de resposta com oresultado.
 */
-//TODO TESTAR
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
   struct message_t *msg_resposta;
   int result;
