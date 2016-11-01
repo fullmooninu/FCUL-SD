@@ -269,8 +269,10 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		keysize = ntohs(short_aux);
 		msg_buf += _SHORT;
 		//key
-		key = strdup(msg_buf + keysize);
+		key = strndup(msg_buf, keysize);
+		if(key == NULL) return NULL;
 		msg_buf += keysize;
+
 		//datasize
 		memcpy(&int_aux, msg_buf, _INT);
 		tamanhoDaData = ntohl(int_aux);
