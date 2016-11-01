@@ -1,9 +1,14 @@
 # FCUL-SD
 
-A partir de agora, sempre que alguém esteja a trabalhar, avise os outros. 
+Sempre que alguém esteja a trabalhar, avise os outros. 
+O código só está pronto quanto tiver sido testado com sucesso.
 
-A parte 1 não tem memory leaks.
+#Coisas ainda por fazer.
 
+- Acabar message.c
+- Acabar os testes do server/client
+- Verificar que os mallocs e semelhantes têm todos guarda em todos os ficheiros
+- A função hash no table.c ainda me pareceu esquisita: por exemplo quando apenas temos um table size 2, só a vi usar uma das listas
 
 # Protocolo para entrega. 
 - garantir que todos os ficheiros test e headers do professor são os originais
