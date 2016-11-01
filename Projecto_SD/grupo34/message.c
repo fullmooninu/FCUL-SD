@@ -9,7 +9,8 @@
 #include <unistd.h>
 
 void free_message(struct message_t *msg) {
-	if (msg == NULL) return;
+	if (msg == NULL)
+		return;
 
 	if (msg->c_type == CT_ENTRY) {
 		entry_destroy(msg->content.entry);
@@ -44,8 +45,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
 	int keysSize = 0;
 
-	//REVER TAMANHOS
-	switch (msg->c_type) {  //
+	switch (msg->c_type) {
 	case CT_ENTRY:
 		buffer_size = 6 + strlen(msg->content.entry->key) + 4;
 		if (msg->content.entry->value->datasize > 0)
@@ -139,7 +139,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 			tamanhoDaChave = htons(strlen(msg->content.keys[i]));
 			memcpy(buffer, &tamanhoDaChave, _SHORT);
 			buffer += _SHORT;
-			memcpy(buffer,msg->content.keys[i],strlen(msg->content.keys[i]));
+			memcpy(buffer, msg->content.keys[i], strlen(msg->content.keys[i]));
 			buffer += strlen(msg->content.keys[i]);
 		}
 		break;
@@ -172,7 +172,6 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 	if (msg_buf == NULL)
 		return NULL;
 
-	//TODO - msg_size < 7?????
 	/* msg_size tem tamanho mínimo ? */
 	if (msg_size < 7)
 		return NULL;
@@ -194,11 +193,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 	msg->c_type = ntohs(short_aux);
 	msg_buf += _SHORT;
 
-	/* A mesma coisa que em cima mas de forma compacta, ao estilo C! */
-	/*msg->opcode = ntohs(*(short *) msg_buf++);
-	 msg->c_type = ntohs(*(short *) ++msg_buf);
-	 msg_buf += _SHORT;
-	 */
+
 	/* O opcode e c_type são válidos? */
 	if (!isValidOPC(msg->opcode) && !isValidCTC(msg->c_type))
 		return NULL;
@@ -231,18 +226,15 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		msg_buf += _SHORT;
 		//key
 		key = strndup(msg_buf, short_aux);
-    if (key == NULL) return NULL;
+		if (key == NULL)
+			return NULL;
 		msg->content.key = key;
 		break;
 	case CT_KEYS:
 		memcpy(&nKeys, msg_buf, _INT);
 		nKeys = ntohl(nKeys);
 		msg_buf += _INT;
-		// preencher o array
-//		keys = (char**) malloc( sizeof(char*) * nKeys + 1);
-//		if (keys == NULL)
-//			return NULL;
-		msg->content.keys=(char **) malloc((nKeys + 1)*sizeof(char*));
+		msg->content.keys = (char **) malloc((nKeys + 1) * sizeof(char*));
 
 		for (int i = 0; i < nKeys; i++) {
 			//keysize
@@ -255,8 +247,6 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 			msg->content.keys[i][keysize] = '\0';
 			msg_buf += keysize;
 		}
-//		msg->content.keys[nKeys] = (char*) malloc(1);
-//		msg->content.keys[nKeys] = NULL;
 		msg->content.keys[nKeys] = NULL;
 		break;
 
@@ -267,7 +257,8 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		msg_buf += _SHORT;
 		//key
 		key = strndup(msg_buf, keysize);
-		if(key == NULL) return NULL;
+		if (key == NULL)
+			return NULL;
 		msg_buf += keysize;
 
 		//datasize
