@@ -70,8 +70,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		break;
 	}
 
-	char* buffer;
-	buffer = (char*) malloc(buffer_size);
+	char* buffer = (char*) malloc(buffer_size);
 	if (buffer == NULL) {
 		*msg_buf = NULL;
 		return -1;
@@ -126,10 +125,9 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		break;
 
 	case CT_KEYS:
-		//key_aux = msg->content.keys[0];
+
 		for (int i = 0; msg->content.keys[i] != NULL; i++) {
 			nKeys++;
-			//key_aux += strlen(msg->content.keys[i]);
 		}
 		int_aux = htonl(nKeys);
 		memcpy(buffer, &int_aux, _INT);
@@ -177,8 +175,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		return NULL;
 
 	/* Alocar memória para uma struct message_t */
-	struct message_t* msg;
-	msg = (struct message_t *) malloc(sizeof(struct message_t));
+	struct message_t* msg = (struct message_t *) malloc(sizeof(struct message_t));
 	if (msg == NULL)
 		return NULL;
 
@@ -273,6 +270,8 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 			data2 = data_create2(tamanhoDaData, data);
 			msg->content.entry = entry_create(key, data2);
 			free(data);
+			free(data2);
+			free(key);
 		}
 		break;
 	}
