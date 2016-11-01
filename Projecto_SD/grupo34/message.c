@@ -92,7 +92,6 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	short short_aux = 0;
 	int tamanhoDaChave = 0;
 	int tamanhoDaData;
-	char* key_aux;
 
 	//Variavel auxiliar para saber o numero de keys
 	int nKeys = 0;
@@ -206,7 +205,6 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 	int int_aux;
 	struct data_t* data2;
 	char *key;
-	char **keys;
 	int tamanhoDaData = 0;
 	int nKeys = 0;
 	short keysize = 0;
@@ -241,26 +239,25 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		nKeys = ntohl(nKeys);
 		msg_buf += _INT;
 		// preencher o array
-		keys = (char**) malloc( sizeof(char*) * nKeys + 1);
-		if (keys == NULL)
-			return NULL;
-		int i;
-		for (i = 0; i < nKeys; i++) {
+//		keys = (char**) malloc( sizeof(char*) * nKeys + 1);
+//		if (keys == NULL)
+//			return NULL;
+		msg->content.keys=(char **) malloc((nKeys + 1)*sizeof(char*));
+
+		for (int i = 0; i < nKeys; i++) {
 			//keysize
 			memcpy(&short_aux, msg_buf, _SHORT);
-			short_aux = ntohs(short_aux);
+			keysize = ntohs(short_aux);
 			msg_buf += _SHORT;
 			//key
-			keys[i] = NULL;
-			keys[i] = (char*) malloc(sizeof(char) * short_aux+1);
-			if (keys[i] == NULL)
-				return NULL;
-			strncpy(keys[i], msg_buf, short_aux);
-			msg_buf += short_aux;
+			msg->content.keys[i] = malloc(keysize + 1);
+			memcpy(msg->content.keys[i], msg_buf, keysize);
+			msg->content.keys[i][keysize] = '\0';
+			msg_buf += keysize;
 		}
-		msg->content.keys[nKeys] = (char*) malloc(1);
+//		msg->content.keys[nKeys] = (char*) malloc(1);
+//		msg->content.keys[nKeys] = NULL;
 		msg->content.keys[nKeys] = NULL;
-		msg->content.keys = keys;
 		break;
 
 	case CT_ENTRY:
