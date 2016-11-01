@@ -8,7 +8,7 @@ O código só está pronto quanto tiver sido testado com sucesso.
 - Acabar message.c
 - Acabar os testes do server/client
 - Verificar que os mallocs e semelhantes têm todos guarda em todos os ficheiros
-- A função hash no table.c ainda me pareceu esquisita: por exemplo quando apenas temos um table size 2, só a vi usar uma das listas
+- A função hash no table.c ainda me pareceu esquisita: por exemplo quando apenas temos um table size 2, só a vi usar uma das listas. È mesmo assim?
 
 # Protocolo para entrega. 
 - garantir que todos os ficheiros test e headers do professor são os originais
