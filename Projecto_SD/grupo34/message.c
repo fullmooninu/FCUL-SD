@@ -46,26 +46,26 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	int keysSize = 0;
 
 	switch (msg->c_type) {
-	case CT_ENTRY:
+		case CT_ENTRY:
 		buffer_size = 6 + strlen(msg->content.entry->key) + 4;
 		if (msg->content.entry->value->datasize > 0)
 			buffer_size += msg->content.entry->value->datasize;
 		break;
-	case CT_KEY:
+		case CT_KEY:
 		buffer_size = (6 + strlen(msg->content.key));
 		break;
-	case CT_KEYS:
+		case CT_KEYS:
 		for (int i = 0; msg->content.keys[i] != NULL; i++) {
 			keysSize += 2 + strlen(msg->content.keys[i]);
 		}
 		buffer_size = 8 + keysSize;
 		break;
-	case CT_VALUE:
+		case CT_VALUE:
 		buffer_size = 8;
 		if ((msg->content.data->datasize) != 0)
 			buffer_size += msg->content.data->datasize;
 		break;
-	case CT_RESULT:
+		case CT_RESULT:
 		buffer_size = 8;
 		break;
 	}
@@ -96,7 +96,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	int nKeys = 0;
 
 	switch (msg->c_type) {
-	case CT_ENTRY:
+		case CT_ENTRY:
 		tamanhoDaChave = strlen(msg->content.entry->key);
 		short_aux = htons(tamanhoDaChave);
 		memcpy(buffer, &short_aux, _SHORT);
@@ -115,7 +115,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 			buffer += tamanhoDaData;
 		}
 		break;
-	case CT_KEY:
+		case CT_KEY:
 		short_aux = htons(strlen(msg->content.key));
 		memcpy(buffer, &short_aux, _SHORT);
 		buffer += _SHORT;
@@ -124,7 +124,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		buffer += strlen(msg->content.key); //j� sabemos que o strlen nao contabiliza o '/0'
 		break;
 
-	case CT_KEYS:
+		case CT_KEYS:
 
 		for (int i = 0; msg->content.keys[i] != NULL; i++) {
 			nKeys++;
@@ -142,7 +142,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		}
 		break;
 
-	case CT_VALUE:
+		case CT_VALUE:
 		//colocar o data_sizeDS
 		int_aux = htonl(msg->content.data->datasize);
 		memcpy(buffer, &int_aux, _INT);
@@ -153,8 +153,9 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 			memcpy(buffer, msg->content.data->data, int_aux);
 			buffer += int_aux;
 		}
+		break;
 
-	case CT_RESULT:
+		case CT_RESULT:
 		int_aux = htonl(msg->content.result);
 		memcpy(buffer, &int_aux, _INT);
 		buffer += _INT;
@@ -192,10 +193,11 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 
 
 	/* O opcode e c_type são válidos? */
-	if (!isValidOPC(msg->opcode) && !isValidCTC(msg->c_type))
+	if (!isValidOPC(msg->opcode) && !isValidCTC(msg->c_type)) {
+		free_message(msg);
 		return NULL;
+	}
 	int int_aux;
-	struct data_t* data2;
 	char *key;
 	int tamanhoDaData = 0;
 	int nKeys = 0;
@@ -203,12 +205,12 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 
 	/* Consoante o c_type, continuar a recuperação da mensagem original */
 	switch (msg->c_type) {
-	case CT_RESULT:
+		case CT_RESULT:
 		memcpy(&int_aux, msg_buf, _INT);
 		msg->content.result = ntohl(int_aux);
 		msg_buf += _INT;
 		break;
-	case CT_VALUE:
+		case CT_VALUE:
 		//datasize
 		memcpy(&int_aux, msg_buf, _INT);
 		tamanhoDaData = ntohl(int_aux);
@@ -216,18 +218,17 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		//data
 		msg->content.data = data_create2(tamanhoDaData, msg_buf);
 		break;
-	case CT_KEY:
+		case CT_KEY:
 		//keysize
 		memcpy(&short_aux, msg_buf, _SHORT);
 		short_aux = ntohs(short_aux);
 		msg_buf += _SHORT;
 		//key
 		key = strndup(msg_buf, short_aux);
-		if (key == NULL)
-			return NULL;
+		if (key == NULL) { free_message(msg); return NULL; }
 		msg->content.key = key;
 		break;
-	case CT_KEYS:
+		case CT_KEYS:
 		memcpy(&nKeys, msg_buf, _INT);
 		nKeys = ntohl(nKeys);
 		msg_buf += _INT;
@@ -247,15 +248,14 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		msg->content.keys[nKeys] = NULL;
 		break;
 
-	case CT_ENTRY:
+		case CT_ENTRY:
 		//keysize /
 		memcpy(&short_aux, msg_buf, _SHORT);
 		keysize = ntohs(short_aux);
 		msg_buf += _SHORT;
 		//key
 		key = strndup(msg_buf, keysize);
-		if (key == NULL)
-			return NULL;
+		if (key == NULL) { free_message(msg); return NULL; }
 		msg_buf += keysize;
 
 		//datasize
@@ -264,13 +264,14 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		msg_buf += _INT;
 		//data
 		if (tamanhoDaData > 0) {
+			struct data_t* data2;
 			void *data = malloc(tamanhoDaData);
 			memcpy(data, msg_buf, tamanhoDaData);
 			msg_buf += tamanhoDaData;
 			data2 = data_create2(tamanhoDaData, data);
 			msg->content.entry = entry_create(key, data2);
 			free(data);
-			free(data2);
+			data_destroy(data2);
 			free(key);
 		}
 		break;

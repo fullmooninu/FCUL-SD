@@ -8,35 +8,35 @@ Silvia Ferreira 45511 */
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 bool isValidOPC(short opcode){
-  return (opcode == OC_SIZE || opcode == OC_DEL || opcode == OC_UPDATE
-    || opcode == OC_GET || opcode == OC_PUT);
+	return (opcode == OC_SIZE || opcode == OC_DEL || opcode == OC_UPDATE
+		|| opcode == OC_GET || opcode == OC_PUT);
 }
 bool isValidCTC(short c_type){
-  return (c_type == CT_RESULT || c_type == CT_VALUE || c_type == CT_KEY
-    || c_type == CT_KEYS || c_type == CT_ENTRY);
+	return (c_type == CT_RESULT || c_type == CT_VALUE || c_type == CT_KEY
+		|| c_type == CT_KEYS || c_type == CT_ENTRY);
 }
 
 
 void print_msg(struct message_t *msg) {
 	int i;
-  char *c;
+	
 
 	printf("----- MESSAGE -----\n");
 	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
 	switch(msg->c_type) {
+
 		case CT_ENTRY:{
+			char *c;
 			printf("key: %s\n", msg->content.entry->key);
 			printf("datasize: %d\n", msg->content.entry->value->datasize);
-      printf("data: ");
-      c = (char *) msg->content.entry->value->data;
-      for (i = 0; i < msg->content.entry->value->datasize; i++) {
-        printf("%c", *c);
-        c += 1;
-      }
-      printf("\n");
+			printf("data: ");
+			c = (char *) msg->content.entry->value->data;
+			for (i = 0; i < msg->content.entry->value->datasize; i++) {
+				printf("%c", *c);
+				c += 1;
+			}
+			printf("\n");
       // printf("data: %s\n", msg->content.entry->value->data);
 		}break;
 		case CT_KEY:{
