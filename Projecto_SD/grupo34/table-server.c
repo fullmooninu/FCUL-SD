@@ -162,7 +162,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   char *message_resposta = NULL;
   char *message_pedido = NULL;
   //int msg_length;
-  int message_size, msg_size, result;
+  int host_size, net_size, result;
   struct message_t *msg_pedido = NULL;
   struct msg_t *msg_resposta = NULL;
   //int msg_length;
@@ -175,17 +175,26 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Com a função read_all, receber num inteiro o tamanho da
   mensagem de pedido que será recebida de seguida.*/
-  result = read_all(sockfd, (char *) &msg_size, _INT);
+  printf("antes do read_all\n");
+	fflush(stdout);
 
+  result = read_all(sockfd, (char *) &net_size, _INT);
   /* Verificar se a receção teve sucesso */
   if (result == -1) return -1;
 
+  host_size = ntohl(net_size);
+  printf("host size: %d\n", host_size);
+  printf("net size: %d\n", net_size);
+  printf("read_all bytes lidos: %d\n", result);
+  fflush(stdout);
   /* Alocar memória para receber o número de bytes da
   mensagem de pedido. */
-  message_pedido = malloc(sizeof(char)*msg_size);
+  message_pedido = malloc(sizeof(char)*host_size);
 
   /* Com a função read_all, receber a mensagem de resposta. */
-  result = read_all(sockfd, message_pedido, msg_size);
+  result = read_all(sockfd, message_pedido, host_size);
+  printf("bytes recebidos buffer: %d\n", result);
+	fflush(stdout);
 
   /* Verificar se a receção teve sucesso */
   if (result == -1){
@@ -194,7 +203,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   }
 
   /* Desserializar a mensagem do pedido */
-  msg_pedido = buffer_to_message(message_pedido, msg_size);
+  msg_pedido = buffer_to_message(message_pedido, host_size);
 
   /* Verificar se a desserialização teve sucesso */
   if (msg_pedido == NULL){
@@ -206,10 +215,10 @@ int network_receive_send(int sockfd, struct table_t *table){
   msg_resposta = process_message(msg_pedido, table);
 
   /* Serializar a mensagem recebida */
-  message_size = message_to_buffer(msg_resposta, &message_resposta);
+  host_size = message_to_buffer(msg_resposta, &message_resposta);
 
   /* Verificar se a serialização teve sucesso */
-  if (message_size == -1){
+  if (host_size == -1){
     free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
     return -1;
   }
@@ -217,8 +226,8 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Enviar ao cliente o tamanho da mensagem que será enviada
   logo de seguida
   */
-  msg_size = htonl(message_size);
-  result = write_all(sockfd, (char *) &msg_size, _INT);
+  net_size = htonl(host_size);
+  result = write_all(sockfd, (char *) &net_size, _INT);
 
   /* Verificar se o envio teve sucesso */
   if (result == -1){
@@ -228,7 +237,7 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Enviar a mensagem que foi previamente serializada */
 
-  result = write_all(sockfd, message_resposta, message_size);
+  result = write_all(sockfd, message_resposta, host_size);
 
   /* Verificar se o envio teve sucesso */
   if (result == -1) {

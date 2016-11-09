@@ -79,7 +79,7 @@ struct server_t *network_connect(const char *address_port) {
 struct message_t *network_send_receive(struct server_t *server,
 		struct message_t *msg) {
 	char *message_out;
-	int message_size, msg_size, result;
+	int host_size, net_size, result;
 	struct message_t *msg_resposta;
 	int nBytes;
 	char *message_result = NULL; //
@@ -89,63 +89,79 @@ struct message_t *network_send_receive(struct server_t *server,
 		return NULL;
 
 	/* Serializar a mensagem recebida */
-	message_size = message_to_buffer(msg, &message_out);
+	host_size = message_to_buffer(msg, &message_out);
 
 	/* Verificar se a serialização teve sucesso */
-	msg_size = htonl(message_size);
-
-	if ((nBytes = write(server->socket_fd, &msg_size, _INT)) != _INT) {
-		perror("Erro no enviar o tamanho da mensagem.");
-		network_close(server);
-		return NULL;
-	}
+	net_size = htonl(host_size);
 
 	/* Enviar ao servidor o tamanho da mensagem que será enviada
 	 logo de seguida
 	 */
-	msg_size = htonl(message_size);
-	result = write_all(server->socket_fd, (char *) &msg_size, _INT);
-
+	printf("host size: %d\n", host_size);
+	printf("net size: %d\n", net_size);
+	fflush(stdout);
+	if ((result = write_all(server->socket_fd, (char*) &net_size, _INT)) != _INT) {
+		perror("Erro no enviar o tamanho da mensagem.");
+		network_close(server);
+		return NULL;
+	}
+	printf("write_all bytes escritos: %d\n", result);
+	fflush(stdout);
 	/* Verificar se o envio teve sucesso */
 
+
 	/* Enviar a mensagem que foi previamente serializada */
-
-	result = write_all(server->socket_fd, message_out, message_size);
-
+	result = write_all(server->socket_fd, message_out, host_size);
+	printf("bytes enviados buffer: %d\n", result);
+	fflush(stdout);
 	/* Verificar se o envio teve sucesso */
 
 	/* De seguida vamos receber a resposta do servidor:
 
 	 Com a função read_all, receber num inteiro o tamanho da
 	 mensagem de resposta.
-
+	*/
+result = read_all(server->socket_fd, (char *) &net_size, _INT);
+//TODO validar result
+host_size = ntohl(net_size);
+/*
 	 Alocar memória para receber o número de bytes da
 	 mensagem de resposta.
 
 	 Com a função read_all, receber a mensagem de resposta.
 
 	 */
+	 message_result = malloc(sizeof(char)*host_size);
+
+	 result = read_all(server->socket_fd, message_result, host_size);
 
 	/* Desserializar a mensagem de resposta */
-	msg_resposta = buffer_to_message(message_result, msg_size);
+	msg_resposta = buffer_to_message(message_result, net_size);
 	//msg_resposta = buffer_to_message( /* */ );
-	if ((nBytes = read(server->socket_fd, &result, sizeof(result)))
-			!= sizeof(result)) {
-		perror("Erro ao receber dados do servidor");
-		network_close(server);
-		return NULL;
-	}
+	//printf("antes do read");
+	//fflush(stdout);
+	// if ((nBytes = read(server->socket_fd, &result, sizeof(result)))
+	// 		!= sizeof(result)) {
+	// 	perror("Erro ao receber dados do servidor");
+	// 	network_close(server);
+	// 	return NULL;
+	// }
+	//printf("depois do read");
+	//fflush(stdout);
 
-	int size = ntohl(result);
-	message_result = (char *)malloc(size + 1);
+	// int size = ntohl(result);
+	// message_result = (char *)malloc(size + 1);
+	//
+	// /* Verificar se a desserialização teve sucesso */
+	// //printf("antes do read_all");
+	// if ((nBytes = read_all(server->socket_fd, message_result, net_size))
+	// 		!= net_size) {
+	// 	perror("Erro no receber os dados do servidor");
+	// 	network_close(server);
+	// 	return NULL;
+	// }
+	// //printf("depoiss do read_all");
 
-	/* Verificar se a desserialização teve sucesso */
-	if ((nBytes = read_all(server->socket_fd, message_result, msg_size))
-			!= msg_size) {
-		perror("Erro no receber os dados do servidor");
-		network_close(server);
-		return NULL;
-	}
 
 	/* Libertar memória */
 	free(message_out);

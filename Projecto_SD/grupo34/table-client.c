@@ -178,7 +178,6 @@ int main(int argc, char **argv){
     if (msg_out != NULL) {
       printf("PEDIDO:\n");
       print_msg(msg_out);
-
       msg_resposta = network_send_receive(server, msg_out);
 
       printf("RESPOSTA:\n");

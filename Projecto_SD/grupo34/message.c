@@ -45,6 +45,8 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 	//Variavel auxiliar para o tamanho de cada chave (CT_KEYS)
 	int keysSize = 0;
 
+	//TODO quando o opcode é OC_SIZE o buffer size
+	// vai ser zero porque nao tem c_type! corrigir isto!
 	switch (msg->c_type) {
 		case CT_ENTRY:
 		buffer_size = 6 + strlen(msg->content.entry->key) + 4;
