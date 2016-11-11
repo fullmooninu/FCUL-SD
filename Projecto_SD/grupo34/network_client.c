@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 struct server_t *network_connect(const char *address_port) {
-	struct server_t *server = malloc(sizeof(struct server_t));
+	struct server_t *server = (struct server_t) malloc(sizeof(struct server_t));
 	struct sockaddr_in server_in;
 	struct hostent *hostinfo;
 	char str_aux[1000];
@@ -77,7 +77,7 @@ struct server_t *network_connect(const char *address_port) {
 }
 
 struct message_t *network_send_receive(struct server_t *server,
-		struct message_t *msg) {
+	struct message_t *msg) {
 	char *message_out;
 	int host_size, net_size, result;
 	struct message_t *msg_resposta;
