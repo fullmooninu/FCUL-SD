@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 struct server_t *network_connect(const char *address_port) {
-	struct server_t *server = (struct server_t) malloc(sizeof(struct server_t));
+	struct server_t *server = malloc(sizeof(struct server_t));
 	struct sockaddr_in server_in;
 	struct hostent *hostinfo;
 	char str_aux[1000];
