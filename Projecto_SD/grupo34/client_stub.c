@@ -3,13 +3,9 @@ Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 #include <stdio.h>
-#include "inet.h"
+#include <errno.h>
 #include "client_stub.h"
 #include "client_stub-private.h"
-#include "list.h"
-#include "list-private.h"
-#include "table.h"
-#include <errno.h>
 
 
 struct rtable_t *rtable_bind(const char *address_port){
@@ -56,7 +52,7 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *value) {
 
 //TODO FALTA FAZER A FUNÇAO UPDATE
 int rable_update(struct rtable_t *rtable, char *key, struct data_t *value){
-//TODO
+ return -1;
 }
 
 
