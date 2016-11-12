@@ -11,7 +11,7 @@
  Exemplo de uso: ./table_client 10.101.148.144:54321
  */
 
-#include "network_client-private.h"
+#include "client_stub-private.h"
 #include "client_stub.h"
 #include <string.h>
 #include "network_client.h"
@@ -90,10 +90,10 @@
 //}
 
 int main(int argc, char **argv) {
-	struct server_t *server = (struct server_t*) malloc(
-			sizeof(struct server_t));
+	struct rtable_t *server = (struct rtable_t*) malloc(
+			sizeof(struct rtable_t));
 	char input[81], *s;
-	struct message_t *msg_out = NULL, *msg_resposta = NULL;
+	//struct message_t *msg_out = NULL, *msg_resposta = NULL;
 
 	/* Testar os argumentos de entrada */
 	if (argc != 2) {
@@ -140,6 +140,7 @@ int main(int argc, char **argv) {
 		char *key = (char*) malloc(sizeof(char) * MAX_MSG);
 		char *data = (void *) malloc(sizeof(void*) * MAX_MSG);
 		char *aux = (char *) malloc(sizeof(char));
+		int int_aux;
 
 		// printf("Leu <%s>\n", input);
 
@@ -166,8 +167,8 @@ int main(int argc, char **argv) {
 			fflush(stdin);
 			fgets(data, MAX_MSG, stdin);
 			struct data_t *dataN = data_create2(strlen(data), data);
-
-			if ((rtable_put(server, key, dataN)) == -1) {
+			int_aux = rtable_put(server, key, dataN);
+			if (int_aux == -1) {
 				printf(
 				"Os dados não foram introduzidos com sucesso!\n");
 			} else
@@ -178,6 +179,7 @@ int main(int argc, char **argv) {
 			free(key);
 			free(data);
 		}
+		//
 
 		else if (strncmp(input, "get ",4) == 0) {
 			printf("Comando GET\n");
@@ -186,11 +188,10 @@ int main(int argc, char **argv) {
 			printf("Key: ");
 			fflush(stdin);
 			fgets(key, MAX_MSG, stdin);
-
-			if ((rtable_get(server, key)) == -1) {
+			if (rtable_get(server,key) == NULL) {
 				printf("Os dados não existem na tabela");
 			} else
-			printf("Foi encontrado: %s\n", rtable_get(server, key));
+			printf("Foi encontrado: %s\n", (char*) rtable_get(server, key));
 
 			free(aux);
 			free(key);
@@ -220,8 +221,8 @@ int main(int argc, char **argv) {
 			printf("Key: ");
 			fflush(stdin);
 			fgets(key, MAX_MSG, stdin);
-
-			if ((rtable_del(server, key)) == -1) {
+			int_aux = rtable_del(server, key);
+			if (int_aux == -1) {
 				printf(
 				"Não foi possível remover a entrada na tabela\n");
 			} else
@@ -239,8 +240,8 @@ int main(int argc, char **argv) {
 
 		else if (strncmp(input, "size ", 5) == 0) {
 			printf("Comando SIZE\n");
-
-			if ((rtable_size(server)) == -1) {
+			int_aux = rtable_size(server);
+			if (int_aux == -1) {
 				printf(
 				"Não foi possível determinar o número de elementos na tabela!\n");
 			} else
@@ -255,7 +256,7 @@ int main(int argc, char **argv) {
 		}
 
 		else if (strncmp(input, "get keys ", 9) == 0) {
-			if ((rtable_get_keys(server)) == -1) {
+			if ((rtable_get_keys(server)) == NULL) {
 				printf("Não se conseguiu obter as chaves!\n");
 			} else {
 				for (int i = 0; rtable_get_keys(server)[i] != NULL;
