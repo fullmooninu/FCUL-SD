@@ -44,6 +44,8 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *value) {
 	mensagem -> content.entry = entry;
 
 	if( network_send_receive(rtable->server, mensagem)->opcode == OC_PUT+1){
+		free(valueN);
+		free(entry);
 		return 0;
 	}
 	else{
