@@ -82,6 +82,7 @@ struct server_t *network_connect(const char *address_port) {
 
 struct message_t *network_send_receive(struct server_t *server,
 	struct message_t *msg) {
+
 	char *message_out;
 	int host_size, net_size, result;
 	struct message_t *msg_resposta;

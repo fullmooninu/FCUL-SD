@@ -7,7 +7,7 @@ Silvia Ferreira 45511 */
 #include "client_stub.h"
 #include "client_stub-private.h"
 
-
+//
 struct rtable_t *rtable_bind(const char *address_port){
 	struct rtable_t *rtable = (struct rtable_t*) malloc(sizeof(struct rtable_t));
 
