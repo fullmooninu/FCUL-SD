@@ -21,7 +21,6 @@ struct rtable_t *rtable_bind(const char *address_port){
 	rtable->server = network_connect(address_port);
 
 	return rtable;
-	//
 }
 
 int rtable_unbind(struct rtable_t *rtable){
