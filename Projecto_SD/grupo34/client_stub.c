@@ -11,7 +11,7 @@ Silvia Ferreira 45511 */
 #include "table.h"
 #include <errno.h>
 
-
+//
 struct rtable_t *rtable_bind(const char *address_port){
 	struct rtable_t *rtable = (struct rtable_t*) malloc(sizeof(struct rtable_t));
 
