@@ -1,0 +1,12 @@
+# Sistemas Distribuidos - 2016 - Grupo 34
+# Elias Miguel Barreira 40821, Pedro Pais 41375
+# Silvia Ferreira 45511
+
+
+Nesta fase do projecto conseguimos corrigir todos erros e memory leaks que trouxémos da fase 1 e progredimos até ao table
+ passando os testes todos deste e sem memory leaks. Fizémos implementações do server e cliente, mas estas
+tiveram de ser testadas manualmente porque a implementação do message.c não está ainda a passar os testes todos (não passa o testEntry e o testKeys).
+
+O cliente e o servidor estabelecem ligação, mas não há transmissão de dados.
+A interacção do cliente com o utilizador está a funcionar para os comandos todos e para construir a mensagem de
+pedido correspondente

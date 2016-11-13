@@ -1,13 +1,11 @@
-/* Sistemas Distribuidos - 2016 - Grupo 34 - Proj1:
+/* Sistemas Distribuidos - 2016 - Grupo 34
 Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
-
-#include "include/list-private.h"
-#include "include/entry.h"
+#include "list.h"
+#include "list-private.h"
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /* Cria uma nova lista. Em caso de erro, retorna NULL.
 */
@@ -24,32 +22,38 @@ struct list_t *list_create() {
 * lista.
 */
 void list_destroy(struct list_t *list) {
-	if(list != NULL)
-		free(list);
+	if(list != NULL) {
+		while(list->head != NULL) {
+			struct node_t* headToDelete = list->head;
+			list->head = list->head->next;
+			entry_destroy(headToDelete->entry);
+			free(headToDelete);
+		}
+	}
+	free(list);
 }
+	
 
 /* Adiciona uma entry na lista. Como a lista deve ser ordenada,
 * a nova entry deve ser colocada no local correto.
 * Retorna 0 (OK) ou -1 (erro)
 */
 int list_add(struct list_t *list, struct entry_t *entry) {
-
-	if(list == NULL || entry == NULL || entry -> value == NULL || entry -> key == NULL)
-	return -1;
-
-	struct node_t *newNode;
-		newNode = node_create(entry);
-	if(newNode == NULL) return -1;
-
-	//se a lista for vazia
-	if(list->head == NULL){
-		list->head = newNode;
-		list->size++;
-		return 0;
+	if(list == NULL || entry == NULL || entry -> key == NULL || entry -> value == NULL )
+		return -1;
+	struct node_t* new_head = (struct node_t*) malloc(sizeof(struct node_t));
+	if (new_head == NULL) return -1;
+	new_head->entry = entry_dup(entry);
+	// se for o primeiro
+	if (list->size==0) { 
+		list->head = new_head;
+		list->head->next=NULL;
+	}else{
+		new_head->next = list->head;
+		list->head=new_head;
 	}
-
-	//cc
-	addBy_descendOrder(newNode, list);
+	list->size++;
+	descending_sort(list);
 	return 0;
 }
 
@@ -61,23 +65,23 @@ int list_remove(struct list_t *list, char* key) {
 	if(list == NULL || key == NULL || list->head == NULL) return -1;
 	/* Apontador que vai percorrer os vários nós */
 	struct node_t* current = list->head;
-	struct node_t* previous = NULL;
+	struct node_t* previous;
 
 	while ( strcmp(current->entry->key, key) != 0) {
-		if (current -> next == NULL) {
+		if (current->next == NULL) {
 			return -1;
 		}else{
 			previous = current;
-			current = current -> next;
+			current = current->next;
 		}
 	}
-	if (current == list -> head) {
+	if (current == list->head) {
 		list->head = list->head->next;
 	}else{
 		previous->next = current->next;
 	}
 	entry_destroy(current->entry);
-	// free(current->next->);
+	current->next = 0;
 	free(current);
 	list->size -= 1;
 	return 0;
@@ -91,20 +95,19 @@ int list_remove(struct list_t *list, char* key) {
 struct entry_t *list_get(struct list_t *list, char *key) {
 	if (list == NULL || key == NULL || list->head == NULL) return NULL;
 	struct node_t* current = list->head;
-
-	if (strcmp(current->entry->key, key) == 0) {
-		return current->entry;
+	// correr a lista
+	while (strcmp(current->entry->key, key) != 0) {
+		//se for o ultimo node
+		if (current->next == NULL) {
+			return NULL;
+		}else{
+			current = current->next;
+		}
 	}
-
-	while (current->next != NULL && strcmp(current->next->entry->key, key) != 0) {
-		current = current->next;
-	}
-	if (current->next == NULL) {
-		return NULL;
-	} else {
-		return current->next->entry;
-	}
-
+	//struct entry_t* ret_entry;
+	//ret_entry = entry_create(current->entry->key,current->entry->value);
+	struct entry_t* ret_entry = current->entry;
+	return ret_entry;
 }
 
 /* Retorna o tamanho (numero de elementos) da lista
@@ -118,19 +121,18 @@ int list_size(struct list_t *list) {
 * tabela, e um ultimo elemento a NULL.
 */
 char **list_get_keys(struct list_t *list) {
-	//TODO mudar isto para dynamic alloc
-	if(list == NULL) return NULL;
-	struct node_t* current = list -> head;
-	//char **list_keys[list -> size + 1];
+	if(list == NULL || list->head == NULL) return NULL;
 	char** list_keys;
-	list_keys = malloc( (list->size) * sizeof(char**) );
-	for (int i = 0; i < list -> size; i++)
+	struct node_t* current = list->head;
+	list_keys = malloc( (list->size + 1) * sizeof(char*) );
+	for (int i = 0; i < list->size; i++)
 	{
-		list_keys[i] = current -> entry -> key;
-		current = current -> next;
+		list_keys[i] = malloc(strlen(current->entry->key)+1);
+		strcpy(list_keys[i],current->entry->key);
+		current = current->next;
 	}
-	list_keys[list -> size] = NULL
-;	return list_keys;
+	list_keys[list->size] = NULL;
+	return list_keys;
 }
 
 /* Liberta a memoria reservada por list_get_keys.
@@ -140,5 +142,5 @@ void list_free_keys(char **keys) {
 	for (int i = 0; keys[i] != NULL; i++) {
 		free( keys[i]);
 	}
-	//free(keys);
+	free(keys);
 }
