@@ -14,13 +14,15 @@ test_entry: data.o entry.o
 list_objects = data.o entry.o list.o list-private.o
 test_list: $(list_objects)
 
-test_table: $(list_objects) table.o table-private.o
+table_objects = $(list_objects) table.o table-private.o
+test_table: $(table_objects)
 
-test_message: $(list_objects) message.o message-private.o
+message_objects = $(list_objects) message.o message-private.o
+test_message: $(message_objects)
 
-table_client: network_client.o message.o message-private.o $(list_objects) client_stub.o
+table_client: network_client.o client_stub.o $(message_objects)
 
-table_server: table-server-private.o table.o message.o message-private.o $(list_objects)
+table_server: table-server-private.o $(table_objects) $(message_objects)
 
 table_skel:
 
