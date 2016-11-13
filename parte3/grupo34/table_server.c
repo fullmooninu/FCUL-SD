@@ -11,7 +11,7 @@ Exemplo de uso: ./table_server 54321 10
 #include "inet.h"
 #include "table-private.h"
 #include "message-private.h"
-#include "table-server-private.h"
+#include "table_server-private.h"
 //#include "message.h"
 #define MAX_CLIENTES 1
 

@@ -22,7 +22,7 @@ test_message: $(message_objects)
 
 table_client: network_client.o client_stub.o $(message_objects)
 
-table_server: table-server-private.o $(table_objects) $(message_objects)
+table_server: table_server-private.o $(table_objects) $(message_objects)
 
 table_skel:
 
