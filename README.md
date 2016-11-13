@@ -1,7 +1,7 @@
 # FCUL-SD
 
 Sempre que alguém esteja a trabalhar, avise os outros. 
-Uma função só está pronto quanto tiver sido testada com sucesso.
+Uma função só está pronta quanto tiver sido testada com sucesso.
 
 #Coisas ainda por fazer.
 
