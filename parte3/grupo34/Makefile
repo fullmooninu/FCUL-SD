@@ -5,7 +5,7 @@
 CFLAGS = -g -Wall -I. -I./include
 CC = gcc
 
-all: test_data test_entry test_list test_table test_message table_client table_server table_skel
+all: test_data test_entry test_list test_table test_message table_client table_server 
 
 test_data: data.o
 
@@ -24,7 +24,7 @@ table_client: network_client.o client_stub.o $(message_objects)
 
 table_server: table_server-private.o $(table_objects) $(message_objects)
 
-table_skel:
+#table_skel: nao tem main
 
 clean:
-	rm -f *.o test_data test_entry test_list test_table test_message table_client table_server client_stub table_skel
+	rm -f *.o test_data test_entry test_list test_table test_message table_client table_server client_stub
