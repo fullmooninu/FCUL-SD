@@ -16,7 +16,7 @@ struct server_t *network_connect(const char *address_port) {
 		return NULL;
 	}
 
-	server_address = strtok(address_port, ":");
+	server_address = strtok((char*)address_port, ":");
 	if (server_address == NULL) {
 		network_close(server);
 		return NULL;
@@ -83,40 +83,49 @@ struct server_t *network_connect(const char *address_port) {
 struct message_t *network_send_receive(struct server_t *server,
 	struct message_t *msg) {
 
-	char *message_out;
-	int host_size, net_size, result;
+
+	char *msg_buf = NULL;
+	int size, nBytes, result, host_size;
 	struct message_t *msg_resposta;
-	char *message_result = NULL; //
+	char *message_buf_result = NULL; //
 
 	/* Verificar parâmetros de entrada */
 	if (server == NULL || msg == NULL)
 		return NULL;
 
 	/* Serializar a mensagem recebida */
-	host_size = message_to_buffer(msg, &message_out);
+	size = message_to_buffer(msg, &msg_buf);
 
 	/* Verificar se a serialização teve sucesso */
-	net_size = htonl(host_size);
+	host_size = htonl(size);
 
 	/* Enviar ao servidor o tamanho da mensagem que será enviada
 	 logo de seguida
 	 */
 	printf("host size: %d\n", host_size);
-	printf("net size: %d\n", net_size);
+	printf("net size: %d\n", size);
 	fflush(stdout);
-	if ((result = write_all(server->socket_fd, (char*) &net_size, _INT)) != _INT) {
+
+	if ((nBytes = write(server->socket_fd,&host_size, _INT)) != _INT) {
 		perror("Erro no enviar o tamanho da mensagem.");
 		network_close(server);
 		return NULL;
 	}
-	printf("write_all bytes escritos: %d\n", result);
+	printf("write_all bytes escritos: %d\n", nBytes);
 	fflush(stdout);
 	/* Verificar se o envio teve sucesso */
 
 	/* Enviar a mensagem que foi previamente serializada */
-	result = write_all(server->socket_fd, message_out, host_size);
-	printf("bytes enviados buffer: %d\n", result);
+	if((nBytes = write_all(server->socket_fd, msg_buf, size)) != size){
+		perror("Erro ao enviar mensagem ao servidor!\n");
+		network_close(server);
+		return NULL;
+	}
+
+	printf("bytes enviados buffer: %d\n", nBytes);
 	fflush(stdout);
+
+	free(msg_buf);
 	/* Verificar se o envio teve sucesso */
 
 	/* De seguida vamos receber a resposta do servidor:
@@ -124,22 +133,33 @@ struct message_t *network_send_receive(struct server_t *server,
 	 Com a função read_all, receber num inteiro o tamanho da
 	 mensagem de resposta.
 	 */
-	result = read_all(server->socket_fd, (char *) &net_size, _INT);
-//TODO validar result
-	host_size = ntohl(net_size);
+	if((nBytes = read(server->socket_fd,&result,sizeof(result))) != sizeof(result)){
+		perror("Erro ao receber dados do servidor");
+		network_close(server);
+		return NULL;
+	}
+
+	int msg_size = ntohl(result);
+
 	/*
 	 Alocar memória para receber o número de bytes da
 	 mensagem de resposta.
 
 	 Com a função read_all, receber a mensagem de resposta.
 
-	 */
-	message_result = malloc(sizeof(char) * host_size);
+					 */
+					message_buf_result = (char *)malloc(sizeof(msg_size + 1));
 
-	result = read_all(server->socket_fd, message_result, host_size);
+							if((nBytes = read_all(server->socket_fd, message_buf_result, msg_size)) != msg_size) {
+						perror("Erro ao receber dados do servidor");
+						network_close(server);
+						return NULL;
+
+					}
+
 
 	/* Desserializar a mensagem de resposta */
-	msg_resposta = buffer_to_message(message_result, net_size);
+	struct message_t *msg_result = buffer_to_message(message_buf_result, msg_size);
 	//msg_resposta = buffer_to_message( /* */ );
 	//printf("antes do read");
 	//fflush(stdout);
@@ -166,10 +186,10 @@ struct message_t *network_send_receive(struct server_t *server,
 	// //printf("depoiss do read_all");
 
 	/* Libertar memória */
-	free(message_out);
-	free(message_result);
+	free(message_buf_result);
 
-	return msg_resposta;
+
+	return msg_result;
 }
 
 int network_close(struct server_t *server) {

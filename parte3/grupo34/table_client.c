@@ -11,10 +11,16 @@
  Exemplo de uso: ./table_client 10.101.148.144:54321
  */
 
+#include <errno.h>
+#include "inet.h"
+#include "data.h"
+#include "entry.h"
+#include <stdio.h>
 #include "client_stub-private.h"
 #include "client_stub.h"
 #include <string.h>
 #include "network_client.h"
+#include "network_client-private.h"
 #include "message.h"
 #include <unistd.h>
 #include <stdlib.h>
@@ -109,9 +115,9 @@ int main(int argc, char **argv) {
 
 	/* Formar a string no formato <ip servidor>:<porta servidor> */
 	strcpy(address, argv[1]);
-	strcat(address, ":");
-	strcat(address, argv[2]);
-	strcat(address, "\0");
+//	strcat(address, ":");
+//	strcat(address, argv[2]);
+//	strcat(address, "\0");
 
 	server = rtable_bind(address);
 

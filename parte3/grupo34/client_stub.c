@@ -50,9 +50,27 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *value) {
 
 }
 
-//TODO FALTA FAZER A FUNÇAO UPDATE
-int rable_update(struct rtable_t *rtable, char *key, struct data_t *value){
- return -1;
+//TODO FALTA SABER COMO LIDA COM DUAS CHAVES IGUAIS
+int rable_update(struct rtable_t *rtable, char *key, struct data_t *value) {
+	struct data_t *valueN = (struct data_t*) malloc(sizeof(struct data_t));
+	valueN = data_create2(value->datasize, value);
+
+	struct entry_t *entry = (struct entry_t*) malloc(sizeof(struct entry_t));
+	entry = entry_create(key, valueN);
+	//Para a mensagem
+	struct message_t *mensagem = (struct message_t*) malloc(
+			sizeof(struct message_t));
+	mensagem->opcode = OC_UPDATE;
+	mensagem->c_type = CT_ENTRY;
+	mensagem->content.entry = entry;
+
+	if (network_send_receive(rtable->server, mensagem)->opcode == OC_PUT + 1) {
+		free(valueN);
+		free(entry);
+		return 0;
+	} else {
+		return (-1);
+	}
 }
 
 
