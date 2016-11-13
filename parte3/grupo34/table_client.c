@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 	}
 
 	printf("Escolha um dos comandos abaixo:\n\n");
-	printf("put\n get\n update\n delete\n size\n get keys\n quit\n\n");
+	printf("put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
 	// Mostrar a prompt para inserção de comando
 
 	/* Receber o comando introduzido pelo utilizador
@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
 		 o server e receber msg_resposta.
 		 */
 
-		if (strncmp(input, "put ",4) == 0 ) {
+		if (strncmp(input, "put",3) == 0 ) {
 
 			fgets(aux, MAX_MSG, stdin);
 			printf("Key: ");
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 		}
 
 
-		else if (strncmp(input, "get ",4) == 0) {
+		else if (strncmp(input, "get",3) == 0) {
 			printf("Comando GET\n");
 
 			fgets(aux, MAX_MSG, stdin);
@@ -209,7 +209,7 @@ int main(int argc, char **argv) {
 
 		}
 
-		else if (strncmp(input, "update ", 7) == 0) {
+		else if (strncmp(input, "update", 6) == 0) {
 			printf("Comando UPDATE\n");
 
 			//TODO UPDATE
@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
 
 		}
 
-		else if (strncmp (input, "delete ",7) == 0) {
+		else if (strncmp (input, "delete",6) == 0) {
 			printf("Comando DEL\n");
 
 			fgets(aux, MAX_MSG, stdin);
@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
 
 		}
 
-		else if (strncmp(input, "size ", 5) == 0) {
+		else if (strncmp(input, "size", 4) == 0) {
 			printf("Comando SIZE\n");
 			int_aux = rtable_size(server);
 			if (int_aux == -1) {
@@ -260,19 +260,19 @@ int main(int argc, char **argv) {
 //      msg_out->opcode = OC_SIZE;
 //      msg_out->c_type = NULL;
 		}
-
-		else if (strncmp(input, "get keys ", 9) == 0) {
-			if ((rtable_get_keys(server)) == NULL) {
-				printf("Não se conseguiu obter as chaves!\n");
-			} else {
-				for (int i = 0; rtable_get_keys(server)[i] != NULL;
-				i++) {
-					printf("Key -> %s;",
-					(char*) rtable_get_keys(server)[i]);
-				}
-			}
-
-		}
+//
+//		else if (strncmp(input, "get keys ", 9) == 0) {
+//			if ((rtable_get_keys(server)) == NULL) {
+//				printf("Não se conseguiu obter as chaves!\n");
+//			} else {
+//				for (int i = 0; rtable_get_keys(server)[i] != NULL;
+//				i++) {
+//					printf("Key -> %s;",
+//					(char*) rtable_get_keys(server)[i]);
+//				}
+//			}
+//
+//		}
 
 //			if (msg_out != NULL) {
 //				printf("PEDIDO:\n");
