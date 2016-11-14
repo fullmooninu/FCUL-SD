@@ -28,4 +28,6 @@ int read_all(int sock, char *buf, int len);
 
 void print_msg(struct message_t *msg);
 
+void print_data(struct data_t *data);
+
 #endif

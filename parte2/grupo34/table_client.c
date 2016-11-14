@@ -41,7 +41,8 @@ struct message_t* process_entry_command(char* input) {
     free_message(msg_out);
     return NULL;
   }
-  printf("STRLEN data: %d\n", strlen(data));
+
+  printf("STRLEN data: %lu\n", strlen(data));
   datat = data_create2(strlen(data), data);
   if (datat == NULL) {
     free_message(msg_out);
@@ -59,7 +60,7 @@ struct message_t* process_entry_command(char* input) {
 
 struct message_t* process_key_command(char* input) {
   struct message_t* msg_out;
-  char *key, *data;
+  char *key;
 
   strtok(input, " "); //ignorar o "comando"
   key = strtok(NULL, "");//le ate ao fim da linha 'input'
@@ -84,7 +85,7 @@ struct message_t* process_key_command(char* input) {
 
 int main(int argc, char **argv){
 	struct server_t *server;
-	char input[81], *s, *key, *data;
+	char input[81], *s;
 	struct message_t *msg_out = NULL, *msg_resposta = NULL;
 
 	/* Testar os argumentos de entrada */
@@ -169,10 +170,10 @@ int main(int argc, char **argv){
       printf("Comando SIZE\n");
 
       msg_out = (struct message_t *) malloc(sizeof(struct message_t));
-      if (msg_out == NULL) return NULL;
+      if (msg_out == NULL) return -1;
 
       msg_out->opcode = OC_SIZE;
-      msg_out->c_type = NULL;
+      msg_out->c_type = -1;
     }
 
     if (msg_out != NULL) {

@@ -70,6 +70,9 @@ int message_to_buffer(struct message_t *msg, char **msg_buf) {
 		case CT_RESULT:
 		buffer_size = 8;
 		break;
+		default:
+		//para o caso do OC_SIZE
+		buffer_size = 8;
 	}
 
 	char* buffer = (char*) malloc(buffer_size);
@@ -218,7 +221,11 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		tamanhoDaData = ntohl(int_aux);
 		msg_buf += _INT;
 		//data
-		msg->content.data = data_create2(tamanhoDaData, msg_buf);
+		if (tamanhoDaData == 0) {
+			msg->content.data = data_create(0);
+		} else {
+			msg->content.data = data_create2(tamanhoDaData, msg_buf);
+		}
 		break;
 		case CT_KEY:
 		//keysize

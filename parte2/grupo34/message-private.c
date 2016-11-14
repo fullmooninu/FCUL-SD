@@ -20,23 +20,24 @@ bool isValidCTC(short c_type){
 
 void print_msg(struct message_t *msg) {
 	int i;
-	
+
 
 	printf("----- MESSAGE -----\n");
 	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
 	switch(msg->c_type) {
 
 		case CT_ENTRY:{
-			char *c;
+			// char *c;
 			printf("key: %s\n", msg->content.entry->key);
-			printf("datasize: %d\n", msg->content.entry->value->datasize);
-			printf("data: ");
-			c = (char *) msg->content.entry->value->data;
-			for (i = 0; i < msg->content.entry->value->datasize; i++) {
-				printf("%c", *c);
-				c += 1;
-			}
-			printf("\n");
+			print_data(msg->content.entry->value);
+			// printf("datasize: %d\n", msg->content.entry->value->datasize);
+			// printf("data: ");
+			// c = (char *) msg->content.entry->value->data;
+			// for (i = 0; i < msg->content.entry->value->datasize; i++) {
+			// 	printf("%c", *c);
+			// 	c += 1;
+			// }
+			// printf("\n");
       // printf("data: %s\n", msg->content.entry->value->data);
 		}break;
 		case CT_KEY:{
@@ -48,11 +49,24 @@ void print_msg(struct message_t *msg) {
 			}
 		}break;
 		case CT_VALUE:{
-			printf("datasize: %d\n", msg->content.data->datasize);
+			print_data(msg->content.data);
 		}break;
 		case CT_RESULT:{
 			printf("result: %d\n", msg->content.result);
 		};
 	}
 	printf("-------------------\n");
+}
+
+void print_data(struct data_t *data) {
+	int i;
+	char *c;
+	c = (char *) data->data;
+	printf("datasize: %d\n", data->datasize);
+	printf("data: ");
+	for (i = 0; i < data->datasize; i++) {
+		printf("%c", *c);
+		c += 1;
+	}
+	printf("\n");
 }

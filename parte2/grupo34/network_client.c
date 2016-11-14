@@ -81,7 +81,7 @@ struct message_t *network_send_receive(struct server_t *server,
 	char *message_out;
 	int host_size, net_size, result;
 	struct message_t *msg_resposta;
-	int nBytes;
+	//int nBytes;
 	char *message_result = NULL; //
 
 	/* Verificar parâmetros de entrada */

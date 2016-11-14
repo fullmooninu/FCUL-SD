@@ -89,7 +89,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     case OC_UPDATE:
     //Garantir o c_type correspondente ao comando
     if(msg_pedido->c_type == CT_ENTRY){
-      result = table_update(tabela, msg_pedido->content.key, msg_pedido->content.data);
+      result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
       if (result == -1) {
         msg_resposta->opcode = OC_RT_ERROR;
         msg_resposta->c_type = CT_RESULT;
@@ -109,16 +109,14 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     if(msg_pedido->c_type == CT_KEY){
       msg_resposta->opcode = OC_GET+1;
       key = msg_pedido->content.key;
-      if(strcmp(key, "*")){
+      if(strcmp(key, "*") == 0){
         msg_resposta->c_type = CT_KEYS;
         msg_resposta->content.keys = table_get_keys(tabela);
       }else {
         msg_resposta->c_type = CT_VALUE;
         data = table_get(tabela, key);
         if(data == NULL){
-          data = (struct data_t*) malloc(sizeof(struct data_t));
-          data->datasize = 0;
-          data->data = NULL;
+          data = data_create(0);
         }
         msg_resposta->content.data = data;
       }
@@ -130,7 +128,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     break;
     case OC_PUT:
     if(msg_pedido->c_type == CT_ENTRY){
-      result = table_put(tabela, msg_pedido->content.key, msg_pedido->content.data);
+      result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
       if (result == -1) {
         msg_resposta->opcode = OC_RT_ERROR;
         msg_resposta->c_type = CT_RESULT;
@@ -164,9 +162,9 @@ int network_receive_send(int sockfd, struct table_t *table){
   //int msg_length;
   int host_size, net_size, result;
   struct message_t *msg_pedido = NULL;
-  struct msg_t *msg_resposta = NULL;
+  struct message_t *msg_resposta = NULL;
   //int msg_length;
-  struct list_t *results;
+  //struct list_t *results;
 
   /* Verificar parâmetros de entrada */
 
@@ -176,7 +174,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Com a função read_all, receber num inteiro o tamanho da
   mensagem de pedido que será recebida de seguida.*/
   printf("antes do read_all\n");
-	fflush(stdout);
+  fflush(stdout);
 
   result = read_all(sockfd, (char *) &net_size, _INT);
   /* Verificar se a receção teve sucesso */
@@ -194,7 +192,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   /* Com a função read_all, receber a mensagem de resposta. */
   result = read_all(sockfd, message_pedido, host_size);
   printf("bytes recebidos buffer: %d\n", result);
-	fflush(stdout);
+  fflush(stdout);
 
   /* Verificar se a receção teve sucesso */
   if (result == -1){
@@ -254,11 +252,12 @@ int network_receive_send(int sockfd, struct table_t *table){
 
 
 int main(int argc, char **argv){
-  int listening_socket, connsock, result;
+  int listening_socket, connsock;
+  int result;
   struct sockaddr_in client;
   socklen_t size_client;
   struct table_t *table;
-  struct message_t* msg_resposta;
+  //struct message_t* msg_resposta;
 
   if (argc != 3){
     printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
@@ -266,11 +265,13 @@ int main(int argc, char **argv){
     return -1;
   }
 
-  if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) return -1;
+  if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) {
+    return -1;
+  }
 
   if ((table = table_create(atoi(argv[2]))) == NULL){
     result = close(listening_socket);
-    return -1;
+    return result;
   }
 
   while ((connsock = accept(listening_socket, (struct sockaddr *) &client, &size_client)) != -1) {
@@ -282,12 +283,12 @@ int main(int argc, char **argv){
       //msg_resposta->c_type = CT_VALUE;
       success = network_receive_send(connsock, table);
     }while (success!=-1);
-      /* Fazer ciclo de pedido e resposta */
+    /* Fazer ciclo de pedido e resposta */
 
 
-      //TODO
-      /* Ciclo feito com sucesso ? Houve erro?
-      Cliente desligou? */
+    //TODO
+    /* Ciclo feito com sucesso ? Houve erro?
+    Cliente desligou? */
 
   }
 }
