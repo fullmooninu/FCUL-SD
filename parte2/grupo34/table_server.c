@@ -53,7 +53,6 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
   struct message_t *msg_resposta;
   int result;
   struct data_t* data;
-  char* key;
   /* Verificar parâmetros de entrada */
   if (msg_pedido == NULL || tabela == NULL) return NULL;
 
@@ -107,6 +106,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
     case OC_GET:
     //Garantir o c_type correspondente ao comando
     if(msg_pedido->c_type == CT_KEY){
+      char* key;
       msg_resposta->opcode = OC_GET+1;
       key = msg_pedido->content.key;
       if(strcmp(key, "*") == 0){
@@ -239,8 +239,8 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Verificar se o envio teve sucesso */
   if (result == -1) {
-    return -1;
     free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
   }
 
   /* Libertar memória */
@@ -253,7 +253,6 @@ int network_receive_send(int sockfd, struct table_t *table){
 
 int main(int argc, char **argv){
   int listening_socket, connsock;
-  int result;
   struct sockaddr_in client;
   socklen_t size_client;
   struct table_t *table;
@@ -270,6 +269,7 @@ int main(int argc, char **argv){
   }
 
   if ((table = table_create(atoi(argv[2]))) == NULL){
+    int result;
     result = close(listening_socket);
     return result;
   }

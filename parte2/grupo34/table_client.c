@@ -85,7 +85,6 @@ struct message_t* process_key_command(char* input) {
 
 int main(int argc, char **argv){
 	struct server_t *server;
-	char input[81], *s;
 	struct message_t *msg_out = NULL, *msg_resposta = NULL;
 
 	/* Testar os argumentos de entrada */
@@ -103,7 +102,7 @@ int main(int argc, char **argv){
 
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
  	while (1){
-
+    char input[81], *s;
 		printf(">>> "); // Mostrar a prompt para inserção de comando
 
 		/* Receber o comando introduzido pelo utilizador
