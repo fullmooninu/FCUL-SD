@@ -103,7 +103,10 @@ int main(int argc, char **argv){
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
  	while (1){
     char input[81], *s;
-		printf(">>> "); // Mostrar a prompt para inserção de comando
+		 // Mostrar a prompt para inserção de comando
+
+	printf("Escolha um dos comandos abaixo:\n");
+	printf("put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
 
 		/* Receber o comando introduzido pelo utilizador
 		   Sugestão: usar fgets de stdio.h
