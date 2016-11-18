@@ -268,6 +268,7 @@ int main(int argc, char **argv) {
 
 	struct pollfd desc_set[MAX_CLIENTES]; //Definido para 5 utilizadores no máximo
 
+
 	if (argc != 3) {
 		printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
 		printf("Exemplo de uso: ./table-server 54321 10\n");
@@ -278,11 +279,11 @@ int main(int argc, char **argv) {
 		return -1;
 
 	//Listen
-	if (listen(listening_socket, 20) < 0) {
-		perror("Erro ao executar listen");
-		close(listening_socket);
-		return -1;
-	}
+//	if (listen(listening_socket, 20) < 0) {
+//		perror("Erro ao executar listen");
+//		close(listening_socket);
+//		return -1;
+//	}
 
 	if ((result = table_skel_init(atoi(argv[2]))) == -1) {
 		close(listening_socket);
@@ -307,8 +308,11 @@ int main(int argc, char **argv) {
 	while (poll(desc_set, MAX_CLIENTES, -1) >= 0) {
 		//Nova ligaçao
 		if (desc_set[1].revents & POLLIN) {
+			printf("ENTROU AQUI\n");
+
 			connsock = accept(desc_set[1].fd, (struct sockaddr *) &client,
 					&size_client);
+			printf("%d",connsock);
 			//Adiciona a lista de descritores
 			desc_set[2].fd = connsock;
 			desc_set[2].events = POLLIN;

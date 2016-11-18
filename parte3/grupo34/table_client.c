@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
 
 	/* Testar os argumentos de entrada */
 	if (argc != 2) {
+
 		printf("Número de argumentos inválido.\n");
 		return -1;
 	}
@@ -110,6 +111,9 @@ int main(int argc, char **argv) {
 	/*--------------------------------------------------------------*/
 
 	/* Fazer a ligação ao servidor */
+
+	printf("O ARGUMENTO 0 É: %s\n\n",argv[0]);
+	printf("O ARGUMENTO 1 É: %s\n\n",argv[1]);
 
 	char address[100];
 
@@ -126,7 +130,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	printf("Escolha um dos comandos abaixo:\n\n");
+	printf("Escolha um dos comandos abaixo:\n");
 	printf("put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
 	// Mostrar a prompt para inserção de comando
 
