@@ -66,18 +66,18 @@ struct server_t *network_connect(const char *address_port) {
 
 	/* Se a ligação não foi estabelecida, retornar NULL */
 	if (connect(server_socket_fd, (struct sockaddr *) &server_in,
-			sizeof(server_in)) < 0) {
+		sizeof(server_in)) < 0) {
 		network_close(server);
-		return NULL;
-	}
+	return NULL;
+}
 
 	//TOD guardar mais info na estrutura server?
 
-	return server;
+return server;
 }
 
 struct message_t *network_send_receive(struct server_t *server,
-		struct message_t *msg) {
+	struct message_t *msg) {
 	char *message_out;
 	int host_size, net_size, result;
 	struct message_t *msg_resposta;
@@ -121,9 +121,9 @@ struct message_t *network_send_receive(struct server_t *server,
 	 Com a função read_all, receber num inteiro o tamanho da
 	 mensagem de resposta.
 	*/
-result = read_all(server->socket_fd, (char *) &net_size, _INT);
+	result = read_all(server->socket_fd, (char *) &net_size, _INT);
 //TODO validar result
-host_size = ntohl(net_size);
+	host_size = ntohl(net_size);
 /*
 	 Alocar memória para receber o número de bytes da
 	 mensagem de resposta.
@@ -131,9 +131,9 @@ host_size = ntohl(net_size);
 	 Com a função read_all, receber a mensagem de resposta.
 
 	 */
-	 message_result = malloc(sizeof(char)*host_size);
+	message_result = malloc(sizeof(char)*host_size);
 
-	 result = read_all(server->socket_fd, message_result, host_size);
+	result = read_all(server->socket_fd, message_result, host_size);
 
 	/* Desserializar a mensagem de resposta */
 	msg_resposta = buffer_to_message(message_result, net_size);

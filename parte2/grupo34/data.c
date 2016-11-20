@@ -11,7 +11,7 @@ Silvia Ferreira 45511 */
  */
 struct data_t *data_create(int size) {
 	struct data_t *retVal;
-	if (size < 0) return NULL;
+	if (size <= 0) return NULL;
 	//Alocacao da estrutura do bloco de dados
 	retVal = (struct data_t*) malloc(sizeof(struct data_t));
 	if (retVal == NULL) return NULL;
@@ -19,16 +19,11 @@ struct data_t *data_create(int size) {
 	retVal->datasize = size;
 	//Aloca espaco para a estrutura que o ponteiro vai apontar,
 	//free, se falhar
-	if (size == 0) {
-		retVal->data = NULL;
-	} else {
-		retVal->data = malloc(size);
-		if (retVal->data == NULL) {
-			free(retVal);
-			return NULL;
-		}
+	retVal->data = malloc(size);
+	if (retVal->data == NULL) {
+		free(retVal);
+		return NULL;
 	}
-
 	return retVal;
 }
 
