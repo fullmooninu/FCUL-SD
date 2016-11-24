@@ -6,8 +6,8 @@ Uma função só está pronta quanto tiver sido testada com sucesso.
 #Coisas ainda por fazer.
 
 - Acabar os testes do server/client
-- Verificar que os mallocs e semelhantes têm todos guarda em todos os ficheiros
-- A função hash no table.c ainda me pareceu esquisita: por exemplo quando apenas temos um table size 2, só a vi usar uma das listas. È mesmo assim?
+- Verificar que os mallocs e semelhantes têm todos guarda em todos os ficheiros. Depois dum x = malloc, if (x == null) return 
+- A função hash no table.c ainda me pareceu esquisita: por exemplo quando apenas temos um table size 2, só a vi usar uma das listas. É mesmo assim? @Pedro.
 
 # Protocolo para entrega. 
 - garantir que todos os ficheiros test e headers do professor são os originais
