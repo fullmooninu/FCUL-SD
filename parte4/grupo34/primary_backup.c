@@ -32,19 +32,19 @@ int update_state(struct server_t* server) {
 }
 
 
-int send_keys(struct table_t *table,struct server_t* backup) {
+int send_table(struct table_t *table,struct server_t* backup) {
 	char** table_keys = table_get_keys(table);
 	for (int i = 0; table_keys[i] != NULL; i++) {
 		struct data_t* data = NULL;
 		// prepare data
-		data = malloc(sizeof(struct data_t)); if (data == NULL) return 0;
+		data = malloc(sizeof(struct data_t)); if (data == NULL) return -1;
 		data = table_get(table, table_keys[i]);
 		// char* char_data = (char*) data->data; //TODO REMOVE THIS?
 
 		// prepare message
 		// TODO check if can use send key instead
 		struct message_t* msg = NULL;
-		msg = malloc(sizeof(struct message_t)); if (msg == NULL) return 0;
+		msg = malloc(sizeof(struct message_t)); if (msg == NULL) return -1;
 		msg->opcode=50;
 		msg->c_type=30;
 		msg->content.key = table_keys[i];
