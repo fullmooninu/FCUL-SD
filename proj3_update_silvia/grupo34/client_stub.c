@@ -138,7 +138,7 @@ struct data_t *rtable_get(struct rtable_t *table, char *key) {
 			}
 		} else {
 
-			print_data(msg_resposta->content.data);
+			// print_data(msg_resposta->content.data);
 			datat = data_dup(msg_resposta->content.data);
 		}
 	}
@@ -209,10 +209,52 @@ int rtable_size(struct rtable_t *rtable){
 
 
 char **rtable_get_keys(struct rtable_t *rtable){
-	//TODO
-	return NULL;
+	struct message_t *msg_out, *msg_resposta;
+	char **keys = NULL;
+	int n_keys = 0;
+
+	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+	if (msg_out == NULL) return NULL;
+
+	msg_out->c_type = CT_KEY;
+	msg_out->content.key = strdup("*");
+
+	msg_out->opcode = OC_GET;
+
+	msg_resposta = network_send_receive(rtable->server, msg_out);
+
+	if (msg_resposta->opcode == OC_RT_ERROR) {
+		keys = NULL;
+	} else if (msg_resposta->opcode == OC_GET+1 &&
+						 msg_resposta->c_type == CT_KEYS) {
+		keys = msg_resposta->content.keys;
+		//keys_size
+		while (*keys != NULL) {
+			keys++;
+			n_keys++;
+		}
+		// printf("KEYS SIZE: %d\n", n_keys);
+
+		keys = (char **) malloc((n_keys + 1) * sizeof(char*));
+
+		for (int i = 0; i < n_keys; i++) {
+			keys[i] = strdup(msg_resposta->content.keys[i]);
+		}
+		keys[n_keys] = NULL;
+
+	}
+
+	free_message(msg_out);
+	free_message(msg_resposta);
+
+	return keys;
 }
 
 void rtable_free_keys(char **keys) {
-	//TODO
+	if (keys != NULL) {
+		for (int i = 0; keys[i] != NULL; i++) {
+			free(keys[i]);
+		}
+		free(keys);
+	}
 }

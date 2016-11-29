@@ -85,9 +85,9 @@ struct message_t* process_key_command(char* input) {
 }
 
 int main(int argc, char **argv){
-	struct rtable_t *server;
-  char *key, *data;
-  struct data_t *datat;
+	struct rtable_t *server = NULL;
+  char *key, *data = NULL, **keys = NULL;
+  struct data_t *datat = NULL;
 
 	/* Testar os argumentos de entrada */
   if (argc != 2) {
@@ -106,9 +106,14 @@ int main(int argc, char **argv){
  	while (1){
     char input[81], *s;
     int result;
+    key = NULL;
+    data = NULL;
+    keys = NULL;
+    datat = NULL;
+
 		 // Mostrar a prompt para inserção de comando
 
-	printf("Escolha um dos comandos abaixo:\n");
+	printf("\n\nEscolha um dos comandos abaixo:\n");
 	printf(" put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
   printf(">>> ");
 
@@ -171,15 +176,27 @@ int main(int argc, char **argv){
         return -1;
       }
 
-      //TODO get *
-      datat = rtable_get(server, key);
-
-      printf("GET result: ");
-      if (datat != NULL) {
-        printf("\n");
-        print_data(datat);
+      if (strcmp(key, "*") == 0) {
+        keys = rtable_get_keys(server);
+        if (keys != NULL && keys[0] != NULL) {
+          printf("GET result:\n");
+          for(int i = 0; keys[i] != NULL; i++) {
+            printf("key[%d]: %s\n", i, keys[i]);
+          }
+        } else {
+          printf("GET result: NO KEYS\n");
+        }
+        rtable_free_keys(keys);
       } else {
-        printf("ERRO\n");
+        datat = rtable_get(server, key);
+
+        printf("GET result: ");
+        if (datat != NULL) {
+          printf("\n");
+          print_data(datat);
+        } else {
+          printf("ERRO\n");
+        }
       }
 
       data_destroy(datat);
