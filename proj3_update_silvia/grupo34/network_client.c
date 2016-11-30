@@ -28,14 +28,14 @@ struct server_t *network_connect(const char *address_port) {
 		return NULL;
 	}
 
-	printf("host: %s\n", server_name);
+	// printf("host: %s\n", server_name);
 	server_port = strtok(NULL, ":");
 	if (server_port == NULL) {
 		network_close(server);
 		return NULL;
 	}
 	server_port_num = atoi(server_port);
-	printf("port: %d\n", server_port_num);
+	// printf("port: %d\n", server_port_num);
 
 	/* Estabelecer ligação ao servidor:
 
@@ -97,23 +97,23 @@ struct message_t *network_send_receive(struct server_t *server,
 	/* Enviar ao servidor o tamanho da mensagem que será enviada
 	 logo de seguida
 	 */
-	printf("host size: %d\n", host_size);
-	printf("net size: %d\n", net_size);
+	// printf("host size: %d\n", host_size);
+	// printf("net size: %d\n", net_size);
 	fflush(stdout);
 	if ((result = write_all(server->socket_fd, (char*) &net_size, _INT)) != _INT) {
 		perror("Erro no enviar o tamanho da mensagem.");
 		network_close(server);
 		return NULL;
 	}
-	printf("write_all bytes escritos: %d\n", result);
-	fflush(stdout);
+	// printf("write_all bytes escritos: %d\n", result);
+	// fflush(stdout);
 	/* Verificar se o envio teve sucesso */
 
 
 	/* Enviar a mensagem que foi previamente serializada */
 	result = write_all(server->socket_fd, message_out, host_size);
-	printf("bytes enviados buffer: %d\n", result);
-	fflush(stdout);
+	// printf("bytes enviados buffer: %d\n", result);
+	// fflush(stdout);
 	/* Verificar se o envio teve sucesso */
 
 	/* De seguida vamos receber a resposta do servidor:
