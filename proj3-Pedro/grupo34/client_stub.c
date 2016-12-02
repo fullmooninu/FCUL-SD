@@ -137,7 +137,7 @@ struct data_t *rtable_get(struct rtable_t *table, char *key) {
 	if (msg_resposta->opcode == OC_RT_ERROR) {
 		//Tolerância a falta definida no enunciado Projeto 3
 		sleep(RETRY_TIME);
-		msg_resposta = network_send_receive(rtable->server, msg_out);
+		msg_resposta = network_send_receive(table->server, msg_out);
 		if (msg_resposta->opcode == OC_RT_ERROR)
 			datat = NULL;
 	} else if (msg_resposta->opcode == OC_GET + 1&&
@@ -184,7 +184,7 @@ int rtable_del(struct rtable_t *table, char *key) {
 	if (msg_resposta->opcode == OC_RT_ERROR) {
 		//Tolerância a falta definida no enunciado Projeto 3
 		sleep(RETRY_TIME);
-		msg_resposta = network_send_receive(rtable->server, msg_out);
+		msg_resposta = network_send_receive(table->server, msg_out);
 		if (msg_resposta->opcode == OC_RT_ERROR)
 			result = -1;
 	} else if (msg_resposta->opcode == OC_DEL + 1&&
