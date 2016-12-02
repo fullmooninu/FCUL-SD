@@ -258,6 +258,7 @@ char **rtable_get_keys(struct rtable_t *rtable) {
 			keys++;
 			n_keys++;
 		}
+
 		// printf("KEYS SIZE: %d\n", n_keys);
 
 		keys = (char **) malloc((n_keys + 1) * sizeof(char*));
