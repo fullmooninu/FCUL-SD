@@ -22,6 +22,7 @@ struct server_t *network_connect(const char *address_port) {
 		strcpy(str_aux, address_port);
 		server->IP = strtok(str_aux, ":");
 		if (server->IP == NULL) {
+			perror("Impossível obter IP");
 			network_close(server);
 			return NULL;
 		}
