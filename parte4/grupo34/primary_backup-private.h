@@ -8,13 +8,6 @@ Silvia Ferreira 45511 */
 #include "primary_backup.h"
 #include "table.h"
 
-//TODO O QUE DEVE CONTER ISTO?
-struct server_t {
-  char* address;
-  int port;
-  int status; // PRIMARY = 0; SECONDARY = 1;
-};
-
 //TODO DEFINE NEW MESSAGE.H OPCODES FOR SERVER SPECIFIC OPERATIONS:
 //ACTUALIZAR TABELA -> TABELA ACTUALIZADA
 //BECOME PRIMARY -> IS NOW PRIMARY

@@ -86,11 +86,12 @@ struct message_t* process_key_command(char* input) {
 
 int main(int argc, char **argv){
 	struct rtable_t *server = NULL;
+  struct rtable_t *server_backup = NULL;
   char *key, *data = NULL, **keys = NULL;
   struct data_t *datat = NULL;
 
 	/* Testar os argumentos de entrada */
-  if (argc != 2) {
+  if (argc != 3) {
     printf("Número de argumentos inválido.\n");
     return -1;
   }
@@ -98,7 +99,13 @@ int main(int argc, char **argv){
 	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = rtable_bind(argv[1]);
   if (server == NULL) {
-    printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
+    printf("Erro ao estabelecer ligação ao servidor primario: %s\n", argv[1]);
+    return -1;
+  }
+
+  server_backup = rtable_bind(argv[2]);
+  if (server_backup == NULL) {
+    printf("Erro ao estabelecer ligação ao servidor secundario: %s\n", argv[2]);
     return -1;
   }
 
