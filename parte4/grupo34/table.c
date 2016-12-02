@@ -120,13 +120,20 @@ int table_update(struct table_t *table, char * key, struct data_t *value) {
 	// Verificar valores de entrada
 	if(table == NULL || key == NULL || value == NULL) return -1;
 
+  // Executar hash para determinar onde inserir a entry na tabela */
+  int hashCode = key_hash(key, table->size);
+	struct list_t* list = table->list[hashCode];
+
+  if(list_get(list, key) == NULL) {
+    return -1;
+  } else {
+    if(list_remove(list, key) == -1) return -1;
+  }
+
 	// Criar entry com par chave/valor
 	struct entry_t* e = entry_create(key, value);
 	if(e == NULL) return -1;
 
-    // Executar hash para determinar onde inserir a entry na tabela */
-	int hashCode = key_hash(key, table->size);
-	struct list_t* list = table->list[hashCode];
 		/* Inserir entry na tabela */
 	int retVal = list_add(list,e);
 	entry_destroy(e);

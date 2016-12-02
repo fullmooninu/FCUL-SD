@@ -17,13 +17,13 @@ struct data_t *data_create(int size) {
 	if (retVal == NULL) return NULL;
 	//define o size
 	retVal->datasize = size;
-	//Aloca espaco para a estrutura que o ponteiro vai apontar,
-	//free, se falhar
+
 	retVal->data = malloc(size);
 	if (retVal->data == NULL) {
 		free(retVal);
 		return NULL;
 	}
+
 	return retVal;
 }
 

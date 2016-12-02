@@ -222,7 +222,11 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		msg_buf += _INT;
 		//data
 		if (tamanhoDaData == 0) {
-			msg->content.data = data_create(0);
+			// msg->content.data = data_create(0);
+			msg->content.data = (struct data_t*) malloc(sizeof(struct data_t));
+			if (msg->content.data == NULL) return NULL;
+			msg->content.data->datasize = 0;
+			msg->content.data->data = NULL;
 		} else {
 			msg->content.data = data_create2(tamanhoDaData, msg_buf);
 		}
@@ -289,21 +293,16 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 }
 
 int read_all(int sock, char *buf, int len) {
-
-	int bufsize = len;
-	while (len > 0) {
-		int res = read(sock, buf, len);
-		if (res < 0) {
-			int errsv = errno;
-			if (errsv == EINTR)
-				continue;
-			perror("Read failed!");
-			return res;
-		}
-		buf += res;
-		len -= res;
+  int read_acc = 0, count = 0;
+  while ((count = read(sock, buf, len - read_acc)) > 0) {
+    buf += count;
+    read_acc += count;
+  }
+  if (count < 0 || read_acc == 0 || read_acc != len) {
+		return -1;
+	} else {
+		return 0;
 	}
-	return bufsize;
 }
 
 int write_all(int sock, char *buf, int len) {

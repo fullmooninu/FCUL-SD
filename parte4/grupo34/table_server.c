@@ -8,12 +8,18 @@ Uso: table-server <porta TCP> <dimensão da tabela>
 Exemplo de uso: ./table_server 54321 10
 */
 #include <error.h>
+#include <poll.h>
+#include <fcntl.h>
 #include "inet.h"
 #include "table-private.h"
 #include "message-private.h"
 #include "table_server-private.h"
+#include "table_skel.h"
 //#include "message.h"
 #define MAX_CLIENTES 1
+
+#define NFDESC 4 // N�mero de sockets (uma para listening)
+#define TIMEOUT 50 // em milisegundos
 
 /* Função para preparar uma socket de receção de pedidos de ligação.
 */
@@ -36,7 +42,7 @@ int make_server_socket(short port){
     return -1;
   }
 
-  if (listen(socket_fd, MAX_CLIENTES) < 0){
+  if (listen(socket_fd, 0) < 0){
     perror("Erro ao executar listen");
     close(socket_fd);
     return -1;
@@ -45,107 +51,6 @@ int make_server_socket(short port){
 }
 
 
-/* Função que recebe uma tabela e uma mensagem de pedido e:
-- aplica a operação na mensagem de pedido na tabela;
-- devolve uma mensagem de resposta com oresultado.
-*/
-struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
-  struct message_t *msg_resposta;
-  int result;
-  struct data_t* data;
-  /* Verificar parâmetros de entrada */
-  if (msg_pedido == NULL || tabela == NULL) return NULL;
-
-  msg_resposta = (struct message_t *) malloc(sizeof(struct message_t));
-
-  /* Verificar opcode e c_type na mensagem de pedido */
-  /* Aplicar operação na tabela */
-  /* Preparar mensagem de resposta */
-  switch (msg_pedido->opcode) {
-    case OC_SIZE:
-    msg_resposta->opcode = OC_SIZE + 1;
-    msg_resposta->c_type = CT_RESULT;
-    msg_resposta->content.result = table_size(tabela);
-    break;
-    case OC_DEL:
-    //Garantir o c_type correspondente ao comando
-    if(msg_pedido->c_type == CT_KEY){
-      result = table_del(tabela, msg_pedido->content.key);
-      if (result == -1) {
-        msg_resposta->opcode = OC_RT_ERROR;
-        msg_resposta->c_type = CT_RESULT;
-      } else {
-        msg_resposta->opcode = OC_DEL + 1;
-        msg_resposta->c_type = CT_RESULT;
-      }
-      msg_resposta->content.result = result;
-    }else{
-      msg_resposta->opcode = OC_RT_ERROR;
-      msg_resposta->c_type = CT_RESULT;
-      msg_resposta->content.result = -1;
-    }
-    break;
-    case OC_UPDATE:
-    //Garantir o c_type correspondente ao comando
-    if(msg_pedido->c_type == CT_ENTRY){
-      result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
-      if (result == -1) {
-        msg_resposta->opcode = OC_RT_ERROR;
-        msg_resposta->c_type = CT_RESULT;
-      } else {
-        msg_resposta->opcode = OC_UPDATE+1;
-        msg_resposta->c_type = CT_RESULT;
-      }
-      msg_resposta->content.result = result;
-    }else{
-      msg_resposta->opcode = OC_RT_ERROR;
-      msg_resposta->c_type = CT_RESULT;
-      msg_resposta->content.result = -1;
-    }
-    break;
-    case OC_GET:
-    //Garantir o c_type correspondente ao comando
-    if(msg_pedido->c_type == CT_KEY){
-      char* key;
-      msg_resposta->opcode = OC_GET+1;
-      key = msg_pedido->content.key;
-      if(strcmp(key, "*") == 0){
-        msg_resposta->c_type = CT_KEYS;
-        msg_resposta->content.keys = table_get_keys(tabela);
-      }else {
-        msg_resposta->c_type = CT_VALUE;
-        data = table_get(tabela, key);
-        if(data == NULL){
-          data = data_create(0);
-        }
-        msg_resposta->content.data = data;
-      }
-    }else{
-      msg_resposta->opcode = OC_RT_ERROR;
-      msg_resposta->c_type = CT_RESULT;
-      msg_resposta->content.result = -1;
-    }
-    break;
-    case OC_PUT:
-    if(msg_pedido->c_type == CT_ENTRY){
-      result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
-      if (result == -1) {
-        msg_resposta->opcode = OC_RT_ERROR;
-        msg_resposta->c_type = CT_RESULT;
-      } else {
-        msg_resposta->opcode = OC_PUT+1;
-        msg_resposta->c_type = CT_RESULT;
-      }
-      msg_resposta->content.result = result;
-    }else{
-      msg_resposta->opcode = OC_RT_ERROR;
-      msg_resposta->c_type = CT_RESULT;
-      msg_resposta->content.result = -1;
-    }
-    break;
-  }
-  return msg_resposta;
-}
 
 
 /* Função "inversa" da função network_send_receive usada no table-client.
@@ -156,7 +61,7 @@ Aplica o pedido na tabela;
 Envia a resposta.#include "message.h"
 
 */
-int network_receive_send(int sockfd, struct table_t *table){
+int network_receive_send(int sockfd){
   char *message_resposta = NULL;
   char *message_pedido = NULL;
   //int msg_length;
@@ -168,31 +73,25 @@ int network_receive_send(int sockfd, struct table_t *table){
 
   /* Verificar parâmetros de entrada */
 
-  if(sockfd < 0|| table == NULL) return -1;
+  if(sockfd < 0) return -1;
 
 
   /* Com a função read_all, receber num inteiro o tamanho da
   mensagem de pedido que será recebida de seguida.*/
-  printf("antes do read_all\n");
-  fflush(stdout);
-
   result = read_all(sockfd, (char *) &net_size, _INT);
   /* Verificar se a receção teve sucesso */
   if (result == -1) return -1;
 
   host_size = ntohl(net_size);
-  printf("host size: %d\n", host_size);
-  printf("net size: %d\n", net_size);
-  printf("read_all bytes lidos: %d\n", result);
-  fflush(stdout);
+
   /* Alocar memória para receber o número de bytes da
   mensagem de pedido. */
   message_pedido = malloc(sizeof(char)*host_size);
 
   /* Com a função read_all, receber a mensagem de resposta. */
   result = read_all(sockfd, message_pedido, host_size);
-  printf("bytes recebidos buffer: %d\n", result);
-  fflush(stdout);
+  // printf("bytes recebidos buffer: %d\n", result);
+  // fflush(stdout);
 
   /* Verificar se a receção teve sucesso */
   if (result == -1){
@@ -210,7 +109,7 @@ int network_receive_send(int sockfd, struct table_t *table){
   }
 
   /* Processar a mensagem */
-  msg_resposta = process_message(msg_pedido, table);
+  msg_resposta = invoke(msg_pedido);
 
   /* Serializar a mensagem recebida */
   host_size = message_to_buffer(msg_resposta, &message_resposta);
@@ -252,11 +151,10 @@ int network_receive_send(int sockfd, struct table_t *table){
 
 
 int main(int argc, char **argv){
-  int listening_socket, connsock;
+  struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
+  int listening_socket, i, nfds, kfds;
   struct sockaddr_in client;
   socklen_t size_client;
-  struct table_t *table;
-  //struct message_t* msg_resposta;
 
   if (argc != 3){
     printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
@@ -268,27 +166,47 @@ int main(int argc, char **argv){
     return -1;
   }
 
-  if ((table = table_create(atoi(argv[2]))) == NULL){
-    int result;
-    result = close(listening_socket);
-    return result;
+  //TODO
+  table_skel_init(atoi(argv[2]));
+
+
+  printf("Servidor à espera de dados\n");
+  size_client = sizeof(struct sockaddr);
+
+  for (i = 0; i < NFDESC; i++)
+    connections[i].fd = -1;    // poll ignora estruturas com fd < 0
+
+  connections[0].fd = listening_socket;  // Vamos detetar eventos na welcoming socket
+  connections[0].events = POLLIN;  // Vamos esperar ligações nesta socket
+
+  nfds = 1; // número de file descriptors
+
+  // Retorna assim que exista um evento ou que TIMEOUT expire. * FUNÇÃO POLL *.
+  while ((kfds = poll(connections, nfds, TIMEOUT)) >= 0) {// kfds == 0 significa timeout sem eventos
+    if (kfds > 0){ // kfds é o número de descritores com evento ou erro
+      if ((connections[0].revents & POLLIN) && (nfds < NFDESC))  // Pedido na listening socket ?
+        if ((connections[nfds].fd = accept(connections[0].fd, (struct sockaddr *) &client, &size_client)) > 0){ // Ligação feita ?
+          connections[nfds].events = POLLIN; // Vamos esperar dados nesta socket
+          nfds++;
+      }
+
+      for (i = 1; i < nfds; i++) { // Todas as ligações
+        if (connections[i].revents & POLLIN) { // Dados para ler ?
+
+          if (network_receive_send(connections[i].fd) < 0) {
+            close(connections[i].fd);
+            connections[i].fd = -1;
+            continue;
+          }
+        }
+      }
+    }
   }
 
-  while ((connsock = accept(listening_socket, (struct sockaddr *) &client, &size_client)) != -1) {
-    printf(" * Client is connected!\n");
+  table_skel_destroy();
 
-    //true
-    int success = -1;
-    do {
-      //msg_resposta->c_type = CT_VALUE;
-      success = network_receive_send(connsock, table);
-    }while (success!=-1);
-    /* Fazer ciclo de pedido e resposta */
-
-
-    //TODO
-    /* Ciclo feito com sucesso ? Houve erro?
-    Cliente desligou? */
-
+  for (i = 0; i < nfds; i++) {
+    close(connections[i].fd);
   }
+  return 0;
 }

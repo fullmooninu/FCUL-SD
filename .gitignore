@@ -1,2 +1,9 @@
 *.o
 /.project
+test_data
+test_entry
+test_list
+test_table
+test_message
+table_client
+table_server
