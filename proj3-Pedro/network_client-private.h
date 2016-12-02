@@ -5,13 +5,8 @@
 #include "network_client.h"
 #include <netdb.h>
 
-#define RETRY_TIME 2
-
 struct server_t{
-    int socket_fd;
-    struct sockaddr_in server_in;
-    char *IP;
-	int port;
+        int socket_fd;
 };
 
 

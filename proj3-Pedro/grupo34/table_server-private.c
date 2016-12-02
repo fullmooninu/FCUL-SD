@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "table_server-private.h"
 
+
 /* Libertar memória alocada no network_receive_send do table-server*/
 void free_memory( char *message_resposta, char *message_pedido, struct message_t* msg_pedido, struct message_t* msg_resposta){
 

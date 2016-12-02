@@ -16,7 +16,7 @@ Exemplo de uso: ./table_server 54321 10
 #include "table_server-private.h"
 #include "table_skel.h"
 //#include "message.h"
-#define MAX_CLIENTES 1
+#define MAX_CLIENTES 5
 
 #define NFDESC 4 // N�mero de sockets (uma para listening)
 #define TIMEOUT 50 // em milisegundos

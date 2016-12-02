@@ -7,69 +7,68 @@
 
 struct server_t *network_connect(const char *address_port) {
 	struct server_t *server = malloc(sizeof(struct server_t));
-	struct sockaddr_in server_in;
-	struct hostent *hostinfo;
-	char str_aux[1000];
-	char *server_name;
-	char *server_port;
-	int server_port_num = -1;
-	int server_socket_fd = -1;
 
-	/* Verificar parâmetro da função e alocação de memória */
-	if (server == NULL || address_port == NULL) {
-		network_close(server);
-		return NULL;
-	}
+		struct hostent *hostinfo;
+		char str_aux[1000];
+//		int server_port_num = -1;
+//		int server_socket_fd = -1;
 
-	strcpy(str_aux, address_port);
-	server_name = strtok(str_aux, ":");
-	if (server_name == NULL) {
-		network_close(server);
-		return NULL;
-	}
+		/* Verificar parâmetro da função e alocação de memória */
+		if (server == NULL || address_port == NULL) {
+			network_close(server);
+			return NULL;
+		}
 
-	// printf("host: %s\n", server_name);
-	server_port = strtok(NULL, ":");
-	if (server_port == NULL) {
-		network_close(server);
-		return NULL;
-	}
-	server_port_num = atoi(server_port);
-	// printf("port: %d\n", server_port_num);
+		strcpy(str_aux, address_port);
+		server->IP = strtok(str_aux, ":");
+		if (server->IP == NULL) {
+			network_close(server);
+			return NULL;
+		}
 
-	/* Estabelecer ligação ao servidor:
+		// printf("host: %s\n", server_name);
+		server->port = atoi(strtok(NULL, ":"));
+		if (server->port < 0) {
+			perror("Erro ao obter o porto do servidor! \n");
+			network_close(server);
+			return NULL;
+		}
+//		server_port_num = server->server_port;
+		// printf("port: %d\n", server_port_num);
 
-	 Preencher estrutura struct sockaddr_in com dados do
-	 endereço do servidor.
+		/* Estabelecer ligação ao servidor:
 
-	 Criar a socket.
+		 Preencher estrutura struct sockaddr_in com dados do
+		 endereço do servidor.
 
-	 Estabelecer ligação.
-	 */
+		 Criar a socket.
 
-	//socket
-	server_socket_fd = socket(PF_INET, SOCK_STREAM, 0);
-	if (server_socket_fd < 0) {
-		network_close(server);
-		return NULL;
-	}
-	server->socket_fd = server_socket_fd;
+		 Estabelecer ligação.
+		 */
 
-	server_in.sin_family = AF_INET;
-	server_in.sin_port = htons(server_port_num);
-	hostinfo = gethostbyname(server_name);
-	if (hostinfo == NULL) {
-		network_close(server);
-		return NULL;
-	}
-	server_in.sin_addr = *(struct in_addr *) hostinfo->h_addr;
+		//socket
+		server->socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+		if (server->socket_fd < 0) {
+			network_close(server);
+			return NULL;
+		}
 
-	/* Se a ligação não foi estabelecida, retornar NULL */
-	if (connect(server_socket_fd, (struct sockaddr *) &server_in,
-			sizeof(server_in)) < 0) {
-		network_close(server);
-		return NULL;
-	}
+		server->server_in.sin_family = AF_INET;
+		server->server_in.sin_port = htons(server->port);
+		hostinfo = gethostbyname(server->IP);
+		if (hostinfo == NULL) {
+			network_close(server);
+			return NULL;
+		}
+		server->server_in.sin_addr = *(struct in_addr *)hostinfo->h_addr;
+
+		/* Se a ligação não foi estabelecida, retornar NULL */
+		if (connect(server->socket_fd, (struct sockaddr *) &server->server_in,
+				sizeof(server->server_in)) < 0) {
+			network_close(server);
+			return NULL;
+		}
+
 
 	//TOD guardar mais info na estrutura server?
 
