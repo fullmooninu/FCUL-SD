@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+
 	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = rtable_bind(argv[1]);
 	if (server == NULL) {

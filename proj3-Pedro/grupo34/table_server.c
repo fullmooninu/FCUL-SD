@@ -151,62 +151,62 @@ int network_receive_send(int sockfd){
 
 
 int main(int argc, char **argv){
-  struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
-  int listening_socket, i, nfds, kfds;
-  struct sockaddr_in client;
-  socklen_t size_client;
+	 struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
+	  int listening_socket, i, nfds, kfds;
+	  struct sockaddr_in client;
+	  socklen_t size_client;
 
-  if (argc != 3){
-    printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
-    printf("Exemplo de uso: ./table-server 54321 10\n");
-    return -1;
-  }
+	  if (argc != 3){
+	    printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
+	    printf("Exemplo de uso: ./table-server 54321 10\n");
+	    return -1;
+	  }
 
-  if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) {
-    return -1;
-  }
+	  if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) {
+	    return -1;
+	  }
 
-  //TODO
-  table_skel_init(atoi(argv[2]));
+	  //TODO
+	  table_skel_init(atoi(argv[2]));
 
 
-  printf("Servidor à espera de dados\n");
-  size_client = sizeof(struct sockaddr);
+	  printf("Servidor à espera de dados\n");
+	  size_client = sizeof(struct sockaddr);
 
-  for (i = 0; i < NFDESC; i++)
-    connections[i].fd = -1;    // poll ignora estruturas com fd < 0
+	  for (i = 0; i < NFDESC; i++)
+	    connections[i].fd = -1;    // poll ignora estruturas com fd < 0
 
-  connections[0].fd = listening_socket;  // Vamos detetar eventos na welcoming socket
-  connections[0].events = POLLIN;  // Vamos esperar ligações nesta socket
+	  connections[0].fd = listening_socket;  // Vamos detetar eventos na welcoming socket
+	  connections[0].events = POLLIN;  // Vamos esperar ligações nesta socket
 
-  nfds = 1; // número de file descriptors
+	  nfds = 1; // número de file descriptors
 
-  // Retorna assim que exista um evento ou que TIMEOUT expire. * FUNÇÃO POLL *.
-  while ((kfds = poll(connections, nfds, TIMEOUT)) >= 0) {// kfds == 0 significa timeout sem eventos
-    if (kfds > 0){ // kfds é o número de descritores com evento ou erro
-      if ((connections[0].revents & POLLIN) && (nfds < NFDESC))  // Pedido na listening socket ?
-        if ((connections[nfds].fd = accept(connections[0].fd, (struct sockaddr *) &client, &size_client)) > 0){ // Ligação feita ?
-          connections[nfds].events = POLLIN; // Vamos esperar dados nesta socket
-          nfds++;
-      }
+	  // Retorna assim que exista um evento ou que TIMEOUT expire. * FUNÇÃO POLL *.
+	  while ((kfds = poll(connections, nfds, TIMEOUT)) >= 0) {// kfds == 0 significa timeout sem eventos
+	    if (kfds > 0){ // kfds é o número de descritores com evento ou erro
+	      if ((connections[0].revents & POLLIN) && (nfds < NFDESC))  // Pedido na listening socket ?
+	        if ((connections[nfds].fd = accept(connections[0].fd, (struct sockaddr *) &client, &size_client)) > 0){ // Ligação feita ?
+	          connections[nfds].events = POLLIN; // Vamos esperar dados nesta socket
+	          nfds++;
+	      }
 
-      for (i = 1; i < nfds; i++) { // Todas as ligações
-        if (connections[i].revents & POLLIN) { // Dados para ler ?
+	      for (i = 1; i < nfds; i++) { // Todas as ligações
+	        if (connections[i].revents & POLLIN) { // Dados para ler ?
 
-          if (network_receive_send(connections[i].fd) < 0) {
-            close(connections[i].fd);
-            connections[i].fd = -1;
-            continue;
-          }
-        }
-      }
-    }
-  }
+	          if (network_receive_send(connections[i].fd) < 0) {
+	            close(connections[i].fd);
+	            connections[i].fd = -1;
+	            continue;
+	          }
+	        }
+	      }
+	    }
+	  }
 
-  table_skel_destroy();
+	  table_skel_destroy();
 
-  for (i = 0; i < nfds; i++) {
-    close(connections[i].fd);
-  }
-  return 0;
-}
+	  for (i = 0; i < nfds; i++) {
+	    close(connections[i].fd);
+	  }
+	  return 0;
+	}
