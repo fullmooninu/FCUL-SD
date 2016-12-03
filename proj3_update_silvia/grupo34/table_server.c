@@ -24,11 +24,18 @@ Exemplo de uso: ./table_server 54321 10
 /* Função para preparar uma socket de receção de pedidos de ligação.
 */
 int make_server_socket(short port){
-  int socket_fd;
+  int socket_fd, sim;
   struct sockaddr_in server;
 
   if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
     perror("Erro ao criar socket");
+    return -1;
+  }
+
+  sim = 1;
+  if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, (int *)&sim, sizeof(sim)) < 0) {
+    perror("SO_REUSEADDR setsockopt error");
+    close(socket_fd);
     return -1;
   }
 
@@ -203,6 +210,8 @@ int main(int argc, char **argv){
     }
   }
 
+  printf("TABLE DESTROY\n");
+  fflush(stdout);
   table_skel_destroy();
 
   for (i = 0; i < nfds; i++) {
