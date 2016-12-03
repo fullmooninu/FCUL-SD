@@ -11,7 +11,15 @@ Silvia Ferreira 45511 */
 struct rtable_t *rtable_bind(const char *address_port){
 	struct rtable_t *rtable = (struct rtable_t*) malloc(sizeof(struct rtable_t));
 
+	if (rtable == NULL) {
+		return NULL;
+	}
+
 	rtable->server = network_connect(address_port);
+
+	if (rtable->server == NULL) {
+		return NULL;
+	}
 
 	return rtable;
 }
@@ -25,7 +33,7 @@ int rtable_unbind(struct rtable_t *rtable){
 
 int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
+	struct data_t *datat;
 	int result = -1;
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
@@ -67,7 +75,7 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
+	struct data_t *datat;
 	int result = -1;
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
@@ -109,7 +117,7 @@ int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 struct data_t *rtable_get(struct rtable_t *table, char *key) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
+	struct data_t *datat = NULL;
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
   if (msg_out == NULL) return NULL;

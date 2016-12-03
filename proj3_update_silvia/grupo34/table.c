@@ -89,7 +89,7 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 	int hash = key_hash(key, table->size);
 
 	// Verificar se jah existe
-	if (list_get(table->list[hash],key) != NULL) return 0;
+	if (list_get(table->list[hash],key) != NULL) return -1;
 
 	/* Criar entry com par chave/valor */
 	struct entry_t* e;
