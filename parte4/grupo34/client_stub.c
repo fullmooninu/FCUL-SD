@@ -11,7 +11,15 @@ Silvia Ferreira 45511 */
 struct rtable_t *rtable_bind(const char *address_port){
 	struct rtable_t *rtable = (struct rtable_t*) malloc(sizeof(struct rtable_t));
 
+	if (rtable == NULL) {
+		return NULL;
+	}
+
 	rtable->server = network_connect(address_port);
+
+	if (rtable->server == NULL) {
+		return NULL;
+	}
 
 	return rtable;
 }

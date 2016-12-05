@@ -3,4 +3,9 @@
 # Silvia Ferreira 45511
 
 
-Béleza
+Nesta fase do projecto conseguimos corrigir os erros e memory leaks que trouxémos da fase 2, nomeadamente no message.c, passando os testes testEntry e testKeys que anteriormente não passavam.
+
+Corrigimos os problemas de comunicação entre o servidor e o cliente também da parte 2, sendo que o envio/recepção dos dados agora já decorre sem erros. A interacção do cliente com o utilizador está a funcionar para os comandos todos e está a construir a mensagem de pedido correspondente, enviando-a para o servidor que a recebe e manipula a tabela de acordo com os comandos, construindo uma mensagem de resposta e enviando-a para o cliente.
+
+Reestruturámos o servidor, que agora está a aceitar várias ligações e usa o table_skel.
+O cliente não foi reestruturado.

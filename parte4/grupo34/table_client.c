@@ -14,75 +14,7 @@ Silvia Ferreira 45511 */
 #include "network_client-private.h"
 #include "client_stub-private.h"
 
-struct message_t* process_entry_command(char* input) {
-  struct message_t* msg_out;
-  char *key, *data;
-  struct data_t *datat;
 
-  strtok(input, " "); //ignorar o "comando"
-  key = strtok(NULL, " ");
-  if (key == NULL) {
-    printf("Comando com formato inválido.\n");
-    return NULL;
-  }
-  printf("key: <%s>\n", key);
-  data = strtok(NULL, "");//le ate ao fim da linha 'input'
-  if (data == NULL) {
-    printf("Comando com formato inválido.\n");
-    return NULL;
-  }
-  printf("data <%s>\n", data);
-
-  msg_out = (struct message_t *) malloc(sizeof(struct message_t));
-  if (msg_out == NULL) return NULL;
-
-  msg_out->c_type = CT_ENTRY;
-  msg_out->content.key = strdup(key);
-  if (msg_out->content.key == NULL) {
-    free_message(msg_out);
-    return NULL;
-  }
-
-  printf("STRLEN data: %lu\n", strlen(data));
-  datat = data_create2(strlen(data), data);
-  if (datat == NULL) {
-    free_message(msg_out);
-    return NULL;
-  }
-  msg_out->content.entry = entry_create(key, datat);
-  if (msg_out->content.entry == NULL) {
-    free_message(msg_out);
-    return NULL;
-  }
-
-  return msg_out;
-}
-
-
-struct message_t* process_key_command(char* input) {
-  struct message_t* msg_out;
-  char *key;
-
-  strtok(input, " "); //ignorar o "comando"
-  key = strtok(NULL, "");//le ate ao fim da linha 'input'
-  if (key == NULL) {
-    printf("Comando com formato inválido.\n");
-    return NULL;
-  }
-  printf("key: <%s>\n", key);
-
-  msg_out = (struct message_t *) malloc(sizeof(struct message_t));
-  if (msg_out == NULL) return NULL;
-
-  msg_out->c_type = CT_KEY;
-  msg_out->content.key = strdup(key);
-  if (msg_out->content.key == NULL) {
-    free_message(msg_out);
-    return NULL;
-  }
-
-  return msg_out;
-}
 
 int main(int argc, char **argv){
 	struct rtable_t *server = NULL;
@@ -99,13 +31,13 @@ int main(int argc, char **argv){
 	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = rtable_bind(argv[1]);
   if (server == NULL) {
-    printf("Erro ao estabelecer ligação ao servidor primario: %s\n", argv[1]);
+    printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
     return -1;
   }
 
   server_backup = rtable_bind(argv[2]);
   if (server_backup == NULL) {
-    printf("Erro ao estabelecer ligação ao servidor secundario: %s\n", argv[2]);
+    printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[2]);
     return -1;
   }
 
@@ -146,14 +78,12 @@ int main(int argc, char **argv){
       key = strtok(NULL, " ");
       if (key == NULL) {
         printf("Comando com formato inválido.\n");
-        rtable_unbind(server);
-        return -1;
+        continue;
       }
       data = strtok(NULL, "");//le ate ao fim da linha 'input'
       if (data == NULL) {
         printf("Comando com formato inválido.\n");
-        rtable_unbind(server);
-        return -1;
+        continue;
       }
 
       datat = data_create2(strlen(data), data);
@@ -180,7 +110,7 @@ int main(int argc, char **argv){
       key = strtok(NULL, "");//le ate ao fim da linha 'input'
       if (key == NULL) {
         printf("Comando com formato inválido.\n");
-        return -1;
+        continue;
       }
 
       if (strcmp(key, "*") == 0) {
@@ -215,14 +145,12 @@ int main(int argc, char **argv){
       key = strtok(NULL, " ");
       if (key == NULL) {
         printf("Comando com formato inválido.\n");
-        rtable_unbind(server);
-        return -1;
+        continue;
       }
       data = strtok(NULL, "");//le ate ao fim da linha 'input'
       if (data == NULL) {
         printf("Comando com formato inválido.\n");
-        rtable_unbind(server);
-        return -1;
+        continue;
       }
 
       datat = data_create2(strlen(data), data);
@@ -249,7 +177,7 @@ int main(int argc, char **argv){
       key = strtok(NULL, "");//le ate ao fim da linha 'input'
       if (key == NULL) {
         printf("Comando com formato inválido.\n");
-        return -1;
+        continue;
       }
 
       result = rtable_del(server, key);
@@ -274,6 +202,8 @@ int main(int argc, char **argv){
         printf("%d\n", result);
       }
 
+    } else {
+      printf("Comando desconhecido.\n");
     }
 
 	}//while
