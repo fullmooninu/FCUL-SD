@@ -20,6 +20,13 @@ int table_skel_destroy() {
   return 0;
 }
 
+char* print_table() {
+  return "abc";
+}
+
+char** table_skel_get_keys() {
+  return table_get_keys(tabela);
+}
 
 /* Função que recebe uma tabela e uma mensagem de pedido e:
 - aplica a operação na mensagem de pedido na tabela;

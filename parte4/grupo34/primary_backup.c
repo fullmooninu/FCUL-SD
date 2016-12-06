@@ -5,6 +5,7 @@ Silvia Ferreira 45511 */
 #include "primary_backup-private.h"
 #include "table-private.h"
 #include "network_client.h"
+#include "table_skel.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +14,7 @@ Silvia Ferreira 45511 */
 /* Função usada para um servidor avisar o servidor “server” de que
 *  já acordou. Retorna 0 em caso de sucesso, -1 em caso de insucesso
 */
-int hello(server_t* server) {
+int hello(struct server_t* server) {
 	return 0;
 	// manda mensagem a dizer que acordou com a informacao de si proprio
 	// recebe acknoweledgement de ok
@@ -22,7 +23,7 @@ int hello(server_t* server) {
 /* Pede atualizacao de estado ao server.
 *  Retorna 0 em caso de sucesso e -1 em caso de insucesso.
 */
-int update_state(server_t* server) {
+int update_state(struct server_t* server) {
 	//send message with request code for table keys and data from primary
 	// o primario tem de iterar a lista e fazer um put para cada par key data
 		// secundario pede lista toda
@@ -33,7 +34,7 @@ int update_state(server_t* server) {
 	return 0;
 }
 
-int send_table(struct table_t *table, server_t* backup) {
+int send_table(struct table_t *table, struct server_t* backup) {
 	char** table_keys = table_get_keys(table);
 	for (int i = 0; table_keys[i] != NULL; i++) {
 		struct data_t* data = NULL;
@@ -57,8 +58,7 @@ int send_table(struct table_t *table, server_t* backup) {
 	return 0;
 }
 
-void printInfo(struct table_t* table) {
-	// while cycle around it
+void printCurrentTable(struct table_t* table) {
 	char input[81], *s;
 	fgets(input, 80, stdin);
 	s = strchr(input, '\n');

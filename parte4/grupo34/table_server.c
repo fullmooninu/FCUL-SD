@@ -10,11 +10,13 @@ Exemplo de uso: ./table_server 54321 10
 #include <error.h>
 #include <poll.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include "inet.h"
 #include "table-private.h"
 #include "message-private.h"
 #include "table_server-private.h"
 #include "table_skel.h"
+
 //#include "message.h"
 #define MAX_CLIENTES 1
 
@@ -157,6 +159,32 @@ int network_receive_send(int sockfd){
 }
 
 
+
+void printqualquercoisa() {
+  printf("\nqualquercoisa\n");
+}
+
+void *fgets_print(void *x)
+{
+  while(1) {
+    char input[80];
+    fgets(input,60,stdin); // TODO eh preciso uma thread para lidar com comandos?
+    printf("\nteste teste %s\n",input);
+    int *x_ptr = (int *)x;
+    printf("\nx %d\n",*x_ptr);
+    printqualquercoisa();
+    char** table_keys = table_skel_get_keys();
+    for(int i = 0; table_keys[i] != NULL; i++) {
+      printf("%s ", table_keys[i]);
+    }
+    printf("\n%s\n",print_table());
+  }
+  return NULL;
+}
+
+
+
+
 int main(int argc, char **argv){
   struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
   int listening_socket, i, nfds, kfds;
@@ -178,10 +206,25 @@ int main(int argc, char **argv){
 
 
   printf("Servidor à espera de dados\n");
+
+  // test thread
+  /* this variable is our reference to the second thread */
+  
+  int test = 4;
+  char* test_string_thread = "josefino";
+  pthread_t fgets_print_thread;
+
+  
+/* create a second thread which executes thread(&x) */
+  if(pthread_create(&fgets_print_thread, NULL, fgets_print, &test)) {
+
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+
+  }
+
+
   size_client = sizeof(struct sockaddr);
-  char input[80];
-  fgets(input,60,stdin); // TODO eh preciso uma thread para lidar com comandos?
-  printf("\nteste teste %s\n",input);
   for (i = 0; i < NFDESC; i++)
     connections[i].fd = -1;    // poll ignora estruturas com fd < 0
 
