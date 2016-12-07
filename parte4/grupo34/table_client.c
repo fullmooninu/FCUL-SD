@@ -29,7 +29,7 @@ int main(int argc, char **argv){
   }
 
 	/* Usar network_connect para estabelcer ligação ao servidor */
-	server = rtable_bind(argv[1]);
+  server = rtable_bind(argv[1]);
   if (server == NULL) {
     printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
     return -1;
@@ -42,7 +42,7 @@ int main(int argc, char **argv){
   }
 
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
- 	while (1){
+  while (1){
     char input[81], *s;
     int result;
     key = NULL;
@@ -52,9 +52,9 @@ int main(int argc, char **argv){
 
 		 // Mostrar a prompt para inserção de comando
 
-	printf("\n\nEscolha um dos comandos abaixo:\n");
-	printf(" put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
-  printf(">>> ");
+    printf("\n\nEscolha um dos comandos abaixo:\n");
+    printf(" put <key> <data>\n get <key>\n update <key> <data>\n del <key>\n size\n quit\n\n");
+    printf(">>> ");
 
 		/* Receber o comando introduzido pelo utilizador
 		   Sugestão: usar fgets de stdio.h
@@ -207,5 +207,5 @@ int main(int argc, char **argv){
     }
 
 	}//while
-  	return rtable_unbind(server);
+ return rtable_unbind(server);
 }

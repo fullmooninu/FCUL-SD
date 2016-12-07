@@ -22,7 +22,7 @@ test_message: $(message_objects)
 
 table_client: network_client.o $(message_objects) client_stub.o
 
-table_server: table_server-private.o table_skel.o $(table_objects) $(message_objects)
+table_server: table_server-private.o table_skel.o network_client.o client_stub.o $(table_objects) $(message_objects)
 
 clean:
 	rm -f *.o test_data test_entry test_list test_table test_message table_client table_server

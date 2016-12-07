@@ -16,12 +16,20 @@ Exemplo de uso: ./table_server 54321 10
 #include "message-private.h"
 #include "table_server-private.h"
 #include "table_skel.h"
+#include "network_client-private.h"
+#include "client_stub-private.h"
+
 
 //#include "message.h"
 #define MAX_CLIENTES 1
 
 #define NFDESC 4 // N�mero de sockets (uma para listening)
 #define TIMEOUT 50 // em milisegundos
+
+char* otherServer = NULL;
+int isPrimary = 0;
+int hasSecondary = 0;
+struct rtable_t *server_backup = NULL;
 
 /* Função para preparar uma socket de receção de pedidos de ligação.
 */
@@ -57,6 +65,20 @@ int make_server_socket(short port){
     return -1;
   }
   return socket_fd;
+}
+
+//thread para tentar enviar qualquer msg para o secundario
+void *message_to_secondary(void *message) {
+  struct message_t *msg = (struct message_t*) message; 
+  if (hasSecondary) {
+    printf("dentrodathread");
+    print_message(message);
+    print_message(msg);
+    network_send_receive(server_backup->server,(struct message_t*) message);
+  }
+
+
+  return NULL;
 }
 
 
@@ -108,6 +130,7 @@ int network_receive_send(int sockfd){
     return -1;
   }
 
+
   /* Desserializar a mensagem do pedido */
   msg_pedido = buffer_to_message(message_pedido, host_size);
 
@@ -116,6 +139,26 @@ int network_receive_send(int sockfd){
     free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
     return -1;
   }
+  
+  /*
+  print_msg(msg_pedido);
+  pthread_t t_message_to_secondary;
+// create a second thread which executes thread(&x) 
+  if(pthread_create(&t_message_to_secondary, NULL, message_to_secondary, msg_pedido)) {
+
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+
+  } 
+  */ 
+
+//TODO PASSAR ISTO PARA THREAD
+
+  if (hasSecondary) {
+    print_message(msg_pedido);
+    network_send_receive(server_backup->server,msg_pedido);
+  }
+
 
   /* Processar a mensagem */
   msg_resposta = invoke(msg_pedido);
@@ -173,6 +216,7 @@ void *fgets_print(void *x)
     int *x_ptr = (int *)x;
     printf("\nx %d\n",*x_ptr);
     printqualquercoisa();
+    printf("elementos da tabela ");
     char** table_keys = table_skel_get_keys();
     for(int i = 0; table_keys[i] != NULL; i++) {
       printf("%s ", table_keys[i]);
@@ -184,22 +228,38 @@ void *fgets_print(void *x)
 
 
 
-
 int main(int argc, char **argv){
   struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
   int listening_socket, i, nfds, kfds;
   struct sockaddr_in client;
   socklen_t size_client;
 
-  if (argc != 3){
-    printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
-    printf("Exemplo de uso: ./table-server 54321 10\n");
+  if (argc != 5){
+    printf("Uso: ./server <porta TCP> <dimensão da tabela> outroServer isPrimary\n");
+    printf("Exemplo de uso: ./table_server 54321 10 localhost:54322 1\n");
     return -1;
   }
 
   if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) {
     return -1;
   }
+
+  otherServer = argv[3];
+  isPrimary = atoi(argv[4]);
+  printf("otherServer %s\n\n",otherServer);
+  printf("isPrimary %d\n\n",isPrimary);
+  fflush(stdout);
+
+  
+  
+  if (isPrimary) { 
+    server_backup = rtable_bind(otherServer); //TODO mal fazer bind todas as vezes
+    if (server_backup == NULL) {
+      printf("Erro ao estabelecer ligação ao servidor_secundario: %s\n", otherServer);
+    } else  hasSecondary = 1; 
+  }
+
+  
 
   //TODO
   table_skel_init(atoi(argv[2]));
@@ -211,7 +271,6 @@ int main(int argc, char **argv){
   /* this variable is our reference to the second thread */
   
   int test = 4;
-  char* test_string_thread = "josefino";
   pthread_t fgets_print_thread;
 
   
@@ -240,7 +299,7 @@ int main(int argc, char **argv){
         if ((connections[nfds].fd = accept(connections[0].fd, (struct sockaddr *) &client, &size_client)) > 0){ // Ligação feita ?
           connections[nfds].events = POLLIN; // Vamos esperar dados nesta socket
           nfds++;
-      }
+        }
 
       for (i = 1; i < nfds; i++) { // Todas as ligações
         if (connections[i].revents & POLLIN) { // Dados para ler ?

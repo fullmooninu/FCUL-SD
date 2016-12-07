@@ -10,4 +10,6 @@ struct server_t{
 };
 
 
+void print_message(struct message_t *msg);
+
 #endif
