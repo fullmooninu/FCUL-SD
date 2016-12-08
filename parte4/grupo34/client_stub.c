@@ -33,10 +33,11 @@ int rtable_unbind(struct rtable_t *rtable){
 
 int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat;
+	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
 	int result = -1;
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
+
   if (msg_out == NULL) return -1;
 
   msg_out->c_type = CT_ENTRY;
@@ -44,12 +45,14 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
   datat = data_create2(data->datasize, data->data);
   if (datat == NULL) {
     free_message(msg_out);
+    free(datat);
     return -1;
   }
   msg_out->content.entry = entry_create(key, datat);
   if (msg_out->content.entry == NULL) {
 		data_destroy(datat);
     free_message(msg_out);
+    free(datat);
     return -1;
   }
 
@@ -68,6 +71,7 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 	data_destroy(datat);
 	free_message(msg_out);
 	free_message(msg_resposta);
+    free(datat);
 
 	return result;
 }
@@ -75,7 +79,7 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat;
+	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
 	int result = -1;
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
@@ -86,12 +90,14 @@ int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
   datat = data_create2(data->datasize, data->data);
   if (datat == NULL) {
     free_message(msg_out);
+    free(datat);
     return -1;
   }
   msg_out->content.entry = entry_create(key, datat);
   if (msg_out->content.entry == NULL) {
 		data_destroy(datat);
     free_message(msg_out);
+    free(datat);
     return -1;
   }
 
@@ -110,6 +116,7 @@ int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 	data_destroy(datat);
 	free_message(msg_out);
 	free_message(msg_resposta);
+	free(datat);
 
 	return result;
 }
@@ -117,7 +124,7 @@ int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 struct data_t *rtable_get(struct rtable_t *table, char *key) {
 	struct message_t *msg_out, *msg_resposta;
-	struct data_t *datat = NULL;
+	struct data_t *datat = (struct data_t *)malloc(sizeof(struct data_t));
 
 	msg_out = (struct message_t *) malloc(sizeof(struct message_t));
   if (msg_out == NULL) return NULL;
@@ -126,6 +133,7 @@ struct data_t *rtable_get(struct rtable_t *table, char *key) {
   msg_out->content.key = strdup(key);
   if (msg_out->content.key == NULL) {
     free_message(msg_out);
+    free(datat);
     return NULL;
   }
 
