@@ -6,6 +6,7 @@ Silvia Ferreira 45511 */
 #include <errno.h>
 #include "client_stub.h"
 #include "client_stub-private.h"
+#include "network_client-private.h"
 
 //
 struct rtable_t *rtable_bind(const char *address_port){
@@ -60,11 +61,14 @@ int rtable_put(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 	msg_resposta = network_send_receive(rtable->server, msg_out);
 
-
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		result = -1;
-	} else if (msg_resposta->opcode == OC_PUT+1 &&
-						 msg_resposta->c_type == CT_RESULT) {
+		//Tolerância a falta definida no enunciado Projeto 3
+		sleep(RETRY_TIME);
+		msg_resposta = network_send_receive(rtable->server, msg_out);
+		if (msg_resposta->opcode == OC_RT_ERROR)
+			result = -1;
+	} else if (msg_resposta->opcode == OC_PUT + 1&&
+	msg_resposta->c_type == CT_RESULT) {
 		result = msg_resposta->content.result;
 	}
 
@@ -107,7 +111,11 @@ int rtable_update(struct rtable_t *rtable, char *key, struct data_t *data) {
 
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		result = -1;
+		//Tolerância a falta definida no enunciado Projeto 3
+				sleep(RETRY_TIME);
+				msg_resposta = network_send_receive(rtable->server, msg_out);
+				if (msg_resposta->opcode == OC_RT_ERROR)
+					result = -1;
 	} else if (msg_resposta->opcode == OC_UPDATE+1 &&
 						 msg_resposta->c_type == CT_RESULT) {
 		result = msg_resposta->content.result;
@@ -142,7 +150,11 @@ struct data_t *rtable_get(struct rtable_t *table, char *key) {
 	msg_resposta = network_send_receive(table->server, msg_out);
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		datat = NULL;
+		//Tolerância a falta definida no enunciado Projeto 3
+				sleep(RETRY_TIME);
+				msg_resposta = network_send_receive(table->server, msg_out);
+				if (msg_resposta->opcode == OC_RT_ERROR)
+					datat=NULL;
 	} else if (msg_resposta->opcode == OC_GET+1 &&
 						 msg_resposta->c_type == CT_VALUE) {
 
@@ -185,7 +197,11 @@ int rtable_del(struct rtable_t *table, char *key){
 	msg_resposta = network_send_receive(table->server, msg_out);
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		result = -1;
+		//Tolerância a falta definida no enunciado Projeto 3
+				sleep(RETRY_TIME);
+				msg_resposta = network_send_receive(table->server, msg_out);
+				if (msg_resposta->opcode == OC_RT_ERROR)
+					result = -1;
 	} else if (msg_resposta->opcode == OC_DEL+1 &&
 						 msg_resposta->c_type == CT_RESULT) {
 		result = msg_resposta->content.result;
@@ -211,7 +227,11 @@ int rtable_size(struct rtable_t *rtable){
 	msg_resposta = network_send_receive(rtable->server, msg_out);
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		result = -1;
+		//Tolerância a falta definida no enunciado Projeto 3
+				sleep(RETRY_TIME);
+				msg_resposta = network_send_receive(rtable->server, msg_out);
+				if (msg_resposta->opcode == OC_RT_ERROR)
+					result = -1;
 	} else if (msg_resposta->opcode == OC_SIZE+1 &&
 						 msg_resposta->c_type == CT_RESULT) {
 		result = msg_resposta->content.result;
@@ -240,7 +260,11 @@ char **rtable_get_keys(struct rtable_t *rtable){
 	msg_resposta = network_send_receive(rtable->server, msg_out);
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		keys = NULL;
+		//Tolerância a falta definida no enunciado Projeto 3
+				sleep(RETRY_TIME);
+				msg_resposta = network_send_receive(rtable->server, msg_out);
+				if (msg_resposta->opcode == OC_RT_ERROR)
+					keys = NULL;
 	} else if (msg_resposta->opcode == OC_GET+1 &&
 						 msg_resposta->c_type == CT_KEYS) {
 		keys = msg_resposta->content.keys;

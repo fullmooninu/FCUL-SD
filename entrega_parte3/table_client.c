@@ -93,8 +93,12 @@ int main(int argc, char **argv){
     return -1;
   }
 
+  printf("O ARGUMENTO 0 É %s\n", argv[0]);
+  printf("O ARUMENTO 1 É %s\n",argv[1]);
+
 	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = network_connect(argv[1]);
+
   if (server == NULL) {
     printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
     return -1;

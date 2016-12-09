@@ -260,7 +260,8 @@ int main(int argc, char **argv) {
 	int listening_socket, connsock;
 	int nBytes, msg_size, count = 2, result;
 	struct sockaddr_in client;
-	socklen_t size_client = sizeof(struct sockaddr_in);
+	socklen_t size_client;
+	size_client = sizeof(struct sockaddr_in);
 	struct table_t *table = (struct table_t*) malloc(sizeof(struct table_t));
 	char *terminal = malloc(sizeof(char));
 	struct message_t* msg_resposta;
@@ -278,12 +279,6 @@ int main(int argc, char **argv) {
 	if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0)
 		return -1;
 
-	//Listen
-//	if (listen(listening_socket, 20) < 0) {
-//		perror("Erro ao executar listen");
-//		close(listening_socket);
-//		return -1;
-//	}
 
 	if ((result = table_skel_init(atoi(argv[2]))) == -1) {
 		close(listening_socket);
@@ -310,7 +305,7 @@ int main(int argc, char **argv) {
 		if (desc_set[1].revents & POLLIN) {
 			printf("ENTROU AQUI\n");
 
-			connsock = accept(desc_set[1].fd, (struct sockaddr *) &client,
+			connsock = accept(desc_set[1].fd, (struct sockaddr*)&client,
 					&size_client);
 			printf("%d",connsock);
 			//Adiciona a lista de descritores
