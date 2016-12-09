@@ -227,7 +227,7 @@ int rtable_size(struct rtable_t *rtable){
 	msg_resposta = network_send_receive(rtable->server, msg_out);
 
 	if (msg_resposta->opcode == OC_RT_ERROR) {
-		//Tolerância a falta definida no enunciado Projeto 3
+		//Tolerância a falta definida no enunciado Projeto 3   ff
 				sleep(RETRY_TIME);
 				msg_resposta = network_send_receive(rtable->server, msg_out);
 				if (msg_resposta->opcode == OC_RT_ERROR)
