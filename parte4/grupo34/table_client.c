@@ -7,8 +7,8 @@
  Os comandos introduzido no programa não deverão exceder
  80 carateres.
 
- Uso: table-client <ip servidor>:<porta servidor>
- Exemplo de uso: ./table_client 10.101.148.144:54321
+ Uso: table-client <ip servidor>:<porta servidor> <ip servidor>:<porta servidor secundario>
+ Exemplo de uso: ./table_client 10.101.148.144:54321 10.101.148.144:12345
  */
 
 #include "network_client-private.h"
@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 	server = rtable_bind(argv[1]);
 	if (server == NULL) {
 		printf("A tentar novo servidor: de %s para %s\n", argv[1], argv[2]);
+		printf("O numero de argumentos AKI é: %d", argc);
 		sleep(RETRY_TIME);
 		rtable_unbind(server);
 		//Faz ligação ao segundo servidor
