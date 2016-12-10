@@ -68,7 +68,7 @@ int make_server_socket(short port){
 }
 
 //thread para tentar enviar qualquer msg para o secundario
-struct message_t *message_to_secondary(struct message_t *message) {
+void *message_to_secondary(void *message) {
   if (hasSecondary) {
     printf("dentrodathread");
     print_message(message);

@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
 	server = rtable_bind(argv[1]);
 	if (server == NULL) {
 		printf("A tentar novo servidor: de %s para %s\n", argv[1], argv[2]);
-		printf("O numero de argumentos AKI é: %d", argc);
 		sleep(RETRY_TIME);
 		rtable_unbind(server);
 		//Faz ligação ao segundo servidor
