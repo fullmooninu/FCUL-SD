@@ -91,6 +91,7 @@ struct message_t *network_send_receive(struct server_t *server,
 	/* Serializar a mensagem recebida */
 	host_size = message_to_buffer(msg, &message_out);
 
+
 	/* Verificar se a serialização teve sucesso */
 	net_size = htonl(host_size);
 

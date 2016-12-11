@@ -283,7 +283,11 @@ int main(int argc, char **argv){
     } else  hasSecondary = 1;
   }
 
-
+  ///////////////////////////////////// FUNÇAO HELLO //////////////
+//if(!is Primary){
+//	server = rtable_bind(otherServer);
+//	hello(server);
+//}
 
   //TODO
   table_skel_init(atoi(argv[2]));

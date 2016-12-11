@@ -15,7 +15,7 @@
 #include "client_stub-private.h"
 
 int main(int argc, char **argv) {
-	struct rtable_t *server = NULL;
+	struct rtable_t *server = (struct rtable_t*)malloc(sizeof(struct rtable_t));
 	//struct rtable_t *server_backup = NULL;
 	char *key, *data = NULL, **keys = NULL;
 	struct data_t *datat = NULL;
@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-		/* Usar network_connect para estabelcer ligação ao servidor */
+	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = rtable_bind(argv[1]);
 	if (server == NULL) {
 		printf("A tentar novo servidor: de %s para %s\n", argv[1], argv[2]);
