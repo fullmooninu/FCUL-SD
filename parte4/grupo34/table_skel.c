@@ -3,6 +3,7 @@
 #include "table_skel.h"
 #include "message-private.h"
 #include "table-private.h"
+#include <stdio.h>
 
 struct table_t *tabela;
 
@@ -20,13 +21,31 @@ int table_skel_destroy() {
   return 0;
 }
 
-char* print_table() {
-  return "abc";
+void print_table() {
+  char** table_keys;
+  struct data_t *data;
+  int i, j;
+  char *c;
+
+  table_keys = table_get_keys(tabela);
+    if (table_keys != NULL) {
+      for(i = 0; table_keys[i] != NULL; i++) {
+        fflush(stdout);
+        data = table_get(tabela, table_keys[i]);
+        printf("key: %s - value: ", table_keys[i]);
+        c = (char *) data->data;
+        for (j = 0; j < data->datasize; j++) {
+      		printf("%c", *c);
+      		c += 1;
+      	}
+      	printf("\n");
+        fflush(stdout);
+        data_destroy(data);
+      }
+      table_free_keys(table_keys);
+    }
 }
 
-char** table_skel_get_keys() {
-  return table_get_keys(tabela);
-}
 
 /* Função que recebe uma tabela e uma mensagem de pedido e:
 - aplica a operação na mensagem de pedido na tabela;

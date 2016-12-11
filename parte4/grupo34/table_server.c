@@ -26,6 +26,9 @@ Exemplo de uso: ./table_server 54321 10
 #define NFDESC 4 // N�mero de sockets (uma para listening)
 #define TIMEOUT 50 // em milisegundos
 
+int nfds;
+struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
+
 char* otherServer = NULL;
 int isPrimary = 0;
 int hasSecondary = 0;
@@ -69,7 +72,7 @@ int make_server_socket(short port){
 
 //thread para tentar enviar qualquer msg para o secundario
 void *message_to_secondary(void *message) {
-  struct message_t *msg = (struct message_t*) message; 
+  struct message_t *msg = (struct message_t*) message;
   if (hasSecondary) {
     printf("dentrodathread");
     print_message(message);
@@ -139,18 +142,18 @@ int network_receive_send(int sockfd){
     free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
     return -1;
   }
-  
+
   /*
   print_msg(msg_pedido);
   pthread_t t_message_to_secondary;
-// create a second thread which executes thread(&x) 
+// create a second thread which executes thread(&x)
   if(pthread_create(&t_message_to_secondary, NULL, message_to_secondary, msg_pedido)) {
 
     fprintf(stderr, "Error creating thread\n");
     return 1;
 
-  } 
-  */ 
+  }
+  */
 
 //TODO PASSAR ISTO PARA THREAD
 
@@ -201,27 +204,40 @@ int network_receive_send(int sockfd){
   return 0;
 }
 
-
-
-void printqualquercoisa() {
-  printf("\nqualquercoisa\n");
+void safeExit() {
+  int i;
+  for (i = 0; i < nfds; i++) {
+    close(connections[i].fd);
+  }
+  table_skel_destroy();
+  exit(EXIT_SUCCESS);
 }
 
-void *fgets_print(void *x)
-{
+
+void *server_commands(void *x) {
+  char input[80], *s;
+  printf("Escreva 'print' para ver o conteúdo da tabela ou 'quit' para parar o servidor.\n");
   while(1) {
-    char input[80];
-    fgets(input,60,stdin); // TODO eh preciso uma thread para lidar com comandos?
-    printf("\nteste teste %s\n",input);
-    int *x_ptr = (int *)x;
-    printf("\nx %d\n",*x_ptr);
-    printqualquercoisa();
-    printf("elementos da tabela ");
-    char** table_keys = table_skel_get_keys();
-    for(int i = 0; table_keys[i] != NULL; i++) {
-      printf("%s ", table_keys[i]);
+    printf(">>> ");
+    fgets(input,60,stdin);
+    s = strchr(input, '\n');
+		*s = '\0';
+
+    if(strcmp(input, "print") == 0) {
+      printf("***********************************************************\n");
+      if (isPrimary == 1) {
+        printf("SERVIDOR PRIMÁRIO\n\n");
+      } else {
+        printf("SERVIDOR SECUNDÁRIO\n\n");
+      }
+      printf("Tabela:\n");
+      print_table();
+      printf("***********************************************************\n\n");
+    } else if (strcmp(input, "quit") == 0) {
+      safeExit();
+    } else {
+      printf("Escreva 'print' para ver o conteúdo da tabela ou 'quit' para parar o servidor.\n");
     }
-    printf("\n%s\n",print_table());
   }
   return NULL;
 }
@@ -229,8 +245,7 @@ void *fgets_print(void *x)
 
 
 int main(int argc, char **argv){
-  struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
-  int listening_socket, i, nfds, kfds;
+  int listening_socket, i, kfds;
   struct sockaddr_in client;
   socklen_t size_client;
 
@@ -250,13 +265,13 @@ int main(int argc, char **argv){
   printf("isPrimary %d\n\n",isPrimary);
   fflush(stdout);
 
-  
-  
-  if (isPrimary) { 
+
+
+  if (isPrimary) {
     server_backup = rtable_bind(otherServer); //TODO mal fazer bind todas as vezes
     if (server_backup == NULL) {
       printf("Erro ao estabelecer ligação ao servidor_secundario: %s\n", otherServer);
-    } else  hasSecondary = 1; 
+    } else  hasSecondary = 1;
   }
 
   
@@ -269,13 +284,13 @@ int main(int argc, char **argv){
 
   // test thread
   /* this variable is our reference to the second thread */
-  
-  int test = 4;
-  pthread_t fgets_print_thread;
 
-  
+  int test = 4;
+  pthread_t server_commands_thread;
+
+
 /* create a second thread which executes thread(&x) */
-  if(pthread_create(&fgets_print_thread, NULL, fgets_print, &test)) {
+  if(pthread_create(&server_commands_thread, NULL, server_commands, &test)) {
 
     fprintf(stderr, "Error creating thread\n");
     return 1;
