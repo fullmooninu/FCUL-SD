@@ -6,7 +6,7 @@
 Nesta fase do projecto conseguimos concluir a implementação da parte 3, tendo o client_stub e o table_skel completamente 
 concretizados e o table_client (já sem mem leaks) e o table_server restruturados. 
 
-Na implementação da parte 4 temos os seguintes pontos a funcionar: 
+Na implementação da parte 4 temos os seguintes pontos do funcionameto base a funcionar: 
 
 1. Temos um servidor primário e um secundário.
 a. os servidores estão à escuta também de eventos do teclado, sendo que no terminal do servidor escrevemos print para imprimir 
