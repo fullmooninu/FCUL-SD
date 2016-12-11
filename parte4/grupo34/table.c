@@ -176,6 +176,10 @@ int table_del(struct table_t *table, char *key){
 	struct list_t* list = table->list[hashCode];
 	int retVal = list_remove(list, key);
 	if(retVal == 0){
+		if (list->size == 0) {
+			list_destroy(list);
+			table->list[hashCode] = NULL;
+		}
 		table->nElem--;
 		return 0;
 	}
