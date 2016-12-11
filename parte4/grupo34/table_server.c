@@ -70,17 +70,19 @@ int make_server_socket(short port){
   return socket_fd;
 }
 
+
+
+pthread_mutex_t lock;
 //thread para tentar enviar qualquer msg para o secundario
-void *message_to_secondary(void *message) {
-  struct message_t *msg = (struct message_t*) message;
-  if (hasSecondary) {
-    printf("dentrodathread");
-    print_message(message);
-    print_message(msg);
-    network_send_receive(server_backup->server,(struct message_t*) message);
+void* message_to_secondary(void *arg) {
+  pthread_mutex_lock(&lock);
+  struct message_t* msg = (struct message_t*) arg;
+  if ( msg->opcode == OC_PUT ||
+       msg->opcode == OC_UPDATE ||
+       msg->opcode == OC_DEL) {
+    network_send_receive(server_backup->server,msg);
   }
-
-
+  pthread_mutex_unlock(&lock);
   return NULL;
 }
 
@@ -143,24 +145,27 @@ int network_receive_send(int sockfd){
     return -1;
   }
 
-  /*
-  print_msg(msg_pedido);
+
   pthread_t t_message_to_secondary;
-// create a second thread which executes thread(&x)
-  if(pthread_create(&t_message_to_secondary, NULL, message_to_secondary, msg_pedido)) {
-
-    fprintf(stderr, "Error creating thread\n");
-    return 1;
-
-  }
-  */
-
-//TODO PASSAR ISTO PARA THREAD
-
   if (hasSecondary) {
-    print_message(msg_pedido);
-    network_send_receive(server_backup->server,msg_pedido);
+    // create a second thread which executes thread(&x)
+    if(pthread_create(&t_message_to_secondary, NULL, message_to_secondary, msg_pedido)) {
+      fprintf(stderr, "Error creating thread\n");
+      return 1;
+    }
   }
+
+
+//TODO PASSAR ISTO PARA THREAD jah foi passado
+/*  if (hasSecondary) {
+    if (
+      msg_pedido->opcode == OC_PUT ||
+      msg_pedido->opcode == OC_UPDATE ||
+      msg_pedido->opcode == OC_DEL) {
+    print_message(msg_pedido); //TODO AUX
+    network_send_receive(server_backup->server,msg_pedido);
+   }
+  }*/
 
 
   /* Processar a mensagem */
@@ -197,6 +202,10 @@ int network_receive_send(int sockfd){
     return -1;
   }
 
+  if (hasSecondary) {
+    pthread_join(t_message_to_secondary, NULL);
+    pthread_mutex_destroy(&lock);
+  }
   /* Libertar memória */
   free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
 
@@ -274,7 +283,7 @@ int main(int argc, char **argv){
     } else  hasSecondary = 1;
   }
 
-  
+
 
   //TODO
   table_skel_init(atoi(argv[2]));
