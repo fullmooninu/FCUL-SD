@@ -69,10 +69,12 @@ int make_server_socket(short port){
 
 //thread para tentar enviar qualquer msg para o secundario
 void *message_to_secondary(void *message) {
+  struct message_t *msg = (struct message_t*) message; 
   if (hasSecondary) {
     printf("dentrodathread");
     print_message(message);
-    network_send_receive(server_backup->server, message);
+    print_message(msg);
+    network_send_receive(server_backup->server,(struct message_t*) message);
   }
 
 
