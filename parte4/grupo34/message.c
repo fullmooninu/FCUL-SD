@@ -224,7 +224,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size) {
 		if (tamanhoDaData == 0) {
 			// msg->content.data = data_create(0);
 			msg->content.data = (struct data_t*) malloc(sizeof(struct data_t));
-			if (msg->content.data == NULL) return NULL;
+			if (msg->content.data == NULL) { free_message(msg); return NULL; }
 			msg->content.data->datasize = 0;
 			msg->content.data->data = NULL;
 		} else {

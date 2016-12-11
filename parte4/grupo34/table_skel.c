@@ -120,7 +120,7 @@ struct message_t *invoke(struct message_t *msg_pedido){
         if(data == NULL){
           // data = data_create(0);
           data =  (struct data_t*) malloc(sizeof(struct data_t));
-          if (data == NULL) return NULL;
+          if (data == NULL) { data_destroy(data); return NULL; }
           data->datasize = 0;
           data->data = NULL;
         }

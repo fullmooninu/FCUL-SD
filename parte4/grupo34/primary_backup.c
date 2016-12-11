@@ -39,7 +39,6 @@ int send_table(struct table_t *table, struct server_t* backup) {
 	for (int i = 0; table_keys[i] != NULL; i++) {
 		struct data_t* data = NULL;
 		// prepare data
-		data = malloc(sizeof(struct data_t)); if (data == NULL) return -1;
 		data = table_get(table, table_keys[i]);
 		// char* char_data = (char*) data->data; //TODO REMOVE THIS?
 

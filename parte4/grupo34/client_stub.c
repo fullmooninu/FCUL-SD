@@ -21,6 +21,7 @@ struct rtable_t *rtable_bind(const char *address_port) {
 	rtable->server = network_connect(address_port);
 
 	if (rtable->server == NULL) {
+		free(rtable);
 		return NULL;
 	}
 
