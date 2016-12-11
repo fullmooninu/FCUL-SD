@@ -27,4 +27,15 @@ No primário este passo está implementado através de uma nova thread.
 escrita, envia a confirmação ao cliente.
 a. se der erro na escrita do primário este irá reportar o erro ao cliente.
 
-//TOCOMPLETE
+
+A ordem de execução deve ser: correr serv secundario, depois correr o serv primario e depois os clientes
+
+Para correr o servidor secundário:
+./table_server <porto> <dimTabela> <enderecoPrimario:portoPrim> 0   (o nr 0 no ultimo arg significa que é o secundario)
+
+Para correr o servidor primário:
+./table_server <porto> <dimTabela> <enderecoSecundario:portoSec> 1   (o nr 1 no ultimo arg significa que é o primario)
+
+Para correr os clientes:
+./table_client <enderecoPrimario:portoPrim> <enderecoSec:portoSec>
+
