@@ -26,23 +26,23 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	/* Usar network_connect para estabelcer ligação ao servidor */
+		/* Usar network_connect para estabelcer ligação ao servidor */
 	server = rtable_bind(argv[1]);
 	if (server == NULL) {
 		printf("A tentar novo servidor: de %s para %s\n", argv[1], argv[2]);
 		sleep(RETRY_TIME);
-		rtable_unbind(server);
 		//Faz ligação ao segundo servidor
 		server = rtable_bind(argv[2]);
-		server->on1 = 0;
+		if (server != NULL)
+			server->on1 = 0;
 		if (server == NULL) {
 			server = rtable_bind(argv[2]);
 			printf("A tentar novo servidor: de %s para %s\n", argv[2], argv[1]);
 			sleep(RETRY_TIME);
-			rtable_unbind(server);
 			//Faz ligação ao primeiro servidor
 			server = rtable_bind(argv[1]);
-			server->on1 = 1;
+			if (server != NULL)
+				server->on1 = 1;
 		}
 	}
 	//Se nenhum funcionar
