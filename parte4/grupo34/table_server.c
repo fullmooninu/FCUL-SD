@@ -155,8 +155,13 @@ int network_receive_send(int sockfd){
 //TODO PASSAR ISTO PARA THREAD
 
   if (hasSecondary) {
-    print_message(msg_pedido);
+    if (
+      msg_pedido->opcode == OC_PUT || 
+      msg_pedido->opcode == OC_UPDATE ||
+      msg_pedido->opcode == OC_DEL) {
+    print_message(msg_pedido); //TODO AUX
     network_send_receive(server_backup->server,msg_pedido);
+   }
   }
 
 
