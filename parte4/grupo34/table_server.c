@@ -3,7 +3,7 @@ Elias Miguel Barreira 40821, Pedro Pais 41375
 Silvia Ferreira 45511 */
 
 /*
-Programa que implementa um servidor de uma tabela hash com chainning.
+Programa que implementa um servidor de 1 tabela hash com chainning.
 Uso: table-server <porta TCP> <dimensão da tabela>
 Exemplo de uso: ./table_server 54321 10
 */
