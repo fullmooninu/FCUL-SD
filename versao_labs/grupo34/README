@@ -1,0 +1,42 @@
+# Sistemas Distribuidos - 2016 - Grupo 34
+# Elias Miguel Barreira 40821, Pedro Pais 41375
+# Silvia Ferreira 45511
+
+
+Nesta fase do projecto conseguimos concluir a implementação da parte 3, tendo o client_stub e o table_skel completamente 
+concretizados e o table_client (já sem mem leaks) e o table_server restruturados. 
+
+Na implementação da parte 4 temos os seguintes pontos do funcionamento base a funcionar: 
+
+1. Temos um servidor primário e um secundário.
+a. os servidores estão à escuta também de eventos do teclado, sendo que no terminal do servidor escrevemos print para imprimir 
+o seguinte conteúdo: uma linha de asteriscos, a informação de se o servidor é primário ou secundário, uma linha em branco,
+o conteúdo da tabela com um par chave/valor por cada linha, e finalmente uma linha final de asteriscos.
+
+2. Quando um cliente pede uma operação de leitura ao primário, este:
+a. está a executar a operação na sua tabela;
+b. está a resposta ao cliente.
+
+3. Quando o cliente pede uma operação ao primário, que envolve alteração da tabela, o primário:
+a. está a alterar a sua tabela;
+b. e está a fazer o pedido de alteração ao secundário. Ao fazer esse pedido o primário está a atuar como cliente do secundário, 
+fazendo com que o secundário proceda à alteração da sua tabela.
+No primário este passo está implementado através de uma nova thread. 
+
+4. Quando o primário recebe confirmação do secundário (quando a segunda thread termina) e já recebeu também a confirmação da sua
+escrita, envia a confirmação ao cliente.
+a. se der erro na escrita do primário este irá reportar o erro ao cliente.
+
+A funcionalidade pedida de trocar os papéis de secundário pelo primário ainda só está a funcionar da seuginte forma: lança-se apenas o secundário e depois o cliente como normal. O cliente tentará ligar-se ao primário e ao falhar, ligar-se-á ao secundário, no entanto o secundário ainda não se assume como primário"
+
+A ordem de execução deve ser: correr serv secundario, depois correr o serv primario e depois os clientes
+
+Para correr o servidor secundário:
+./table_server <porto> <dimTabela> <enderecoPrimario:portoPrim> 0   (o nr 0 no ultimo arg significa que é o secundario)
+
+Para correr o servidor primário:
+./table_server <porto> <dimTabela> <enderecoSecundario:portoSec> 1   (o nr 1 no ultimo arg significa que é o primario)
+
+Para correr os clientes:
+./table_client <enderecoPrimario:portoPrim> <enderecoSec:portoSec>
+

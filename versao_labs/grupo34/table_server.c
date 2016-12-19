@@ -1,0 +1,353 @@
+/* Sistemas Distribuidos - 2016 - Grupo 34
+Elias Miguel Barreira 40821, Pedro Pais 41375
+Silvia Ferreira 45511 */
+
+/*
+Programa que implementa um servidor de 1 tabela hash com chainning.
+Uso: table-server <porta TCP> <dimensão da tabela>
+Exemplo de uso: ./table_server 54321 10
+*/
+#include <error.h>
+#include <poll.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include "inet.h"
+#include "table-private.h"
+#include "message-private.h"
+#include "table_server-private.h"
+#include "table_skel.h"
+#include "network_client-private.h"
+#include "client_stub-private.h"
+
+
+//#include "message.h"
+#define MAX_CLIENTES 1
+
+#define NFDESC 4 // N�mero de sockets (uma para listening)
+#define TIMEOUT 50 // em milisegundos
+
+int nfds;
+struct pollfd connections[NFDESC]; // Estrutura para file descriptors das sockets das ligações
+
+char* otherServer = NULL;
+int isPrimary = 0;
+int hasSecondary = 0;
+struct rtable_t *server_backup = NULL;
+
+/* Função para preparar uma socket de receção de pedidos de ligação.
+*/
+int make_server_socket(short port){
+  int socket_fd, sim;
+  struct sockaddr_in server;
+
+  if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+    perror("Erro ao criar socket");
+    return -1;
+  }
+
+  sim = 1;
+  if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, (int *)&sim, sizeof(sim)) < 0) {
+    perror("SO_REUSEADDR setsockopt error");
+    close(socket_fd);
+    return -1;
+  }
+
+  server.sin_family = AF_INET;
+  server.sin_port = htons(port);
+  server.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (bind(socket_fd, (struct sockaddr *) &server, sizeof(server)) < 0){
+    perror("Erro ao fazer bind");
+    close(socket_fd);
+    return -1;
+  }
+
+  if (listen(socket_fd, 0) < 0){
+    perror("Erro ao executar listen");
+    close(socket_fd);
+    return -1;
+  }
+  return socket_fd;
+}
+
+
+
+pthread_mutex_t lock;
+//thread para tentar enviar qualquer msg para o secundario
+void* message_to_secondary(void *arg) {
+  pthread_mutex_lock(&lock);
+  struct message_t* msg = (struct message_t*) arg;
+  if ( msg->opcode == OC_PUT ||
+       msg->opcode == OC_UPDATE ||
+       msg->opcode == OC_DEL) {
+    network_send_receive(server_backup->server,msg);
+  }
+  pthread_mutex_unlock(&lock);
+  return NULL;
+}
+
+
+
+
+/* Função "inversa" da função network_send_receive usada no table-client.
+Neste caso a função implementa um ciclo receive/send:
+
+Recebe um pedido;
+Aplica o pedido na tabela;
+Envia a resposta.#include "message.h"
+
+*/
+int network_receive_send(int sockfd){
+  char *message_resposta = NULL;
+  char *message_pedido = NULL;
+  //int msg_length;
+  int host_size, net_size, result;
+  struct message_t *msg_pedido = NULL;
+  struct message_t *msg_resposta = NULL;
+  //int msg_length;
+  //struct list_t *results;
+
+  /* Verificar parâmetros de entrada */
+
+  if(sockfd < 0) return -1;
+
+
+  /* Com a função read_all, receber num inteiro o tamanho da
+  mensagem de pedido que será recebida de seguida.*/
+  result = read_all(sockfd, (char *) &net_size, _INT);
+  /* Verificar se a receção teve sucesso */
+  if (result == -1) return -1;
+
+  host_size = ntohl(net_size);
+
+  /* Alocar memória para receber o número de bytes da
+  mensagem de pedido. */
+  message_pedido = malloc(sizeof(char)*host_size);
+
+  /* Com a função read_all, receber a mensagem de resposta. */
+  result = read_all(sockfd, message_pedido, host_size);
+  // printf("bytes recebidos buffer: %d\n", result);
+  // fflush(stdout);
+
+  /* Verificar se a receção teve sucesso */
+  if (result == -1){
+    free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
+  }
+
+
+  /* Desserializar a mensagem do pedido */
+  msg_pedido = buffer_to_message(message_pedido, host_size);
+
+  /* Verificar se a desserialização teve sucesso */
+  if (msg_pedido == NULL){
+    free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
+  }
+
+
+  pthread_t t_message_to_secondary;
+  if (hasSecondary) {
+    // create a second thread which executes thread(&x)
+    if(pthread_create(&t_message_to_secondary, NULL, message_to_secondary, msg_pedido)) {
+      fprintf(stderr, "Error creating thread\n");
+      return 1;
+    }
+  }
+
+
+//TODO PASSAR ISTO PARA THREAD jah foi passado
+/*  if (hasSecondary) {
+    if (
+      msg_pedido->opcode == OC_PUT ||
+      msg_pedido->opcode == OC_UPDATE ||
+      msg_pedido->opcode == OC_DEL) {
+    print_message(msg_pedido); //TODO AUX
+    network_send_receive(server_backup->server,msg_pedido);
+   }
+  }*/
+
+
+  /* Processar a mensagem */
+  msg_resposta = invoke(msg_pedido);
+
+  /* Serializar a mensagem recebida */
+  host_size = message_to_buffer(msg_resposta, &message_resposta);
+
+  /* Verificar se a serialização teve sucesso */
+  if (host_size == -1){
+    free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
+  }
+
+  /* Enviar ao cliente o tamanho da mensagem que será enviada
+  logo de seguida
+  */
+  net_size = htonl(host_size);
+  result = write_all(sockfd, (char *) &net_size, _INT);
+
+  /* Verificar se o envio teve sucesso */
+  if (result == -1){
+    free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
+  }
+
+  /* Enviar a mensagem que foi previamente serializada */
+
+  result = write_all(sockfd, message_resposta, host_size);
+
+  /* Verificar se o envio teve sucesso */
+  if (result == -1) {
+    free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+    return -1;
+  }
+
+  if (hasSecondary) {
+    pthread_join(t_message_to_secondary, NULL);
+    pthread_mutex_destroy(&lock);
+  }
+  /* Libertar memória */
+  free_memory(message_resposta, message_pedido, msg_pedido, msg_resposta);
+
+
+  return 0;
+}
+
+void safeExit() {
+  int i;
+  for (i = 0; i < nfds; i++) {
+    close(connections[i].fd);
+  }
+  table_skel_destroy();
+  exit(EXIT_SUCCESS);
+}
+
+
+void *server_commands(void *x) {
+  char input[80], *s;
+  printf("Escreva 'print' para ver o conteúdo da tabela ou 'quit' para parar o servidor.\n");
+  while(1) {
+    printf(">>> ");
+    fgets(input,60,stdin);
+    s = strchr(input, '\n');
+		*s = '\0';
+
+    if(strcmp(input, "print") == 0) {
+      printf("***********************************************************\n");
+      if (isPrimary == 1) {
+        printf("SERVIDOR PRIMÁRIO\n\n");
+      } else {
+        printf("SERVIDOR SECUNDÁRIO\n\n");
+      }
+      printf("Tabela:\n");
+      print_table();
+      printf("***********************************************************\n\n");
+    } else if (strcmp(input, "quit") == 0) {
+      safeExit();
+    } else {
+      printf("Escreva 'print' para ver o conteúdo da tabela ou 'quit' para parar o servidor.\n");
+    }
+  }
+  return NULL;
+}
+
+
+
+int main(int argc, char **argv){
+  int listening_socket, i, kfds;
+  struct sockaddr_in client;
+  socklen_t size_client;
+
+  if (argc != 5){
+    printf("Uso: ./server <porta TCP> <dimensão da tabela> outroServer isPrimary\n");
+    printf("Exemplo de uso: ./table_server 54321 10 localhost:54322 1\n");
+    return -1;
+  }
+
+  if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) {
+    return -1;
+  }
+
+  otherServer = argv[3];
+  isPrimary = atoi(argv[4]);
+  printf("otherServer %s\n\n",otherServer);
+  printf("isPrimary %d\n\n",isPrimary);
+  fflush(stdout);
+
+
+
+  if (isPrimary) {
+    server_backup = rtable_bind(otherServer); //TODO mal fazer bind todas as vezes
+    if (server_backup == NULL) {
+      printf("Erro ao estabelecer ligação ao servidor_secundario: %s\n", otherServer);
+    } else  hasSecondary = 1;
+  }
+
+  ///////////////////////////////////// FUNÇAO HELLO //////////////
+//if(!is Primary){
+//	server = rtable_bind(otherServer);
+//	hello(server);
+//}
+
+  //TODO
+  table_skel_init(atoi(argv[2]));
+
+
+  printf("Servidor à espera de dados\n");
+
+  // test thread
+  /* this variable is our reference to the second thread */
+
+  int test = 4;
+  pthread_t server_commands_thread;
+
+
+/* create a second thread which executes thread(&x) */
+  if(pthread_create(&server_commands_thread, NULL, server_commands, &test)) {
+
+    fprintf(stderr, "Error creating thread\n");
+    return 1;
+
+  }
+
+
+  size_client = sizeof(struct sockaddr);
+  for (i = 0; i < NFDESC; i++)
+    connections[i].fd = -1;    // poll ignora estruturas com fd < 0
+
+  connections[0].fd = listening_socket;  // Vamos detetar eventos na welcoming socket
+  connections[0].events = POLLIN;  // Vamos esperar ligações nesta socket
+
+  nfds = 1; // número de file descriptors
+
+  // Retorna assim que exista um evento ou que TIMEOUT expire. * FUNÇÃO POLL *.
+  while ((kfds = poll(connections, nfds, TIMEOUT)) >= 0) {// kfds == 0 significa timeout sem eventos
+    if (kfds > 0){ // kfds é o número de descritores com evento ou erro
+      if ((connections[0].revents & POLLIN) && (nfds < NFDESC))  // Pedido na listening socket ?
+        if ((connections[nfds].fd = accept(connections[0].fd, (struct sockaddr *) &client, &size_client)) > 0){ // Ligação feita ?
+          connections[nfds].events = POLLIN; // Vamos esperar dados nesta socket
+          nfds++;
+        }
+
+      for (i = 1; i < nfds; i++) { // Todas as ligações
+        if (connections[i].revents & POLLIN) { // Dados para ler ?
+
+          if (network_receive_send(connections[i].fd) < 0) {
+            close(connections[i].fd);
+            connections[i].fd = -1;
+            continue;
+          }
+        }
+      }
+    }
+  }
+
+  printf("TABLE DESTROY\n");
+  fflush(stdout);
+  table_skel_destroy();
+
+  for (i = 0; i < nfds; i++) {
+    close(connections[i].fd);
+  }
+  return 0;
+}
