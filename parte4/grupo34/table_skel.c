@@ -3,6 +3,7 @@
 #include "table_skel.h"
 #include "message-private.h"
 #include "table-private.h"
+#include <stdio.h>
 
 struct table_t *tabela;
 
@@ -18,6 +19,31 @@ int table_skel_init(int n_lists) {
 int table_skel_destroy() {
   table_destroy(tabela);
   return 0;
+}
+
+void print_table() {
+  char** table_keys;
+  struct data_t *data;
+  int i, j;
+  char *c;
+
+  table_keys = table_get_keys(tabela);
+    if (table_keys != NULL) {
+      for(i = 0; table_keys[i] != NULL; i++) {
+        fflush(stdout);
+        data = table_get(tabela, table_keys[i]);
+        printf("key: %s - value: ", table_keys[i]);
+        c = (char *) data->data;
+        for (j = 0; j < data->datasize; j++) {
+      		printf("%c", *c);
+      		c += 1;
+      	}
+      	printf("\n");
+        fflush(stdout);
+        data_destroy(data);
+      }
+      table_free_keys(table_keys);
+    }
 }
 
 
@@ -94,7 +120,7 @@ struct message_t *invoke(struct message_t *msg_pedido){
         if(data == NULL){
           // data = data_create(0);
           data =  (struct data_t*) malloc(sizeof(struct data_t));
-          if (data == NULL) return NULL;
+          if (data == NULL) { data_destroy(data); return NULL; }
           data->datasize = 0;
           data->data = NULL;
         }

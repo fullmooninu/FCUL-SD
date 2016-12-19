@@ -9,5 +9,6 @@ make clean
 make
 #flawfinder -C table.c
 cppcheck ./include --enable=all .
+# splint
 #./test_table
 #./test_message

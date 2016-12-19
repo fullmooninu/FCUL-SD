@@ -14,6 +14,9 @@ Silvia Ferreira 45511 */
  */
 struct rtable_t{
 	struct server_t *server;
+	char* address1;
+	char* address2;
+	int on1; // 1º address ligado -> 1, desligado -> 0
 };
 
 #endif

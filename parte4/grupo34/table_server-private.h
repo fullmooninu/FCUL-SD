@@ -5,4 +5,6 @@
 
 void free_memory( char *message_resposta, char *message_pedido, struct message_t* msg_pedido, struct message_t* msg_resposta);
 
+void* message_to_secondary (void* message);
+
 #endif

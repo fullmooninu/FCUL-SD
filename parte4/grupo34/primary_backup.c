@@ -5,15 +5,39 @@ Silvia Ferreira 45511 */
 #include "primary_backup-private.h"
 #include "table-private.h"
 #include "network_client.h"
+#include "table_skel.h"
+#include "message-private.h"
 #include <stdlib.h>
 #include <string.h>
 
 #include <stdio.h>
 
 /* Função usada para um servidor avisar o servidor “server” de que
-*  já acordou. Retorna 0 em caso de sucesso, -1 em caso de insucesso
-*/
-int hello(server_t* server) {
+ *  já acordou. Retorna 0 em caso de sucesso, -1 em caso de insucesso
+ */
+int hello(struct server_t* server) {
+	int result = -1;
+	/* Prepara a mensagem */
+	struct message_t mensagemOk = (struct message_t *)malloc(struct message_t);
+	mensagemOk->opcode = OC_HELLO;
+	mensagemOk->c_type = CT_RESULT;
+	mensagemOk->content.result = OC_HELLO; //na verdade '60'
+
+	//envia e recebe aknowledge guardando em result
+	if(network_send_receive(rtable->server, mensagemOk)->opcode
+			== OC_OK)
+		result = 0;
+
+	//caso sucesso, entrou no if em cima
+	if (result == 0)
+		return 0;
+	else
+		return -1;
+}
+
+	/* Enviar a mensagem que foi previamente serializada */
+	result = write_all(server->socket_fd, message_out, host_size);
+
 	return 0;
 	// manda mensagem a dizer que acordou com a informacao de si proprio
 	// recebe acknoweledgement de ok
@@ -22,7 +46,7 @@ int hello(server_t* server) {
 /* Pede atualizacao de estado ao server.
 *  Retorna 0 em caso de sucesso e -1 em caso de insucesso.
 */
-int update_state(server_t* server) {
+int update_state(struct server_t* server) {
 	//send message with request code for table keys and data from primary
 	// o primario tem de iterar a lista e fazer um put para cada par key data
 		// secundario pede lista toda
@@ -33,12 +57,11 @@ int update_state(server_t* server) {
 	return 0;
 }
 
-int send_table(struct table_t *table, server_t* backup) {
+int send_table(struct table_t *table, struct server_t* backup) {
 	char** table_keys = table_get_keys(table);
 	for (int i = 0; table_keys[i] != NULL; i++) {
 		struct data_t* data = NULL;
 		// prepare data
-		data = malloc(sizeof(struct data_t)); if (data == NULL) return -1;
 		data = table_get(table, table_keys[i]);
 		// char* char_data = (char*) data->data; //TODO REMOVE THIS?
 
@@ -57,8 +80,7 @@ int send_table(struct table_t *table, server_t* backup) {
 	return 0;
 }
 
-void printInfo(struct table_t* table) {
-	// while cycle around it
+void printCurrentTable(struct table_t* table) {
 	char input[81], *s;
 	fgets(input, 80, stdin);
 	s = strchr(input, '\n');

@@ -4,9 +4,12 @@
 #define _SHORT 2
 #define _INT 4
 #define OC_RT_ERROR 99
+#define OC_HELLO 60
+#define OC_OK 61
 
 
-#include "table-private.h" /* For table_free_keys() */
+#include "table-private.h" /*
+For table_free_keys() */
 #include "message.h"
 #include <stdbool.h>
 

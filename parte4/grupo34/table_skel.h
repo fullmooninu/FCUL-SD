@@ -20,4 +20,7 @@ int table_skel_destroy();
  */
 struct message_t *invoke(struct message_t *msg_in);
 
+void print_table();
+
+
 #endif

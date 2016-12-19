@@ -95,6 +95,7 @@ int main(int argc, char **argv){
 
 	/* Usar network_connect para estabelcer ligação ao servidor */
 	server = network_connect(argv[1]);
+
   if (server == NULL) {
     printf("Erro ao estabelecer ligação ao servidor: %s\n", argv[1]);
     return -1;

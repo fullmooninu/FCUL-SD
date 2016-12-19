@@ -89,7 +89,7 @@ int table_put(struct table_t *table, char * key, struct data_t *value) {
 	int hash = key_hash(key, table->size);
 
 	// Verificar se jah existe
-	if (list_get(table->list[hash],key) != NULL) return 0;
+	if (list_get(table->list[hash],key) != NULL) return -1;
 
 	/* Criar entry com par chave/valor */
 	struct entry_t* e;
@@ -176,6 +176,10 @@ int table_del(struct table_t *table, char *key){
 	struct list_t* list = table->list[hashCode];
 	int retVal = list_remove(list, key);
 	if(retVal == 0){
+		if (list->size == 0) {
+			list_destroy(list);
+			table->list[hashCode] = NULL;
+		}
 		table->nElem--;
 		return 0;
 	}
